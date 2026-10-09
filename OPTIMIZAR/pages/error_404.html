@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon">
+    <title>Página no encontrada - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: "Inter", sans-serif; }
+        .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+        .error-animation { animation: float 3s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        .pulse-animation { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .hero-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(37, 99, 235, 0.15) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10">
+                    <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+                    <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Búsqueda</a>
+                    <a href="6_favorites.html" class="text-gray-600 hover:text-blue-600 font-medium">Favoritos</a>
+                    <a href="6_user_profile.html" class="text-gray-600 hover:text-blue-600 font-medium">Perfil</a>
+                    <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+                </div>
+                <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold">U</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-pattern py-20">
+        <div class="container mx-auto px-4 text-center">
+            <!-- Error Animation -->
+            <div class="error-animation mb-8">
+                <div class="relative inline-block">
+                    <div class="text-9xl font-bold text-gray-300 mb-4">404</div>
+                    <div class="absolute -top-4 -right-4 pulse-animation">
+                        <i class="fas fa-exclamation-triangle text-yellow-500 text-4xl"></i>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">¡Ups! Página no encontrada</h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Lo sentimos, la página que estás buscando no existe o ha sido movida. 
+                Pero no te preocupes, podemos ayudarte a encontrar lo que necesitas.
+            </p>
+
+            <!-- Search Bar -->
+            <div class="max-w-md mx-auto mb-12">
+                <div class="relative">
+                    <input type="text" id="searchInput" placeholder="¿Qué estás buscando?" 
+                           class="w-full px-6 py-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <button onclick="performSearch()" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <a href="3_user_dashboard.html" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                    <div class="w-12 h-12 health-gradient rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                        <i class="fas fa-home text-white text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Inicio</h3>
+                    <p class="text-gray-600 text-sm">Volver al panel principal</p>
+                </a>
+
+                <a href="4_search_results.html" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                        <i class="fas fa-search text-white text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Buscar</h3>
+                    <p class="text-gray-600 text-sm">Encuentra especialistas y servicios</p>
+                </a>
+
+                <a href="8_help_center.html" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                        <i class="fas fa-question-circle text-white text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Ayuda</h3>
+                    <p class="text-gray-600 text-sm">Centro de soporte y FAQ</p>
+                </a>
+
+                <a href="6_favorites.html" class="bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:scale-110 transition-transform">
+                        <i class="fas fa-heart text-white text-xl"></i>
+                    </div>
+                    <h3 class="font-semibold text-gray-900 mb-2">Favoritos</h3>
+                    <p class="text-gray-600 text-sm">Tus proveedores guardados</p>
+                </a>
+            </div>
+
+            <!-- Popular Searches -->
+            <div class="bg-white rounded-lg p-8 shadow-sm mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Búsquedas populares</h2>
+                <div class="flex flex-wrap justify-center gap-3">
+                    <button onclick="searchFor('cardiologo')" class="bg-blue-100 text-blue-700 px-4 py-2 rounded-full hover:bg-blue-200 transition-colors">
+                        <i class="fas fa-heart mr-2"></i>Cardiólogo
+                    </button>
+                    <button onclick="searchFor('dermatologo')" class="bg-green-100 text-green-700 px-4 py-2 rounded-full hover:bg-green-200 transition-colors">
+                        <i class="fas fa-hand-holding-medical mr-2"></i>Dermatólogo
+                    </button>
+                    <button onclick="searchFor('pediatra')" class="bg-purple-100 text-purple-700 px-4 py-2 rounded-full hover:bg-purple-200 transition-colors">
+                        <i class="fas fa-baby mr-2"></i>Pediatra
+                    </button>
+                    <button onclick="searchFor('ginecologo')" class="bg-pink-100 text-pink-700 px-4 py-2 rounded-full hover:bg-pink-200 transition-colors">
+                        <i class="fas fa-female mr-2"></i>Ginecólogo
+                    </button>
+                    <button onclick="searchFor('laboratorio')" class="bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full hover:bg-yellow-200 transition-colors">
+                        <i class="fas fa-microscope mr-2"></i>Laboratorio
+                    </button>
+                    <button onclick="searchFor('radiologia')" class="bg-indigo-100 text-indigo-700 px-4 py-2 rounded-full hover:bg-indigo-200 transition-colors">
+                        <i class="fas fa-x-ray mr-2"></i>Radiología
+                    </button>
+                </div>
+            </div>
+
+            <!-- Contact Support -->
+            <div class="bg-gradient-to-r from-blue-600 to-green-500 rounded-lg p-8 text-white">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="mb-6 md:mb-0">
+                        <h3 class="text-2xl font-bold mb-2">¿Aún necesitas ayuda?</h3>
+                        <p class="text-blue-100">Nuestro equipo de soporte está aquí para ayudarte</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="8_help_center.html" class="bg-white text-blue-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold">
+                            <i class="fas fa-question-circle mr-2"></i>Centro de Ayuda
+                        </a>
+                        <a href="mailto:soporte@comparasalud.com" class="bg-blue-700 text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition-colors font-semibold">
+                            <i class="fas fa-envelope mr-2"></i>Contactar Soporte
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script>
+        // Search functionality
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.trim();
+            if (searchTerm) {
+                // Redirect to search results with the search term
+                window.location.href = `4_search_results.html?search=${encodeURIComponent(searchTerm)}`;
+            }
+        }
+
+        // Search for popular terms
+        function searchFor(term) {
+            window.location.href = `4_search_results.html?search=${encodeURIComponent(term)}`;
+        }
+
+        // Handle Enter key in search input
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Add some interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate error number on load
+            const errorNumber = document.querySelector('.text-9xl');
+            errorNumber.style.opacity = '0';
+            errorNumber.style.transform = 'scale(0.5)';
+            
+            setTimeout(() => {
+                errorNumber.style.transition = 'all 0.8s ease-out';
+                errorNumber.style.opacity = '1';
+                errorNumber.style.transform = 'scale(1)';
+            }, 300);
+
+            // Add hover effects to quick links
+            document.querySelectorAll('.group').forEach(link => {
+                link.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                link.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
+
+        // Add typing effect to search placeholder
+        const searchInput = document.getElementById('searchInput');
+        const placeholders = [
+            '¿Qué estás buscando?',
+            'Busca especialistas...',
+            'Encuentra servicios médicos...',
+            '¿Necesitas una cita?'
+        ];
+        
+        let currentPlaceholder = 0;
+        let currentChar = 0;
+        let isDeleting = false;
+        
+        function typePlaceholder() {
+            const currentText = placeholders[currentPlaceholder];
+            
+            if (isDeleting) {
+                searchInput.placeholder = currentText.substring(0, currentChar - 1);
+                currentChar--;
+            } else {
+                searchInput.placeholder = currentText.substring(0, currentChar + 1);
+                currentChar++;
+            }
+            
+            let speed = isDeleting ? 50 : 100;
+            
+            if (!isDeleting && currentChar === currentText.length) {
+                speed = 2000;
+                isDeleting = true;
+            } else if (isDeleting && currentChar === 0) {
+                isDeleting = false;
+                currentPlaceholder = (currentPlaceholder + 1) % placeholders.length;
+                speed = 500;
+            }
+            
+            setTimeout(typePlaceholder, speed);
+        }
+        
+        // Start typing effect after 2 seconds
+        setTimeout(typePlaceholder, 2000);
+    </script>
+</body>
+</html>

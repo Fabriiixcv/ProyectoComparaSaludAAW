@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>ComparaSalud - Inicio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      .health-gradient {
+        background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+      }
+
+      .text-health-gradient {
+        background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: border-box;
+      }
+
+      .shadow-soft {
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+          0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      .category-card:hover .category-icon {
+        transform: scale(1.1);
+      }
+
+      .provider-card:hover {
+        transform: translateY(-4px);
+      }
+
+      .scroll-hidden {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      .scroll-hidden::-webkit-scrollbar {
+        display: none;
+      }
+
+      .search-focus:focus-within {
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Header Principal -->
+    <header class="bg-white sticky top-0 z-50">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <!-- Logo y Navegación Principal -->
+          <div class="flex justify-between items-center space-x-14">
+            <!-- Logo -->
+            <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+              <img
+                src="../assets/img/logo.png"
+                alt="ComparaSalud"
+                class="w-10 h-10"
+              />
+              <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+            </a>
+
+            <!-- Navegación Desktop -->
+            <nav class="hidden lg:flex items-center space-x-8">
+              <a
+                href="4_search_results.html"
+                class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors"
+                >Buscar</a
+              >
+              <a
+                href="4_medicamentos.html"
+                class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors"
+                >Medicamentos</a
+              >
+              
+              <a
+                href="8_help_center.html"
+                class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors"
+                >Ayuda</a
+              >
+            </nav>
+          </div>
+
+          <!-- Iconos de Acceso Rápido -->
+          <div class="flex items-center space-x-4">
+            <!-- Favoritos -->
+            <button
+              onclick="window.location.href='6_favorites.html'"
+              class="relative text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+            >
+              <i class="far fa-heart text-lg"></i>
+              <span
+                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                >3</span
+              >
+            </button>
+
+            <!-- Notificaciones -->
+            <button
+              class="relative text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+            >
+              <i class="far fa-bell text-lg"></i>
+              <span
+                class="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center"
+                >5</span
+              >
+            </button>
+
+            <!-- Perfil -->
+            <div class="relative group">
+              <button
+                class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100"
+              >
+                <img
+                  src="../assets/img/usuarios/usuario9.png"
+                  alt="Juan Sánchez"
+                  class="w-10 h-10 rounded-full"
+                />
+                <span class="hidden md:block text-gray-700 font-medium"
+                  >Juan Sánchez</span
+                >
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </button>
+
+              <!-- Menú desplegable del perfil -->
+              <div
+                class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+              >
+                <a
+                  href="6_user_profile.html"
+                  class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="far fa-user mr-3"></i>Mi Perfil
+                </a>
+                <a href="6_user_profile.html"
+                  class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="fas fa-cog mr-3"></i>Configuración
+                </a>
+                <a
+                  href="8_help_center.html"
+                  class="block lg:hidden px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="fa-solid fa-life-ring mr-3"></i>Ayuda
+                </a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <a
+                  href="1_2_auth.html"
+                  onclick="sessionStorage.removeItem('cs_session')"
+                  class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="fas fa-sign-out-alt mr-3"></i>Cerrar Sesión
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barra de Búsqueda - Mobile Expandida -->
+        <div class="lg:hidden mt-3 search-focus">
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="Buscar médicos, especialidades, servicios..."
+              class="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] transition-colors"
+            />
+            <i
+              class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"
+            ></i>
+            <button
+              class="absolute right-2 top-1/2 transform -translate-y-1/2 health-gradient text-white px-4 py-1.5 rounded-lg text-sm font-medium"
+            >
+              Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Sección Hero -->
+    <section class="health-gradient text-white py-12 md:py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            Encuentra el cuidado de salud perfecto para ti
+          </h1>
+          <p class="text-xl md:text-2xl opacity-90 mb-8">
+            Compara precios, calificaciones y disponibilidad en tiempo real
+          </p>
+
+          <!-- Buscador Principal con Filtros Básicos -->
+          <div class="bg-white rounded-2xl p-6 shadow-soft mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <!-- Servicio -->
+              <div class="text-left">
+                <label class="block text-gray-700 text-sm font-medium mb-2"
+                  >¿Qué necesitas?</label
+                >
+                <select
+                  class="w-full p-3 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:border-[#2563EB]"
+                >
+                  <option>Consulta médica</option>
+                  <option>Análisis clínicos</option>
+                  <option>Especialista</option>
+                  <option>Odontología</option>
+                  <option>Optometría</option>
+                </select>
+              </div>
+
+              <!-- Ubicación -->
+              <div class="text-left">
+                <label class="block text-gray-700 text-sm font-medium mb-2"
+                  >Ubicación</label
+                >
+                <div class="relative">
+                  <input
+                    type="text"
+                    value="Lima, Perú"
+                    class="w-full p-3 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:border-[#2563EB] pl-10"
+                  />
+                  <i
+                    class="fas fa-map-marker-alt absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                  ></i>
+                </div>
+              </div>
+
+              
+
+              <!-- Botón Buscar -->
+              <div class="flex items-end">
+                <button onclick="location.href='4_search_results.html'"
+                  class="w-full health-gradient text-white py-3 rounded-lg font-semibold shadow hover:shadow-md transition-all"
+                >
+                  <i class="fas fa-search mr-2"></i>Buscar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ubicación Actual -->
+          <div class="flex items-center justify-center text-white opacity-80">
+            <i class="fas fa-map-marker-alt mr-2"></i>
+            <span>Ubicación actual: <strong>Lima, Perú</strong></span>
+            <button class="ml-2 text-sm underline">Cambiar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categorías Principales de Servicios -->
+    <section class="py-8 bg-white">
+      <div class="container mx-auto px-4">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+          Categorías principales
+        </h2>
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <!-- Card Categoría -->
+          <div
+            onclick="location.href='4_search_results.html'" class="category-card bg-gray-50 rounded-xl p-4 text-center cursor-pointer transition-all hover:shadow-soft border border-gray-200"
+          >
+            <div
+              class="w-12 h-12 health-gradient rounded-lg flex items-center justify-center mx-auto mb-3"
+            >
+              <i
+                class="fas fa-user-md text-white text-xl category-icon transition-transform"
+              ></i>
+            </div>
+            <span class="text-sm font-medium text-gray-700"
+              >Médico General</span
+            >
+          </div>
+
+          <div
+            onclick="location.href='4_search_results.html'" class="category-card bg-gray-50 rounded-xl p-4 text-center cursor-pointer transition-all hover:shadow-soft border border-gray-200"
+          >
+            <div
+              class="w-12 h-12 bg-[#8B5CF6] rounded-lg flex items-center justify-center mx-auto mb-3"
+            >
+              <i
+                class="fas fa-teeth text-white text-xl category-icon transition-transform"
+              ></i>
+            </div>
+            <span class="text-sm font-medium text-gray-700">Odontología</span>
+          </div>
+
+          <div
+            onclick="location.href='4_search_results.html'" class="category-card bg-gray-50 rounded-xl p-4 text-center cursor-pointer transition-all hover:shadow-soft border border-gray-200"
+          >
+            <div
+              class="w-12 h-12 bg-[#06B6D4] rounded-lg flex items-center justify-center mx-auto mb-3"
+            >
+              <i
+                class="fas fa-eye text-white text-xl category-icon transition-transform"
+              ></i>
+            </div>
+            <span class="text-sm font-medium text-gray-700">Oftalmología</span>
+          </div>
+
+          <div
+            onclick="location.href='4_search_results.html'" class="category-card bg-gray-50 rounded-xl p-4 text-center cursor-pointer transition-all hover:shadow-soft border border-gray-200"
+          >
+            <div
+              class="w-12 h-12 bg-[#10B981] rounded-lg flex items-center justify-center mx-auto mb-3"
+            >
+              <i
+                class="fas fa-heartbeat text-white text-xl category-icon transition-transform"
+              ></i>
+            </div>
+            <span class="text-sm font-medium text-gray-700">Cardiología</span>
+          </div>
+
+          <div
+            onclick="location.href='4_search_results.html'" class="category-card bg-gray-50 rounded-xl p-4 text-center cursor-pointer transition-all hover:shadow-soft border border-gray-200"
+          >
+            <div
+              class="w-12 h-12 bg-[#F59E0B] rounded-lg flex items-center justify-center mx-auto mb-3"
+            >
+              <i
+                class="fas fa-brain text-white text-xl category-icon transition-transform"
+              ></i>
+            </div>
+            <span class="text-sm font-medium text-gray-700">Neurología</span>
+          </div>
+
+          <div
+            onclick="location.href='4_search_results.html'" class="category-card bg-gray-50 rounded-xl p-4 text-center cursor-pointer transition-all hover:shadow-soft border border-gray-200"
+          >
+            <div
+              class="w-12 h-12 bg-[#EF4444] rounded-lg flex items-center justify-center mx-auto mb-3"
+            >
+              <i
+                class="fas fa-baby text-white text-xl category-icon transition-transform"
+              ></i>
+            </div>
+            <span class="text-sm font-medium text-gray-700">Pediatría</span>
+          </div>
+
+          <div
+            onclick="location.href='4_medicamentos.html'" class="category-card bg-gray-50 rounded-xl p-4 text-center cursor-pointer transition-all hover:shadow-soft border border-gray-200"
+          >
+            <div
+              class="w-12 h-12 bg-[#2563EB] rounded-lg flex items-center justify-center mx-auto mb-3"
+            >
+              <i
+                class="fas fa-pills text-white text-xl category-icon transition-transform"
+              ></i>
+            </div>
+            <span class="text-sm font-medium text-gray-700">Medicamentos</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contenido Principal -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+      <!-- Proveedores Cercanos -->
+      <section class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">
+            Proveedores cercanos a ti
+          </h2>
+          <a href="4_search_results.html" class="text-[#2563EB] font-medium hover:underline"
+            >Ver todos</a
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Card Proveedor -->
+          <div
+            class="provider-card bg-white rounded-2xl shadow-soft border border-gray-200 overflow-hidden transition-all duration-300"
+          >
+            <div
+              class="h-32 bg-gradient-to-r from-blue-400 to-green-400 relative"
+            >
+              <span
+                class="absolute top-3 right-3 bg-white text-gray-700 px-2 py-1 rounded-full text-xs font-medium"
+              >
+                <i class="fas fa-map-marker-alt mr-1"></i>1.2 km
+              </span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-lg text-gray-800">
+                    Clínica San Juan
+                  </h3>
+                  <p class="text-gray-600 text-sm">
+                    Médico General • Odontología
+                  </p>
+                </div>
+                <div
+                  class="flex items-center bg-green-50 text-green-700 px-2 py-1 rounded-full"
+                >
+                  <i class="fas fa-star text-sm mr-1"></i>
+                  <span class="text-sm font-medium">4.8</span>
+                </div>
+              </div>
+
+              <div class="flex items-center text-gray-600 text-sm mb-3">
+                <i class="far fa-clock mr-2"></i>
+                <span>Abierto hasta las 20:00</span>
+              </div>
+
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-gray-700">
+                  <span class="text-lg font-bold">S/ 80</span>
+                  <span class="text-sm">consulta general</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <i class="fas fa-user-friends mr-1"></i>
+                  <span>124 consultas</span>
+                </div>
+              </div>
+
+              <a href="4_provider_profile.html?id=1" class="block text-center w-full health-gradient text-white py-2.5 rounded-lg font-medium hover:shadow-md transition-all">Ver perfil</a>
+            </div>
+          </div>
+
+          <!-- Segundo Proveedor -->
+          <div
+            class="provider-card bg-white rounded-2xl shadow-soft border border-gray-200 overflow-hidden transition-all duration-300"
+          >
+            <div
+              class="h-32 bg-gradient-to-r from-purple-400 to-pink-400 relative"
+            >
+              <span
+                class="absolute top-3 right-3 bg-white text-gray-700 px-2 py-1 rounded-full text-xs font-medium"
+              >
+                <i class="fas fa-map-marker-alt mr-1"></i>0.8 km
+              </span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-lg text-gray-800">
+                    Laboratorio Médico Central
+                  </h3>
+                  <p class="text-gray-600 text-sm">
+                    Análisis Clínicos • Diagnóstico
+                  </p>
+                </div>
+                <div
+                  class="flex items-center bg-green-50 text-green-700 px-2 py-1 rounded-full"
+                >
+                  <i class="fas fa-star text-sm mr-1"></i>
+                  <span class="text-sm font-medium">4.6</span>
+                </div>
+              </div>
+
+              <div class="flex items-center text-gray-600 text-sm mb-3">
+                <i class="far fa-clock mr-2"></i>
+                <span>Abierto hasta las 18:00</span>
+              </div>
+
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-gray-700">
+                  <span class="text-lg font-bold">S/ 45</span>
+                  <span class="text-sm">hemograma completo</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <i class="fas fa-user-friends mr-1"></i>
+                  <span>89 consultas</span>
+                </div>
+              </div>
+
+              <a href="4_provider_profile.html?id=2" class="block text-center w-full health-gradient text-white py-2.5 rounded-lg font-medium hover:shadow-md transition-all">Ver perfil</a>
+            </div>
+          </div>
+
+          <!-- Tercer Proveedor -->
+          <div
+            class="provider-card bg-white rounded-2xl shadow-soft border border-gray-200 overflow-hidden transition-all duration-300"
+          >
+            <div
+              class="h-32 bg-gradient-to-r from-orange-400 to-red-400 relative"
+            >
+              <span
+                class="absolute top-3 right-3 bg-white text-gray-700 px-2 py-1 rounded-full text-xs font-medium"
+              >
+                <i class="fas fa-map-marker-alt mr-1"></i>2.1 km
+              </span>
+            </div>
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-3">
+                <div>
+                  <h3 class="font-bold text-lg text-gray-800">
+                    Dr. Carlos Rodríguez
+                  </h3>
+                  <p class="text-gray-600 text-sm">Cardiólogo • Especialista</p>
+                </div>
+                <div
+                  class="flex items-center bg-green-50 text-green-700 px-2 py-1 rounded-full"
+                >
+                  <i class="fas fa-star text-sm mr-1"></i>
+                  <span class="text-sm font-medium">4.9</span>
+                </div>
+              </div>
+
+              <div class="flex items-center text-gray-600 text-sm mb-3">
+                <i class="far fa-clock mr-2"></i>
+                <span>Abierto hasta las 19:00</span>
+              </div>
+
+              <div class="flex items-center justify-between mb-4">
+                <div class="text-gray-700">
+                  <span class="text-lg font-bold">S/ 150</span>
+                  <span class="text-sm">consulta especializada</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <i class="fas fa-user-friends mr-1"></i>
+                  <span>203 consultas</span>
+                </div>
+              </div>
+
+              <a href="4_provider_profile.html?id=3" class="block text-center w-full health-gradient text-white py-2.5 rounded-lg font-medium hover:shadow-md transition-all">Ver perfil</a>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Servicios Populares -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+          Servicios populares
+        </h2>
+        <div class="bg-white rounded-2xl shadow-soft p-6">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div
+              onclick="location.href='4_search_results.html'" class="text-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <div
+                class="w-16 h-16 health-gradient rounded-full flex items-center justify-center mx-auto mb-3"
+              >
+                <i class="fas fa-syringe text-white text-xl"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-700">Vacunación</span>
+              <p class="text-xs text-gray-500 mt-1">Desde S/ 35</p>
+            </div>
+
+            <div
+              onclick="location.href='4_search_results.html'" class="text-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <div
+                class="w-16 h-16 bg-[#8B5CF6] rounded-full flex items-center justify-center mx-auto mb-3"
+              >
+                <i class="fas fa-teeth text-white text-xl"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-700"
+                >Limpieza Dental</span
+              >
+              <p class="text-xs text-gray-500 mt-1">Desde S/ 60</p>
+            </div>
+
+            <div
+              onclick="location.href='4_search_results.html'" class="text-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <div
+                class="w-16 h-16 bg-[#06B6D4] rounded-full flex items-center justify-center mx-auto mb-3"
+              >
+                <i class="fas fa-eye text-white text-xl"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-700"
+                >Examen Visual</span
+              >
+              <p class="text-xs text-gray-500 mt-1">Desde S/ 50</p>
+            </div>
+
+            <div
+              onclick="location.href='4_search_results.html'" class="text-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <div
+                class="w-16 h-16 bg-[#10B981] rounded-full flex items-center justify-center mx-auto mb-3"
+              >
+                <i class="fas fa-heartbeat text-white text-xl"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-700"
+                >Check-up Cardio</span
+              >
+              <p class="text-xs text-gray-500 mt-1">Desde S/ 120</p>
+            </div>
+
+            <div
+              onclick="location.href='4_search_results.html'" class="text-center p-4 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <div
+                class="w-16 h-16 bg-[#F59E0B] rounded-full flex items-center justify-center mx-auto mb-3"
+              >
+                <i class="fas fa-x-ray text-white text-xl"></i>
+              </div>
+              <span class="text-sm font-medium text-gray-700">Radiografía</span>
+              <p class="text-xs text-gray-500 mt-1">Desde S/ 45</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ofertas Especiales -->
+      <section class="mb-12">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Ofertas especiales</h2>
+          <a href="4_search_results.html" class="text-[#2563EB] font-medium hover:underline"
+            >Ver todas</a
+          >
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Oferta 1 -->
+          <div
+            class="bg-gradient-to-r from-[#2563EB] to-[#10B981] rounded-2xl p-6 text-white relative overflow-hidden"
+          >
+            <div class="relative z-10">
+              <span
+                class="bg-white text-[#2563EB] px-3 py-1 rounded-full text-sm font-bold inline-block mb-4"
+              >
+                30% DESCUENTO
+              </span>
+              <h3 class="text-xl font-bold mb-2">Chequeo General Completo</h3>
+              <p class="opacity-90 mb-4">
+                Incluye consulta médica, análisis básicos y evaluación
+                nutricional
+              </p>
+              <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold">S/ 140</span>
+                <span class="line-through opacity-70">S/ 200</span>
+              </div>
+              <button
+                onclick="location.href='4_search_results.html'" class="mt-4 bg-white text-[#2563EB] px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all"
+              >
+                Aprovechar oferta
+              </button>
+            </div>
+            <div
+              class="absolute right-0 top-0 bottom-0 w-32 bg-white bg-opacity-10 transform skew-x-12"
+            ></div>
+          </div>
+
+          <!-- Oferta 2 -->
+          <div
+            class="bg-gradient-to-r from-[#8B5CF6] to-[#06B6D4] rounded-2xl p-6 text-white relative overflow-hidden"
+          >
+            <div class="relative z-10">
+              <span
+                class="bg-white text-[#8B5CF6] px-3 py-1 rounded-full text-sm font-bold inline-block mb-4"
+              >
+                2da CONSULTA GRATIS
+              </span>
+              <h3 class="text-xl font-bold mb-2">Paquete Dental Familiar</h3>
+              <p class="opacity-90 mb-4">
+                Limpieza dental + blanqueamiento para 2 personas
+              </p>
+              <div class="flex items-center space-x-2">
+                <span class="text-2xl font-bold">S/ 180</span>
+                <span class="line-through opacity-70">S/ 240</span>
+              </div>
+              <button
+                onclick="location.href='4_search_results.html'" class="mt-4 bg-white text-[#8B5CF6] px-6 py-2 rounded-lg font-semibold hover:shadow-lg transition-all"
+              >
+                Aprovechar oferta
+              </button>
+            </div>
+            <div
+              class="absolute right-0 top-0 bottom-0 w-32 bg-white bg-opacity-10 transform skew-x-12"
+            ></div>
+          </div>
+        </div>
+      </section>
+
+      
+
+      <!-- Historial de Búsquedas Recientes -->
+      <section class="mb-12">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">
+          Búsquedas recientes
+        </h2>
+        <div class="bg-white rounded-2xl shadow-soft p-6">
+          <div class="flex flex-wrap gap-3">
+            <span
+              class="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-200 cursor-pointer transition-colors"
+            >
+              Dentista cerca de Miraflores
+            </span>
+            <span
+              class="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-200 cursor-pointer transition-colors"
+            >
+              Pediatra con seguro
+            </span>
+            <span
+              class="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-200 cursor-pointer transition-colors"
+            >
+              Análisis de sangre económico
+            </span>
+            <span
+              class="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-200 cursor-pointer transition-colors"
+            >
+              Oftalmólogo para niños
+            </span>
+            <span
+              class="bg-gray-100 text-gray-700 px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-200 cursor-pointer transition-colors"
+            >
+              Check-up ejecutivo
+            </span>
+          </div>
+          <button class="mt-4 text-[#2563EB] font-medium hover:underline">
+            Limpiar historial
+          </button>
+        </div>
+      </section>
+    </main>
+    
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/services/usuario.js?v=3"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () { UsuarioService.pintarCabecera(); });</script>
+
+    <script>
+      // Script para funcionalidades interactivas
+      document.addEventListener("DOMContentLoaded", function () {
+        // Efecto de hover en cards de proveedores
+        const providerCards = document.querySelectorAll(".provider-card");
+        providerCards.forEach((card) => {
+          card.addEventListener("mouseenter", function () {
+            this.style.transform = "translateY(-8px)";
+            this.style.boxShadow =
+              "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)";
+          });
+
+          card.addEventListener("mouseleave", function () {
+            this.style.transform = "translateY(0)";
+            this.style.boxShadow =
+              "0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)";
+          });
+        });
+
+        // Simular búsqueda al hacer clic en historial
+        const recentSearches = document.querySelectorAll(".bg-gray-100");
+        recentSearches.forEach((search) => {
+          search.addEventListener("click", function () {
+            const searchText = this.textContent;
+            alert(`Buscando: ${searchText}`);
+            // En una aplicación real, aquí se ejecutaría la búsqueda
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

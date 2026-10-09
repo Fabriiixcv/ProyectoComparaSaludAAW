@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>ComparaSalud - Autenticación</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      .health-gradient {
+        background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+      }
+
+      .health-gradient-hover:hover {
+        background: linear-gradient(135deg, #1e40af 0%, #059669 100%);
+      }
+
+      .input-focus:focus {
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+
+      .password-strength-bar {
+        transition: all 0.3s ease;
+      }
+
+      .slide-enter {
+        opacity: 0;
+        transform: translateX(20px);
+      }
+
+      .slide-enter-active {
+        opacity: 1;
+        transform: translateX(0);
+        transition: all 0.3s ease-out;
+      }
+
+      .fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .shake {
+        animation: shake 0.5s ease-in-out;
+      }
+
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-5px);
+        }
+        75% {
+          transform: translateX(5px);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Contenedor Principal -->
+    <div class="min-h-screen flex">
+      <!-- Panel Lateral (Solo visible en desktop) -->
+      <div class="hidden lg:flex lg:flex-1 health-gradient text-white">
+        <div class="w-full flex flex-col justify-between p-12">
+          <!-- Logo y contenido superior -->
+          <div>
+            <div class="flex items-center mb-8">
+              <a href="../index.html" class="flex items-center space-x-3">
+                <img
+                  src="../assets/img/logo.png"
+                  alt="ComparaSalud"
+                  class="w-10 h-10"
+                />
+                <span class="text-xl font-bold">ComparaSalud</span>
+              </a>
+            </div>
+
+            <div class="mt-16 max-w-md">
+              <h1 class="text-4xl font-bold mb-6">
+                Tu salud, transparente y al alcance
+              </h1>
+              <p class="text-lg opacity-90">
+                Accede a tu cuenta para gestionar tu cuenta, comparar
+                precios y tomar el control de tu bienestar.
+              </p>
+            </div>
+
+            <!-- Características -->
+            <div class="mt-12 space-y-6">
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4"
+                >
+                  <i class="fas fa-search text-sm"></i>
+                </div>
+                <span>Encuentra los mejores proveedores de salud</span>
+              </div>
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4"
+                >
+                  <i class="fas fa-balance-scale text-sm"></i>
+                </div>
+                <span>Compara precios y calificaciones en tiempo real</span>
+              </div>
+              <div class="flex items-center">
+                <div
+                  class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center mr-4"
+                >
+                  <i class="far fa-calendar-check text-sm"></i>
+                </div>
+                <span>Consulta medicamentos y servicios</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer del panel lateral -->
+          <div class="text-sm opacity-80">
+            <p>© 2025 ComparaSalud. Todos los derechos reservados.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel de Contenido Principal -->
+      <div
+        class="flex-1 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-20 xl:px-24"
+      >
+        <!-- Header móvil -->
+        <div class="lg:hidden flex justify-center mb-8">
+          <div class="flex items-center">
+            <a href="../index.html" class="flex items-center space-x-3">
+              <img
+                src="../assets/img/logo.png"
+                alt="ComparaSalud"
+                class="w-10 h-10"
+              />
+              <span class="text-xl font-bold">ComparaSalud</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- Contenedor de formularios -->
+        <div class="max-w-md w-full mx-auto">
+          <!-- Página de Login -->
+          <div
+            id="login-page"
+            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-8 fade-in"
+          >
+            <div class="text-center mb-8">
+              <h2 class="text-2xl font-bold text-gray-800">
+                Bienvenido de nuevo
+              </h2>
+              <p class="text-gray-600 mt-2">
+                Ingresa a tu cuenta para continuar
+              </p>
+            </div>
+
+            <form id="login-form" class="space-y-6">
+              <!-- Campo Email -->
+              <div>
+                <label
+                  for="login-email"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Correo electrónico
+                </label>
+                <div class="relative">
+                  <input
+                    type="email"
+                    id="login-email"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition-all duration-200"
+                    placeholder="tu@email.com"
+                  />
+                  <div
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    <i class="fas fa-envelope text-gray-400"></i>
+                  </div>
+                </div>
+                <div
+                  id="login-email-error"
+                  class="hidden text-red-500 text-sm mt-1 flex items-center"
+                >
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  <span>Por favor ingresa un email válido</span>
+                </div>
+              </div>
+
+              <!-- Campo Contraseña -->
+              <div>
+                <div class="flex items-center justify-between mb-2">
+                  <label
+                    for="login-password"
+                    class="block text-sm font-medium text-gray-700"
+                  >
+                    Contraseña
+                  </label>
+                  <button
+                    type="button"
+                    id="forgot-password-btn"
+                    class="text-sm text-blue-600 hover:text-blue-500 font-medium"
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
+                <div class="relative">
+                  <input
+                    type="password"
+                    id="login-password"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition-all duration-200"
+                    placeholder="Ingresa tu contraseña"
+                  />
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password"
+                  >
+                    <i class="fas fa-eye text-gray-400"></i>
+                  </button>
+                </div>
+                <div
+                  id="login-password-error"
+                  class="hidden text-red-500 text-sm mt-1 flex items-center"
+                >
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  <span>La contraseña es requerida</span>
+                </div>
+              </div>
+
+              <!-- Recordarme -->
+              <div class="flex items-center">
+                <input
+                  type="checkbox"
+                  id="remember-me"
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                />
+                <label for="remember-me" class="ml-2 text-sm text-gray-700">
+                  Recordar mi cuenta
+                </label>
+              </div>
+
+              <!-- Botón de Login -->
+              <button
+                type="submit"
+                class="w-full health-gradient text-white py-3 px-4 rounded-lg font-medium shadow-sm hover:shadow-md health-gradient-hover transition-all duration-200 flex items-center justify-center"
+              >
+                <i class="fas fa-sign-in-alt mr-2"></i>
+                Iniciar Sesión
+              </button>
+            </form>
+
+            
+
+            <!-- Enlace a registro -->
+            <div class="mt-8 text-center">
+              <p class="text-gray-600">
+                ¿No tienes una cuenta?
+                <button
+                  id="go-to-register"
+                  class="text-blue-600 hover:text-blue-500 font-medium ml-1"
+                >
+                  Regístrate aquí
+                </button>
+              </p>
+            </div>
+          </div>
+
+          <!-- Página de Registro -->
+          <div
+            id="register-page"
+            class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-8"
+          >
+            <div class="text-center mb-8">
+              <h2 class="text-2xl font-bold text-gray-800">Crear tu cuenta</h2>
+              <p class="text-gray-600 mt-2">
+                Comienza a gestionar tu salud de forma inteligente
+              </p>
+            </div>
+
+            <form id="register-form" class="space-y-6">
+              <!-- Nombre Completo -->
+              <div>
+                <label
+                  for="register-name"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Nombre completo
+                </label>
+                <input
+                  type="text"
+                  id="register-name"
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition-all duration-200"
+                  placeholder="Ingresa tu nombre completo"
+                />
+                <div
+                  id="register-name-error"
+                  class="hidden text-red-500 text-sm mt-1 flex items-center"
+                >
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  <span>El nombre es requerido</span>
+                </div>
+              </div>
+
+              <!-- Campo Email -->
+              <div>
+                <label
+                  for="register-email"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Correo electrónico
+                </label>
+                <div class="relative">
+                  <input
+                    type="email"
+                    id="register-email"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition-all duration-200"
+                    placeholder="tu@email.com"
+                  />
+                  <div
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    <i class="fas fa-envelope text-gray-400"></i>
+                  </div>
+                </div>
+                <div
+                  id="register-email-error"
+                  class="hidden text-red-500 text-sm mt-1 flex items-center"
+                >
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  <span id="register-email-error-text"
+                    >Por favor ingresa un email válido</span
+                  >
+                </div>
+              </div>
+
+              <!-- Campo Contraseña -->
+              <div>
+                <label
+                  for="register-password"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Contraseña
+                </label>
+                <div class="relative">
+                  <input
+                    type="password"
+                    id="register-password"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition-all duration-200"
+                    placeholder="Crea una contraseña segura"
+                  />
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password"
+                  >
+                    <i class="fas fa-eye text-gray-400"></i>
+                  </button>
+                </div>
+
+                <!-- Indicador de fortaleza de contraseña -->
+                <div class="mt-2">
+                  <div class="flex justify-between items-center mb-1">
+                    <span class="text-xs text-gray-500"
+                      >Fortaleza de la contraseña</span
+                    >
+                    <span
+                      id="password-strength-text"
+                      class="text-xs font-medium"
+                      >Débil</span
+                    >
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      id="password-strength-bar"
+                      class="password-strength-bar h-2 rounded-full bg-red-500"
+                      style="width: 20%"
+                    ></div>
+                  </div>
+                  <div id="password-requirements" class="mt-2 space-y-1">
+                    <div
+                      class="flex items-center text-xs text-gray-500 requirement"
+                      data-requirement="length"
+                    >
+                      <i class="fas fa-times mr-1 text-red-500"></i>
+                      <span>Mínimo 8 caracteres</span>
+                    </div>
+                    <div
+                      class="flex items-center text-xs text-gray-500 requirement"
+                      data-requirement="uppercase"
+                    >
+                      <i class="fas fa-times mr-1 text-red-500"></i>
+                      <span>Una letra mayúscula</span>
+                    </div>
+                    <div
+                      class="flex items-center text-xs text-gray-500 requirement"
+                      data-requirement="number"
+                    >
+                      <i class="fas fa-times mr-1 text-red-500"></i>
+                      <span>Un número</span>
+                    </div>
+                    <div
+                      class="flex items-center text-xs text-gray-500 requirement"
+                      data-requirement="special"
+                    >
+                      <i class="fas fa-times mr-1 text-red-500"></i>
+                      <span>Un carácter especial</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Confirmar Contraseña -->
+              <div>
+                <label
+                  for="register-confirm-password"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Confirmar contraseña
+                </label>
+                <div class="relative">
+                  <input
+                    type="password"
+                    id="register-confirm-password"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition-all duration-200"
+                    placeholder="Repite tu contraseña"
+                  />
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center toggle-password"
+                  >
+                    <i class="fas fa-eye text-gray-400"></i>
+                  </button>
+                </div>
+                <div
+                  id="register-confirm-password-error"
+                  class="hidden text-red-500 text-sm mt-1 flex items-center"
+                >
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  <span>Las contraseñas no coinciden</span>
+                </div>
+              </div>
+
+              <!-- Selección de rol -->
+              <div>
+                <span class="block text-sm font-medium text-gray-700 mb-2">
+                  Quiero registrarme como
+                </span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <label class="cursor-pointer">
+                    <input type="radio" name="register-role" value="paciente" class="peer sr-only" checked />
+                    <div class="h-full border border-gray-300 rounded-lg p-3 text-center transition-all duration-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 hover:border-blue-400">
+                      <i class="fas fa-user text-blue-600 text-lg mb-1"></i>
+                      <div class="text-sm font-medium text-gray-800">Paciente</div>
+                      <div class="text-xs text-gray-500">Busco servicios de salud</div>
+                    </div>
+                  </label>
+                  <label class="cursor-pointer">
+                    <input type="radio" name="register-role" value="proveedor" class="peer sr-only" />
+                    <div class="h-full border border-gray-300 rounded-lg p-3 text-center transition-all duration-200 peer-checked:border-blue-600 peer-checked:bg-blue-50 peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 hover:border-blue-400">
+                      <i class="fas fa-hospital text-blue-600 text-lg mb-1"></i>
+                      <div class="text-sm font-medium text-gray-800">Proveedor</div>
+                      <div class="text-xs text-gray-500">Ofrezco servicios y medicamentos</div>
+                    </div>
+                  </label>
+                  
+                </div>
+              </div>
+
+              <!-- Términos y condiciones -->
+              <div class="flex items-start">
+                <input
+                  type="checkbox"
+                  id="accept-terms"
+                  class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 mt-1"
+                />
+                <label for="accept-terms" class="ml-2 text-sm text-gray-700">
+                  Acepto los
+                  <a
+                    href="#"
+                    class="text-blue-600 hover:text-blue-500 font-medium"
+                    >Términos de Servicio</a
+                  >
+                  y la
+                  <a
+                    href="#"
+                    class="text-blue-600 hover:text-blue-500 font-medium"
+                    >Política de Privacidad</a
+                  >
+                </label>
+              </div>
+              <div
+                id="terms-error"
+                class="hidden text-red-500 text-sm mt-1 flex items-center"
+              >
+                <i class="fas fa-exclamation-circle mr-1"></i>
+                <span>Debes aceptar los términos y condiciones</span>
+              </div>
+
+              <!-- Botón de Registro -->
+              <button
+                type="submit"
+                class="w-full health-gradient text-white py-3 px-4 rounded-lg font-medium shadow-sm hover:shadow-md health-gradient-hover transition-all duration-200 flex items-center justify-center"
+              >
+                <i class="fas fa-user-plus mr-2"></i>
+                Crear Cuenta
+              </button>
+            </form>
+
+            
+
+            <!-- Enlace a login -->
+            <div class="mt-8 text-center">
+              <p class="text-gray-600">
+                ¿Ya tienes una cuenta?
+                <button
+                  id="go-to-login"
+                  class="text-blue-600 hover:text-blue-500 font-medium ml-1"
+                >
+                  Inicia sesión aquí
+                </button>
+              </p>
+            </div>
+          </div>
+
+          <!-- Página de Recuperación de Contraseña -->
+          <div
+            id="recovery-page"
+            class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-8"
+          >
+            <div class="text-center mb-8">
+              <div
+                class="w-16 h-16 health-gradient rounded-full flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="fas fa-key text-white text-xl"></i>
+              </div>
+              <h2 class="text-2xl font-bold text-gray-800">
+                Recuperar contraseña
+              </h2>
+              <p class="text-gray-600 mt-2">
+                Te enviaremos instrucciones para restablecer tu contraseña
+              </p>
+            </div>
+
+            <form id="recovery-form" class="space-y-6">
+              <!-- Campo Email -->
+              <div>
+                <label
+                  for="recovery-email"
+                  class="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Correo electrónico
+                </label>
+                <div class="relative">
+                  <input
+                    type="email"
+                    id="recovery-email"
+                    required
+                    class="w-full px-4 py-3 border border-gray-300 rounded-lg input-focus transition-all duration-200"
+                    placeholder="tu@email.com"
+                  />
+                  <div
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  >
+                    <i class="fas fa-envelope text-gray-400"></i>
+                  </div>
+                </div>
+                <div
+                  id="recovery-email-error"
+                  class="hidden text-red-500 text-sm mt-1 flex items-center"
+                >
+                  <i class="fas fa-exclamation-circle mr-1"></i>
+                  <span>Por favor ingresa un email válido</span>
+                </div>
+              </div>
+
+              <!-- Botón de Envío -->
+              <button
+                type="submit"
+                class="w-full health-gradient text-white py-3 px-4 rounded-lg font-medium shadow-sm hover:shadow-md health-gradient-hover transition-all duration-200 flex items-center justify-center"
+              >
+                <i class="fas fa-paper-plane mr-2"></i>
+                Enviar Instrucciones
+              </button>
+            </form>
+
+            <!-- Instrucciones adicionales -->
+            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <i class="fas fa-info-circle text-blue-500"></i>
+                </div>
+                <div class="ml-3">
+                  <h3 class="text-sm font-medium text-blue-800">
+                    ¿Qué esperar?
+                  </h3>
+                  <div class="mt-1 text-sm text-blue-700">
+                    <p>
+                      Recibirás un email con un enlace seguro para restablecer
+                      tu contraseña. El enlace expirará en 1 hora por seguridad.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enlace a login -->
+            <div class="mt-8 text-center">
+              <button
+                id="back-to-login"
+                class="text-blue-600 hover:text-blue-500 font-medium flex items-center justify-center mx-auto"
+              >
+                <i class="fas fa-arrow-left mr-2"></i>
+                Volver al inicio de sesión
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirmación de Envío de Recuperación -->
+          <div
+            id="recovery-sent-page"
+            class="hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-8 text-center"
+          >
+            <div
+              class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6"
+            >
+              <i class="fas fa-check text-green-600 text-2xl"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">
+              ¡Email enviado!
+            </h2>
+            <p class="text-gray-600 mb-2">
+              Hemos enviado las instrucciones para restablecer tu contraseña a:
+            </p>
+            <p class="text-gray-800 font-medium mb-6" id="sent-email-display">
+              usuario@email.com
+            </p>
+            <p class="text-sm text-gray-500 mb-8">
+              Si no ves el email en tu bandeja de entrada, revisa tu carpeta de
+              spam.
+            </p>
+            <button
+              id="recovery-back-to-login"
+              class="w-full health-gradient text-white py-3 px-4 rounded-lg font-medium shadow-sm hover:shadow-md health-gradient-hover transition-all duration-200"
+            >
+              Volver al Inicio de Sesión
+            </button>
+          </div>
+        </div>
+
+        <!-- Footer móvil -->
+        <div class="lg:hidden mt-12 text-center">
+          <p class="text-gray-500 text-sm">
+            © 2025 ComparaSalud. Todos los derechos reservados.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="../js/services/auth.js"></script>
+    <script>
+      /* Respaldo: si auth.js no cargó (ruta incorrecta), se define aquí con las mismas claves de almacenamiento */
+      if (!window.Auth) {
+        (function (g) {
+          const UK = "cs_users", SK = "cs_session";
+          const ROLES = {
+            paciente: { label: "Paciente", home: "./2_tutorial.html" },
+            proveedor: { label: "Proveedor", home: "./3_provider_home.html" },
+            administrador: { label: "Administrador", home: "./3_admin_home.html" },
+          };
+          const DEMO = [
+            { id: 1, nombre: "Paciente Demo", email: "paciente@comparasalud.com", password: "Demo1234", rol: "paciente" },
+            { id: 2, nombre: "Clínica Demo", email: "proveedor@comparasalud.com", password: "Demo1234", rol: "proveedor" },
+            { id: 3, nombre: "Admin Demo", email: "admin@comparasalud.com", password: "Demo1234", rol: "administrador" },
+          ];
+          function getUsers() {
+            try { const s = JSON.parse(localStorage.getItem(UK)); if (Array.isArray(s)) return s; } catch (e) {}
+            localStorage.setItem(UK, JSON.stringify(DEMO));
+            return DEMO.slice();
+          }
+          function find(email) {
+            const e = (email || "").trim().toLowerCase();
+            return getUsers().find((u) => u.email.toLowerCase() === e) || null;
+          }
+          function register(d) {
+            if (!ROLES[d.rol]) return { ok: false, error: "rol" };
+            if (find(d.email)) return { ok: false, error: "email-existente" };
+            const users = getUsers();
+            const id = users.reduce((m, u) => Math.max(m, u.id), 0) + 1;
+            const user = { id, nombre: d.nombre.trim(), email: d.email.trim(), password: d.password, rol: d.rol };
+            users.push(user);
+            localStorage.setItem(UK, JSON.stringify(users));
+            return { ok: true, user };
+          }
+          function start(u) {
+            const s = { id: u.id, email: u.email, nombre: u.nombre, rol: u.rol };
+            if (u.rol === "proveedor") { s.idCentroMedico = u.id; s.nombreCentro = u.nombre; }
+            sessionStorage.setItem(SK, JSON.stringify(s));
+            return s;
+          }
+          function login(email, password) {
+            const u = find(email);
+            if (!u || u.password !== password) return { ok: false };
+            return { ok: true, user: u, session: start(u), home: ROLES[u.rol].home };
+          }
+          function getSession() { try { return JSON.parse(sessionStorage.getItem(SK)); } catch (e) { return null; } }
+          function requireRole(r) {
+            const s = getSession();
+            if (!s) { location.href = "./1_2_auth.html"; return null; }
+            if (s.rol !== r) { location.href = ROLES[s.rol].home; return null; }
+            return s;
+          }
+          function logout() { sessionStorage.removeItem(SK); location.href = "./1_2_auth.html"; }
+          g.Auth = { ROLES, getUsers, register, login, getSession, requireRole, logout };
+        })(window);
+      }
+    </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Elementos del DOM
+        const loginPage = document.getElementById("login-page");
+        const registerPage = document.getElementById("register-page");
+        const recoveryPage = document.getElementById("recovery-page");
+        const recoverySentPage = document.getElementById("recovery-sent-page");
+
+        // Botones de navegación
+        document
+          .getElementById("go-to-register")
+          .addEventListener("click", showRegisterPage);
+        document
+          .getElementById("go-to-login")
+          .addEventListener("click", showLoginPage);
+        document
+          .getElementById("forgot-password-btn")
+          .addEventListener("click", showRecoveryPage);
+        document
+          .getElementById("back-to-login")
+          .addEventListener("click", showLoginPage);
+        document
+          .getElementById("recovery-back-to-login")
+          .addEventListener("click", showLoginPage);
+
+        // Toggle visibilidad de contraseña
+        document.querySelectorAll(".toggle-password").forEach((button) => {
+          button.addEventListener("click", function () {
+            const input = this.parentElement.querySelector("input");
+            const icon = this.querySelector("i");
+
+            if (input.type === "password") {
+              input.type = "text";
+              icon.classList.remove("fa-eye");
+              icon.classList.add("fa-eye-slash");
+            } else {
+              input.type = "password";
+              icon.classList.remove("fa-eye-slash");
+              icon.classList.add("fa-eye");
+            }
+          });
+        });
+
+        // Validación de fortaleza de contraseña
+        const passwordInput = document.getElementById("register-password");
+        if (passwordInput) {
+          passwordInput.addEventListener("input", validatePasswordStrength);
+        }
+
+        // Manejo de formularios
+        document
+          .getElementById("login-form")
+          .addEventListener("submit", handleLogin);
+        document
+          .getElementById("register-form")
+          .addEventListener("submit", handleRegister);
+        document
+          .getElementById("recovery-form")
+          .addEventListener("submit", handleRecovery);
+
+        // Funciones de navegación
+        function showLoginPage() {
+          loginPage.classList.remove("hidden");
+          registerPage.classList.add("hidden");
+          recoveryPage.classList.add("hidden");
+          recoverySentPage.classList.add("hidden");
+        }
+
+        function showRegisterPage() {
+          loginPage.classList.add("hidden");
+          registerPage.classList.remove("hidden");
+          recoveryPage.classList.add("hidden");
+          recoverySentPage.classList.add("hidden");
+        }
+
+        function showRecoveryPage() {
+          loginPage.classList.add("hidden");
+          registerPage.classList.add("hidden");
+          recoveryPage.classList.remove("hidden");
+          recoverySentPage.classList.add("hidden");
+        }
+
+        function showRecoverySent(email) {
+          loginPage.classList.add("hidden");
+          registerPage.classList.add("hidden");
+          recoveryPage.classList.add("hidden");
+          recoverySentPage.classList.remove("hidden");
+          document.getElementById("sent-email-display").textContent = email;
+        }
+
+        // Validación de contraseña
+        function validatePasswordStrength() {
+          const password = passwordInput.value;
+          const strengthBar = document.getElementById("password-strength-bar");
+          const strengthText = document.getElementById(
+            "password-strength-text"
+          );
+          const requirements = document.querySelectorAll(".requirement");
+
+          let strength = 0;
+          const checks = {
+            length: password.length >= 8,
+            uppercase: /[A-Z]/.test(password),
+            number: /[0-9]/.test(password),
+            special: /[!@#$%^&*(),.?":{}|<>]/.test(password),
+          };
+
+          // Actualizar indicadores visuales
+          requirements.forEach((req) => {
+            const requirement = req.getAttribute("data-requirement");
+            const icon = req.querySelector("i");
+            const met = checks[requirement];
+
+            if (met) {
+              icon.classList.remove("fa-times", "text-red-500");
+              icon.classList.add("fa-check", "text-green-500");
+              req.classList.remove("text-gray-500");
+              req.classList.add("text-green-600");
+              strength += 25;
+            } else {
+              icon.classList.remove("fa-check", "text-green-500");
+              icon.classList.add("fa-times", "text-red-500");
+              req.classList.remove("text-green-600");
+              req.classList.add("text-gray-500");
+            }
+          });
+
+          // Actualizar barra de progreso y texto
+          strengthBar.style.width = `${strength}%`;
+
+          if (strength < 25) {
+            strengthBar.className =
+              "password-strength-bar h-2 rounded-full bg-red-500";
+            strengthText.textContent = "Débil";
+            strengthText.className = "text-xs font-medium text-red-600";
+          } else if (strength < 50) {
+            strengthBar.className =
+              "password-strength-bar h-2 rounded-full bg-yellow-500";
+            strengthText.textContent = "Regular";
+            strengthText.className = "text-xs font-medium text-yellow-600";
+          } else if (strength < 75) {
+            strengthBar.className =
+              "password-strength-bar h-2 rounded-full bg-blue-500";
+            strengthText.textContent = "Buena";
+            strengthText.className = "text-xs font-medium text-blue-600";
+          } else {
+            strengthBar.className =
+              "password-strength-bar h-2 rounded-full bg-green-500";
+            strengthText.textContent = "Fuerte";
+            strengthText.className = "text-xs font-medium text-green-600";
+          }
+        }
+
+        // Manejo de envío de formularios
+        function handleLogin(e) {
+          e.preventDefault();
+          const email = document.getElementById("login-email").value;
+          const password = document.getElementById("login-password").value;
+          document.getElementById("login-password-error").classList.add("hidden");
+
+          // Validación simple
+          if (!validateEmail(email)) {
+            showError("login-email-error");
+            return;
+          }
+
+          if (!password) {
+            showError("login-password-error");
+            return;
+          }
+
+          // Autenticación por rol: Paciente, Proveedor o Administrador
+          const result = Auth.login(email, password);
+          if (!result.ok) {
+            const err = document.getElementById("login-password-error");
+            err.querySelector("span").textContent = "Email o contraseña incorrectos";
+            showError("login-password-error");
+            return;
+          }
+
+          window.location.href = result.home;
+        }
+
+        function handleRegister(e) {
+          e.preventDefault();
+          const name = document.getElementById("register-name").value;
+          const email = document.getElementById("register-email").value;
+          const password = document.getElementById("register-password").value;
+          const confirmPassword = document.getElementById(
+            "register-confirm-password"
+          ).value;
+          const termsAccepted = document.getElementById("accept-terms").checked;
+          document.getElementById("register-email-error-text").textContent =
+            "Por favor ingresa un email válido";
+          document.getElementById("register-email-error").classList.add("hidden");
+
+          // Validaciones
+          if (!name) {
+            showError("register-name-error");
+            return;
+          }
+
+          if (!validateEmail(email)) {
+            showError("register-email-error");
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            showError("register-confirm-password-error");
+            return;
+          }
+
+          if (!termsAccepted) {
+            showError("terms-error");
+            return;
+          }
+
+          const role = document.querySelector('input[name="register-role"]:checked').value;
+          const result = Auth.register({ nombre: name, email, password, rol: role });
+
+          if (!result.ok) {
+            if (result.error === "email-existente") {
+              document.getElementById("register-email-error-text").textContent =
+                "Este email ya está registrado";
+              showError("register-email-error");
+            }
+            return;
+          }
+
+          const auto = Auth.login(email, password);
+          if (auto.ok) {
+            // Proveedor: primero completa el registro de su clínica (documentos, datos, etc.)
+            window.location.href = role === "proveedor" ? "./7_provider_registration.html" : auto.home;
+            return;
+          }
+          document.getElementById("login-email").value = email;
+          showLoginPage();
+        }
+
+        function handleRecovery(e) {
+          e.preventDefault();
+          const email = document.getElementById("recovery-email").value;
+
+          if (!validateEmail(email)) {
+            showError("recovery-email-error");
+            return;
+          }
+
+          // Simular envío de email
+          showRecoverySent(email);
+        }
+
+        // Funciones auxiliares
+        function validateEmail(email) {
+          const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+          return re.test(email);
+        }
+
+        function showError(errorId) {
+          const errorElement = document.getElementById(errorId);
+          errorElement.classList.remove("hidden");
+          errorElement.parentElement.classList.add("shake");
+
+          setTimeout(() => {
+            errorElement.parentElement.classList.remove("shake");
+          }, 500);
+        }
+      });
+    </script>
+  <script>
+document.addEventListener("DOMContentLoaded",function(){var p=new URLSearchParams(location.search);
+if(p.get("modo")==="registro"){document.getElementById("go-to-register").click();}
+var r=p.get("rol");if(r){var i=document.querySelector('input[name="register-role"][value="'+r+'"]');if(i)i.checked=true;}});
+</script>
+</body>
+</html>

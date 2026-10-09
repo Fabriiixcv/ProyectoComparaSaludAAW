@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>ComparaSalud - Bienvenida</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      .health-gradient {
+        background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+      }
+
+      .slide-enter {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      .slide-enter-active {
+        transform: translateX(0);
+        opacity: 1;
+        transition: all 0.3s ease-out;
+      }
+
+      .slide-exit {
+        transform: translateX(0);
+        opacity: 1;
+      }
+
+      .slide-exit-active {
+        transform: translateX(-100%);
+        opacity: 0;
+        transition: all 0.3s ease-out;
+      }
+
+      .pulse-soft {
+        animation: pulse-soft 2s infinite;
+      }
+
+      @keyframes pulse-soft {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.05);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Página de Bienvenida (Splash Screen) -->
+    <div
+      id="splash-screen"
+      class="min-h-screen flex flex-col justify-center items-center health-gradient text-white p-6 transition-opacity duration-500"
+    >
+      <div class="max-w-md w-full text-center pulse-soft">
+        <!-- Logo -->
+        <div class="mb-8">
+          <img
+              src="../assets/img/logo.png"
+              alt="ComparaSalud"
+              class="w-24 h-24 mx-auto"
+            />
+          <h1 class="text-3xl font-bold mt-4">ComparaSalud</h1>
+        </div>
+
+        <!-- Tagline -->
+        <p class="text-xl font-light mb-12 opacity-90">
+          Transparencia en tu salud
+        </p>
+
+        <!-- Botón Comenzar -->
+        <button
+          id="start-btn"
+          class="bg-white text-[#2563EB] font-semibold py-4 px-12 rounded-full shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-lg"
+        >
+          Comenzar
+        </button>
+
+        <!-- Texto informativo adicional -->
+        <p class="mt-8 text-sm opacity-80 max-w-xs mx-auto">
+          Únete a miles de personas que toman decisiones informadas sobre su
+          salud
+        </p>
+      </div>
+
+      <!-- Indicador de carga sutil -->
+      <div class="mt-16 flex space-x-2">
+        <div class="w-2 h-2 bg-white rounded-full opacity-60"></div>
+        <div class="w-2 h-2 bg-white rounded-full opacity-40"></div>
+        <div class="w-2 h-2 bg-white rounded-full opacity-20"></div>
+      </div>
+    </div>
+
+    <!-- Tutorial Interactivo -->
+    <div
+      id="tutorial-container"
+      class="hidden min-h-screen bg-white overflow-hidden"
+    >
+      <!-- Indicador de progreso -->
+      <div class="w-full bg-gray-200 h-1">
+        <div
+          id="progress-bar"
+          class="health-gradient h-1 transition-all duration-300"
+          style="width: 25%"
+        ></div>
+      </div>
+
+      <!-- Contenedor de slides -->
+      <div
+        id="slides-container"
+        class="flex transition-transform duration-300 ease-in-out"
+      >
+        <!-- Pantalla 1: Encuentra proveedores -->
+        <div class="min-w-full min-h-screen flex flex-col p-6">
+          <div
+            class="flex-1 flex flex-col justify-center items-center text-center max-w-md mx-auto"
+          >
+            <!-- Ilustración -->
+            <div class="mb-10">
+              <div
+                class="w-48 h-48 health-gradient rounded-full flex items-center justify-center mx-auto relative"
+              >
+                <div
+                  class="absolute -top-2 -right-2 w-16 h-16 bg-[#8B5CF6] rounded-full flex items-center justify-center text-white"
+                >
+                  <i class="fas fa-map-marker-alt text-xl"></i>
+                </div>
+                <div
+                  class="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-inner"
+                >
+                  <i class="fas fa-search text-6xl"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contenido -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">
+              Encuentra proveedores de salud cerca de ti
+            </h2>
+            <p class="text-gray-600 text-lg mb-10">
+              Descubre médicos, centros medicos y servicios en tu zona con nuestra
+              tecnología de geolocalización avanzada.
+            </p>
+
+            <!-- Indicadores de slide -->
+            <div class="flex space-x-3 mb-8">
+              <div class="w-3 h-3 health-gradient rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <!-- Navegación -->
+            <div class="w-full flex justify-between">
+              <button onclick="window.location.href='./3_user_dashboard.html'" class="text-gray-500 font-medium py-3 px-6 rounded-lg">
+                Saltar
+              </button>
+              <button
+                class="next-slide health-gradient text-white font-medium py-3 px-8 rounded-lg shadow hover:shadow-md transition-all"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pantalla 2: Compara precios -->
+        <div class="min-w-full min-h-screen flex flex-col p-6">
+          <div
+            class="flex-1 flex flex-col justify-center items-center text-center max-w-md mx-auto"
+          >
+            <!-- Ilustración -->
+            <div class="mb-10">
+              <div
+                class="w-48 h-48 health-gradient rounded-full flex items-center justify-center mx-auto relative"
+              >
+                <div
+                  class="absolute -top-2 -left-2 w-16 h-16 bg-[#06B6D4] rounded-full flex items-center justify-center text-white"
+                >
+                  <i class="fas fa-chart-line text-xl"></i>
+                </div>
+                <div
+                  class="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-inner"
+                >
+                  <i class="fas fa-balance-scale text-6xl"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contenido -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">
+              Compara precios y calificaciones en tiempo real
+            </h2>
+            <p class="text-gray-600 text-lg mb-10">
+              Toma decisiones informadas con datos actualizados de costos y
+              experiencias de otros pacientes.
+            </p>
+
+            <!-- Indicadores de slide -->
+            <div class="flex space-x-3 mb-8">
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 health-gradient rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <!-- Navegación -->
+            <div class="w-full flex justify-between">
+              <button
+                class="prev-slide text-gray-500 font-medium py-3 px-6 rounded-lg"
+              >
+                Atrás
+              </button>
+              <button
+                class="next-slide health-gradient text-white font-medium py-3 px-8 rounded-lg shadow hover:shadow-md transition-all"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pantalla 3: Explora servicios -->
+        <div class="min-w-full min-h-screen flex flex-col p-6">
+          <div
+            class="flex-1 flex flex-col justify-center items-center text-center max-w-md mx-auto"
+          >
+            <!-- Ilustración -->
+            <div class="mb-10">
+              <div
+                class="w-48 h-48 health-gradient rounded-full flex items-center justify-center mx-auto relative"
+              >
+                <div
+                  class="absolute -bottom-2 -right-2 w-16 h-16 bg-[#10B981] rounded-full flex items-center justify-center text-white"
+                >
+                  <i class="fas fa-pills text-xl"></i>
+                </div>
+                <div
+                  class="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-inner"
+                >
+                  <i class="fas fa-notes-medical text-6xl"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contenido -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">
+              Explora servicios y medicamentos
+            </h2>
+            <p class="text-gray-600 text-lg mb-10">
+             Consulta el catálogo de servicios y medicamentos de cada proveedor en pocos segundos.
+            </p>
+
+            <!-- Indicadores de slide -->
+            <div class="flex space-x-3 mb-8">
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 health-gradient rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+            </div>
+
+            <!-- Navegación -->
+            <div class="w-full flex justify-between">
+              <button
+                class="prev-slide text-gray-500 font-medium py-3 px-6 rounded-lg"
+              >
+                Atrás
+              </button>
+              <button
+                class="next-slide health-gradient text-white font-medium py-3 px-8 rounded-lg shadow hover:shadow-md transition-all"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pantalla 4: Gestiona salud familiar -->
+        <div class="min-w-full min-h-screen flex flex-col p-6">
+          <div
+            class="flex-1 flex flex-col justify-center items-center text-center max-w-md mx-auto"
+          >
+            <!-- Ilustración -->
+            <div class="mb-10">
+              <div
+                class="w-48 h-48 health-gradient rounded-full flex items-center justify-center mx-auto relative"
+              >
+                <div
+                  class="absolute -bottom-2 -left-2 w-16 h-16 bg-[#F59E0B] rounded-full flex items-center justify-center text-white"
+                >
+                  <i class="fas fa-users text-xl"></i>
+                </div>
+                <div
+                  class="w-32 h-32 bg-white rounded-full flex items-center justify-center shadow-inner"
+                >
+                  <i class="fas fa-heart text-6xl"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Contenido -->
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">
+              Gestiona la salud de tu familia
+            </h2>
+            <p class="text-gray-600 text-lg mb-10">
+              Mantén organizadas los datos de tu familia de todos tus
+              seres queridos en un solo lugar seguro.
+            </p>
+
+            <!-- Indicadores de slide -->
+            <div class="flex space-x-3 mb-8">
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 bg-gray-300 rounded-full"></div>
+              <div class="w-3 h-3 health-gradient rounded-full"></div>
+            </div>
+
+            <!-- Navegación -->
+            <div class="w-full flex justify-between">
+              <button
+                class="prev-slide text-gray-500 font-medium py-3 px-6 rounded-lg"
+              >
+                Atrás
+              </button>
+              <button
+                id="to-permissions"
+                class="health-gradient text-white font-medium py-3 px-8 rounded-lg shadow hover:shadow-md transition-all"
+              >
+                Continuar
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Página de Permisos -->
+    <div id="permissions-screen" class="hidden min-h-screen bg-white p-6">
+      <div class="max-w-md mx-auto h-full flex flex-col justify-center">
+        <!-- Header -->
+        <div class="text-center mb-12">
+          <div
+            class="w-16 h-16 health-gradient rounded-2xl flex items-center justify-center mx-auto mb-4"
+          >
+            <i class="fas fa-shield-alt text-white text-2xl"></i>
+          </div>
+          <h2 class="text-2xl font-bold text-gray-800 mb-2">
+            Permisos necesarios
+          </h2>
+          <p class="text-gray-600">
+            Para una experiencia personalizada, necesitamos algunos permisos
+          </p>
+        </div>
+
+        <!-- Tarjeta de Ubicación -->
+        <div class="bg-gray-50 rounded-xl p-6 mb-6 border border-gray-200">
+          <div class="flex items-start">
+            <div
+              class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4"
+            >
+              <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold text-gray-800 mb-1">
+                Acceso a ubicación
+              </h3>
+              <p class="text-gray-600 text-sm mb-4">
+                Para mostrarte servicios de salud cercanos y calcular
+                distancias
+              </p>
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-2"></i>
+                <span>Solo usamos tu ubicación cuando la app está en uso</span>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button
+              id="location-deny"
+              class="text-gray-500 font-medium py-2 px-6 rounded-lg mr-3"
+            >
+              Denegar
+            </button>
+            <button
+              id="location-allow"
+              class="health-gradient text-white font-medium py-2 px-6 rounded-lg shadow"
+            >
+              Permitir
+            </button>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Notificaciones -->
+        <div class="bg-gray-50 rounded-xl p-6 border border-gray-200">
+          <div class="flex items-start">
+            <div
+              class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4"
+            >
+              <i class="fas fa-bell text-green-600 text-xl"></i>
+            </div>
+            <div class="flex-1">
+              <h3 class="font-semibold text-gray-800 mb-1">
+                Notificaciones push
+              </h3>
+              <p class="text-gray-600 text-sm mb-4">
+                Para ofertas especiales y novedades
+                importantes
+              </p>
+              <div class="flex items-center text-sm text-gray-500">
+                <i class="fas fa-info-circle mr-2"></i>
+                <span
+                  >Puedes cambiar estas preferencias en cualquier momento</span
+                >
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 flex justify-end">
+            <button
+              id="notifications-deny"
+              class="text-gray-500 font-medium py-2 px-6 rounded-lg mr-3"
+            >
+              Denegar
+            </button>
+            <button
+              id="notifications-allow"
+              class="health-gradient text-white font-medium py-2 px-6 rounded-lg shadow"
+            >
+              Permitir
+            </button>
+          </div>
+        </div>
+
+        <!-- Información adicional -->
+        <div class="mt-8 text-center">
+          <p class="text-gray-500 text-sm">
+            Tu privacidad es importante. Lee nuestra
+            <a href="#" class="text-blue-600 hover:underline"
+              >Política de Privacidad</a
+            >
+            para más información.
+          </p>
+        </div>
+
+        <!-- Botón para continuar -->
+        <div class="mt-10">
+          <button
+            id="finish-onboarding"
+            class="w-full health-gradient text-white font-medium py-4 rounded-lg shadow hover:shadow-md transition-all"
+          >
+            Completar configuración
+          </button>
+          <button class="w-full text-gray-500 font-medium py-3 rounded-lg mt-3">
+            Configurar más tarde
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Elementos del DOM
+        const splashScreen = document.getElementById("splash-screen");
+        const tutorialContainer = document.getElementById("tutorial-container");
+        const permissionsScreen = document.getElementById("permissions-screen");
+        const slidesContainer = document.getElementById("slides-container");
+        const progressBar = document.getElementById("progress-bar");
+        const startBtn = document.getElementById("start-btn");
+
+        // Variables de estado
+        let currentSlide = 0;
+        const totalSlides = 4;
+
+        // Ir al tutorial desde la pantalla de bienvenida
+        startBtn.addEventListener("click", function () {
+          splashScreen.classList.add("hidden");
+          tutorialContainer.classList.remove("hidden");
+        });
+
+        // Navegación del tutorial
+        document.querySelectorAll(".next-slide").forEach((button) => {
+          button.addEventListener("click", function () {
+            if (currentSlide < totalSlides - 1) {
+              currentSlide++;
+              updateSlidePosition();
+              updateProgressBar();
+            }
+          });
+        });
+
+        document.querySelectorAll(".prev-slide").forEach((button) => {
+          button.addEventListener("click", function () {
+            if (currentSlide > 0) {
+              currentSlide--;
+              updateSlidePosition();
+              updateProgressBar();
+            }
+          });
+        });
+
+        // Ir a la pantalla de permisos desde el último slide
+        document
+          .getElementById("to-permissions")
+          .addEventListener("click", function () {
+            tutorialContainer.classList.add("hidden");
+            permissionsScreen.classList.remove("hidden");
+          });
+
+        // Funciones auxiliares
+        function updateSlidePosition() {
+          slidesContainer.style.transform = `translateX(-${
+            currentSlide * 100
+          }%)`;
+        }
+
+        function updateProgressBar() {
+          const progress = ((currentSlide + 1) / totalSlides) * 100;
+          progressBar.style.width = `${progress}%`;
+        }
+
+        // Manejo de permisos
+        document
+          .getElementById("location-allow")
+          .addEventListener("click", function () {
+            this.textContent = "Permitido ✓";
+            this.classList.remove("health-gradient");
+            this.classList.add("bg-green-500");
+            this.disabled = true;
+            document.getElementById("location-deny").classList.add("hidden");
+          });
+
+        document
+          .getElementById("notifications-allow")
+          .addEventListener("click", function () {
+            this.textContent = "Permitido ✓";
+            this.classList.remove("health-gradient");
+            this.classList.add("bg-green-500");
+            this.disabled = true;
+            document
+              .getElementById("notifications-deny")
+              .classList.add("hidden");
+          });
+
+        document
+          .getElementById("location-deny")
+          .addEventListener("click", function () {
+            this.textContent = "Denegado";
+            this.classList.add("text-red-500");
+            this.disabled = true;
+            document.getElementById("location-allow").classList.add("hidden");
+          });
+
+        document
+          .getElementById("notifications-deny")
+          .addEventListener("click", function () {
+            this.textContent = "Denegado";
+            this.classList.add("text-red-500");
+            this.disabled = true;
+            document
+              .getElementById("notifications-allow")
+              .classList.add("hidden");
+          });
+
+        // Finalizar onboarding
+        document
+          .getElementById("finish-onboarding")
+          .addEventListener("click", function () {
+            window.location.href = "./3_user_dashboard.html";
+          });
+      });
+    </script>
+  </body>
+</html>

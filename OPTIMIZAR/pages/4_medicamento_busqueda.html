@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Buscar Medicamento por Nombre Comercial - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+.search-focus:focus-within{box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+.row-card{transition:transform .2s ease,box-shadow .2s ease}
+.row-card:hover{transform:translateY(-2px);box-shadow:0 10px 25px -3px rgba(0,0,0,.1)}
+mark{background:#dbeafe;color:#1e40af;border-radius:4px;padding:0 2px}
+@media (prefers-reduced-motion:reduce){.row-card{transition:none}.row-card:hover{transform:none}}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+    <a href="3_user_dashboard.html" class="flex items-center space-x-3"><img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" /><span class="text-xl font-bold text-gray-900">ComparaSalud</span></a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+      <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Búsqueda</a>
+      <a href="4_medicamentos.html" class="text-gray-600 hover:text-blue-600 font-medium">Medicamentos</a>
+      <a href="4_medicamento_busqueda.html" class="text-blue-600 font-semibold">Buscar por marca</a>
+      <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+    </div>
+    <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold" aria-label="Mi perfil">U</a>
+  </div>
+</nav>
+
+<section class="health-gradient text-white py-14 md:py-16">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Busca tu medicamento por su marca</h1>
+    <p class="text-lg md:text-xl opacity-90 mb-8">Escribe el nombre comercial y descubre en qué servicios o atenciones se incluye</p>
+
+    <!-- HU27: Buscar => GET /api/medicamento?nombreComercial= -->
+    <form id="form" role="search" novalidate class="bg-white rounded-2xl p-3 shadow-soft search-focus max-w-2xl mx-auto">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <div class="relative flex-1 text-left">
+          <label for="q" class="sr-only">Nombre comercial del medicamento</label>
+          <i class="fas fa-pills absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+          <input id="q" type="text" maxlength="50" autocomplete="off" placeholder="Ej: Panadol, Brufen, Cozaar"
+            class="w-full pl-12 pr-4 py-3 rounded-xl text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+        </div>
+        <button id="btn" type="submit" class="health-gradient text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-60"><i class="fas fa-search mr-2"></i>Buscar</button>
+      </div>
+      <p id="err" class="hidden text-left items-center text-red-600 text-sm mt-2 px-2" role="alert"><i class="fas fa-times-circle mr-2"></i><span></span></p>
+    </form>
+
+    <div class="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm">
+      <span class="opacity-80">Marcas frecuentes:</span>
+      <span id="chips" class="flex flex-wrap justify-center gap-2"></span>
+    </div>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-10">
+  <div class="max-w-5xl mx-auto">
+
+    <div id="intro" class="bg-white rounded-2xl shadow-soft p-10 text-center">
+      <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+      <h2 class="text-xl font-semibold text-gray-900 mb-2">Escribe una marca para empezar</h2>
+      <p class="text-gray-600">Buscamos coincidencias parciales, sin importar tildes ni mayúsculas.</p>
+    </div>
+
+    <div id="loading" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center text-gray-600"><i class="fas fa-spinner fa-spin text-2xl text-[#2563EB] mb-3"></i><p>Consultando medicamentos...</p></div>
+
+    <div id="serverErr" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm flex items-center justify-between gap-4 flex-wrap" role="alert">
+      <span><i class="fas fa-exclamation-circle mr-2"></i>No pudimos completar la búsqueda (GET /api/medicamento). Inténtalo nuevamente.</span>
+      <button id="retry" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700"><i class="fas fa-redo mr-2"></i>Reintentar</button>
+    </div>
+
+    <div id="empty" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center">
+      <i class="fas fa-pills text-4xl text-gray-300 mb-4"></i>
+      <h2 class="text-xl font-semibold text-gray-900 mb-2">No encontramos ese nombre comercial</h2>
+      <p id="emptyTxt" class="text-gray-600 mb-4"></p>
+      <button id="all" type="button" class="health-gradient text-white px-6 py-2.5 rounded-xl font-medium hover:opacity-90">Ver todas las marcas</button>
+    </div>
+
+    <section id="res" class="hidden">
+      <p id="summary" class="text-gray-600 mb-6" aria-live="polite"></p>
+      <div id="list" class="space-y-8"></div>
+    </section>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+<script src="../js/components/footer.js"></script>
+<script src="../js/services/auth.js"></script>
+<script src="../js/services/usuario.js?v=3"></script>
+<script>document.addEventListener("DOMContentLoaded", function () { if (window.UsuarioService) UsuarioService.pintarCabecera(); });</script>
+<script>
+/* Datos simulados (equivale a la tabla Medicamento + servicios que lo incluyen) */
+const MEDS = [
+  { id:1,  marca:"Panadol 500 mg",       activo:"Paracetamol",     pres:"Caja x 20 tabletas", precio:12.50, rx:false, servs:[["Consulta Médica General","Clínica San Juan","Miraflores",80],["Consulta Médica General","Clínica Surco Vital","Santiago de Surco",95],["Dr. Luis Paredes (consulta)","Clínica Médica Central","San Isidro",70]] },
+  { id:2,  marca:"Brufen 400 mg",        activo:"Ibuprofeno",      pres:"Caja x 10 tabletas", precio:15.00, rx:false, servs:[["Consulta Médica General","Clínica San Juan","Miraflores",80],["Dra. Ana López (consulta)","Centro Médico San Isidro","San Isidro",180]] },
+  { id:3,  marca:"Cozaar 50 mg",         activo:"Losartán potásico",pres:"Caja x 30 tabletas",precio:28.00, rx:true,  servs:[["Consulta con Especialista","Centro Cardiológico","San Borja",120],["Chequeo Cardiovascular","Centro Cardiológico","San Borja",180]] },
+  { id:4,  marca:"Amoxil 500 mg",        activo:"Amoxicilina",     pres:"Caja x 12 cápsulas", precio:21.90, rx:true,  servs:[["Consulta Médica General","Clínica Médica Central","San Isidro",70],["Consulta Médica General","Clínica Surco Vital","Santiago de Surco",95]] },
+  { id:5,  marca:"Losec 20 mg",          activo:"Omeprazol",       pres:"Caja x 14 cápsulas", precio:26.40, rx:false, servs:[["Consulta Médica General","Clínica Miraflores Salud","Miraflores",85]] },
+  { id:6,  marca:"Claritin 10 mg",       activo:"Loratadina",      pres:"Caja x 10 tabletas", precio:14.80, rx:false, servs:[["Examen Visual","Clínica San Juan","Miraflores",50],["Consulta Médica General","Policlínico La Molina","La Molina",65]] },
+  { id:7,  marca:"Glucophage 850 mg",    activo:"Metformina",      pres:"Caja x 30 tabletas", precio:24.50, rx:true,  servs:[["Dr. Andrés Vega (consulta)","Centro Médico San Isidro","San Borja",190],["Análisis de Sangre Completo","Laboratorio Médico Central","Lince",65]] },
+  { id:8,  marca:"Lipitor 20 mg",        activo:"Atorvastatina",   pres:"Caja x 30 tabletas", precio:48.00, rx:true,  servs:[["Perfil Lipídico","Laboratorio Miraflores Diagnóstica","Lince",55],["Chequeo Cardiovascular","Centro Cardiológico","San Borja",180]] },
+  { id:9,  marca:"Ventolin inhalador",   activo:"Salbutamol",      pres:"Frasco 200 dosis",   precio:29.90, rx:false, servs:[["Consulta Médica General","Clínica San Juan","Miraflores",80],["Dra. María González (consulta)","Clínica San Juan","Miraflores",110]] },
+  { id:10, marca:"Zithromax 500 mg",     activo:"Azitromicina",    pres:"Caja x 3 tabletas",  precio:39.00, rx:true,  servs:[["Consulta Médica General","Clínica Angloamericana","La Molina",120]] }
+];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+const norm = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+const resaltar = (t, q) => { const i = norm(t).indexOf(norm(q)); return !q || i < 0 ? esc(t) : esc(t.slice(0,i)) + "<mark>" + esc(t.slice(i,i+q.length)) + "</mark>" + esc(t.slice(i+q.length)); };
+let timer = null, ultima = "";
+
+/* Validación del texto ingresado */
+function validar(txt) {
+  const t = txt.trim();
+  if (!t) return "Escribe el nombre comercial del medicamento.";
+  if (t.length < 2) return "Ingresa al menos 2 caracteres.";
+  if (t.length > 50) return "El nombre no puede superar los 50 caracteres.";
+  if (!/^[\p{L}0-9\s.\-]+$/u.test(t)) return "Usa solo letras, números, espacios, puntos o guiones.";
+  return "";
+}
+function showErr(m) { const e = $("err"); e.classList.toggle("hidden", !m); e.classList.toggle("flex", !!m); e.querySelector("span").textContent = m; $("q").classList.toggle("border-red-400", !!m); }
+
+/* Equivale a GET /api/medicamento?nombreComercial= */
+function consultar(q) { const n = norm(q); return n ? MEDS.filter((m) => norm(m.marca).includes(n)) : MEDS.slice(); }
+
+function card(m, q) {
+  return `<article class="row-card bg-white rounded-2xl shadow-soft p-6">
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-4">
+      <div class="flex items-start gap-4 min-w-0">
+        <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas fa-pills"></i></div>
+        <div class="min-w-0">
+          <h3 class="text-lg font-semibold text-gray-900">${resaltar(m.marca, q)}</h3>
+          <p class="text-gray-500 text-sm">${esc(m.pres)} · ${esc(m.activo)}</p>
+          <div class="flex flex-wrap gap-2 mt-2">
+            <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">Comercial</span>
+            ${m.rx ? '<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded text-xs"><i class="fas fa-file-prescription mr-1"></i>Con receta</span>' : '<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs">Venta libre</span>'}
+          </div>
+        </div>
+      </div>
+      <div class="flex items-center gap-4 md:flex-col md:items-end">
+        <span class="text-xl font-bold text-green-600 whitespace-nowrap">S/ ${m.precio.toFixed(2)}</span>
+        <a href="4_medicamento_ficha.html?id=${m.id}#ficha" class="border border-[#2563EB] text-[#2563EB] px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 whitespace-nowrap"><i class="fas fa-file-medical mr-2"></i>Ver ficha técnica</a>
+      </div>
+    </div>
+    <p class="text-xs font-semibold text-gray-500 uppercase mb-2"><i class="fas fa-stethoscope mr-1"></i>Se incluye en ${m.servs.length} ${m.servs.length === 1 ? "atención" : "atenciones"}</p>
+    <ul class="divide-y divide-gray-100 text-sm border border-gray-100 rounded-xl">
+      ${m.servs.map(([s, sede, d, p]) => `<li class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 px-4 py-3">
+        <div class="min-w-0"><p class="font-medium text-gray-800">${esc(s)}</p><p class="text-gray-500 text-xs"><i class="fas fa-hospital mr-1"></i>${esc(sede)} · ${esc(d)}</p></div>
+        <span class="font-semibold text-gray-900 whitespace-nowrap">S/ ${p.toFixed(2)}</span></li>`).join("")}
+    </ul>
+  </article>`;
+}
+
+function mostrar(q) {
+  ["intro","loading","empty","res","serverErr"].forEach((i) => $(i).classList.add("hidden"));
+  const l = consultar(q);
+  if (!l.length) {
+    const sug = MEDS.find((m) => norm(m.activo).includes(norm(q)));
+    $("emptyTxt").innerHTML = `No hay medicamentos cuyo nombre comercial coincida con <strong>"${esc(q)}"</strong>.` + (sug ? ` ¿Buscabas <button type="button" class="sug text-[#2563EB] font-semibold underline" data-m="${esc(sug.marca.split(" ")[0])}">${esc(sug.marca.split(" ")[0])}</button> (${esc(sug.activo)})? Aquí buscamos por marca, no por principio activo.` : " Revisa la ortografía o prueba con otra marca.");
+    $("empty").classList.remove("hidden"); return;
+  }
+  const n = l.length;
+  $("summary").innerHTML = q ? `<span class="font-semibold text-blue-600">${n}</span> ${n === 1 ? "medicamento encontrado" : "medicamentos encontrados"} para "${esc(q)}"` : `Mostrando todas las marcas (${n})`;
+  $("list").innerHTML = l.map((m) => card(m, q)).join("");
+  $("res").classList.remove("hidden");
+}
+
+function buscar(txt) {
+  const m = validar(txt); showErr(m); if (m) return;
+  ultima = txt.trim(); clearTimeout(timer);
+  ["intro","empty","res","serverErr"].forEach((i) => $(i).classList.add("hidden"));
+  $("loading").classList.remove("hidden"); $("btn").disabled = true;
+  timer = setTimeout(() => { $("loading").classList.add("hidden"); $("btn").disabled = false; mostrar(ultima); }, 450);
+}
+
+$("form").addEventListener("submit", (e) => { e.preventDefault(); buscar($("q").value); });
+$("q").addEventListener("input", () => showErr(""));
+$("all").addEventListener("click", () => { $("q").value = ""; showErr(""); mostrar(""); });
+$("retry").addEventListener("click", () => buscar(ultima));
+$("empty").addEventListener("click", (e) => { const b = e.target.closest(".sug"); if (b) { $("q").value = b.dataset.m; buscar(b.dataset.m); } });
+$("chips").innerHTML = ["Panadol","Brufen","Cozaar","Ventolin"].map((c) => `<button type="button" data-c="${c}" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition-colors">${c}</button>`).join("");
+$("chips").addEventListener("click", (e) => { const b = e.target.closest("button[data-c]"); if (b) { $("q").value = b.dataset.c; buscar(b.dataset.c); } });
+
+const ini = new URLSearchParams(location.search).get("q");
+if (ini) { $("q").value = ini; buscar(ini); }
+</script>
+</body>
+</html>

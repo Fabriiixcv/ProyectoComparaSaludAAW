@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Catálogo General de Medicamentos (Admin) - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-14">
+      <a href="3_admin_home.html" class="flex items-center space-x-3"><img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" /><span class="text-xl font-bold text-gray-900">ComparaSalud</span></a>
+      <nav class="hidden lg:flex items-center space-x-8">
+        <a href="3_admin_home.html" class="text-gray-700 hover:text-[#2563EB] font-medium">Panel</a>
+        <a href="3_admin_medicamentos.html" class="text-[#2563EB] font-medium">Medicamentos</a>
+        <a href="3_admin_especialidades.html" class="text-gray-700 hover:text-[#2563EB] font-medium">Especialidades</a>
+      </nav>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span class="hidden md:inline-flex items-center bg-purple-50 text-purple-700 text-xs font-medium px-3 py-1 rounded-full"><i class="fas fa-user-shield mr-2"></i>Administrador</span>
+      <a href="1_2_auth.html" onclick="sessionStorage.removeItem('cs_session')" class="text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100" aria-label="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+</header>
+
+<div id="toast" class="hidden fixed top-20 right-4 z-[70] max-w-sm rounded-xl shadow-lg px-4 py-3 items-start flex" role="status"></div>
+
+<section class="health-gradient text-white py-10">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Catálogo general de medicamentos</h1>
+    <p class="text-lg opacity-90">Retira del listado maestro los productos que ya no existen en el mercado</p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-10">
+  <div class="max-w-5xl mx-auto">
+    <div class="flex items-start bg-amber-50 border border-amber-200 text-amber-900 rounded-xl px-4 py-3 text-sm mb-6">
+      <i class="fas fa-triangle-exclamation mt-0.5 mr-3"></i>
+      <span>Eliminar un medicamento del catálogo general es <strong>permanente</strong>: desaparece del listado maestro y de las sedes que lo ofrecen.</span>
+    </div>
+
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+      <p id="count" class="text-gray-600"></p>
+      <input id="q" type="text" placeholder="Buscar medicamento..." class="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#2563EB] sm:w-64" />
+    </div>
+
+    <div id="list" class="space-y-4"></div>
+    <div id="empty" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center">
+      <i class="fas fa-pills text-4xl text-gray-300 mb-4"></i>
+      <h2 class="text-lg font-semibold text-gray-900 mb-2">No hay medicamentos para mostrar</h2>
+      <button id="reset" type="button" class="mt-2 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Restablecer datos de ejemplo</button>
+    </div>
+  </div>
+</main>
+
+<!-- Confirmación (HU32) -->
+<div id="modal" class="hidden fixed inset-0 bg-gray-900/55 z-[60] items-center justify-center p-4">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-trash-alt text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">¿Eliminar del catálogo general?</h3>
+    <p class="text-gray-600 text-center mb-4">Se eliminará <strong id="mNombre"></strong> de la lista maestra.</p>
+    <div class="bg-red-50 border border-red-200 text-red-800 rounded-lg px-3 py-2 text-sm mb-5">
+      <i class="fas fa-exclamation-triangle mr-2"></i><span id="mAviso"></span> Esta acción no se puede deshacer.
+    </div>
+    <label class="flex items-start gap-3 mb-6 text-sm text-gray-700 cursor-pointer"><input id="chk" type="checkbox" class="mt-1 accent-red-600" />Confirmo que este medicamento fue retirado del mercado nacional.</label>
+    <div class="flex flex-col-reverse sm:flex-row gap-3">
+      <button id="cancel" type="button" class="flex-1 border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</button>
+      <button id="confirm" type="button" disabled class="flex-1 bg-red-600 text-white font-medium py-2.5 rounded-xl hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">Sí, eliminar</button>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+
+<script src="../js/services/auth.js"></script>
+<script>
+// Solo el rol Administrador puede entrar (si auth.js está disponible)
+if (window.Auth && Auth.requireRole) Auth.requireRole("administrador");
+
+const SEED = [
+  { id:1,  nombre:"Paracetamol 500 mg",  pres:"Caja x 20 tabletas", cat:"Analgésicos",       sedes:6 },
+  { id:2,  nombre:"Ibuprofeno 400 mg",   pres:"Caja x 10 tabletas", cat:"Antiinflamatorios", sedes:4 },
+  { id:3,  nombre:"Losartán 50 mg",      pres:"Caja x 30 tabletas", cat:"Cardiovasculares",  sedes:3 },
+  { id:4,  nombre:"Amoxicilina 500 mg",  pres:"Caja x 12 cápsulas", cat:"Antibióticos",      sedes:5 },
+  { id:5,  nombre:"Omeprazol 20 mg",     pres:"Caja x 14 cápsulas", cat:"Gastrointestinales",sedes:2 },
+  { id:6,  nombre:"Ranitidina 150 mg",   pres:"Caja x 20 tabletas", cat:"Gastrointestinales",sedes:0 },
+  { id:7,  nombre:"Metformina 850 mg",   pres:"Caja x 30 tabletas", cat:"Endocrinológicos",  sedes:2 },
+  { id:8,  nombre:"Atorvastatina 20 mg", pres:"Caja x 30 tabletas", cat:"Cardiovasculares",  sedes:1 }
+];
+let data = SEED.slice(), pendiente = null;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
+
+function toast(msg, ok = true) {
+  const t = $("toast");
+  t.className = "fixed top-20 right-4 z-[70] max-w-sm rounded-xl shadow-lg px-4 py-3 items-start flex " + (ok ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-700");
+  t.innerHTML = `<i class="fas ${ok ? "fa-check-circle text-green-600" : "fa-exclamation-circle text-red-600"} mt-0.5 mr-3"></i><span class="text-sm font-medium">${esc(msg)}</span>`;
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+
+function pintar() {
+  const q = $("q").value.trim().toLowerCase();
+  const l = data.filter((m) => m.nombre.toLowerCase().includes(q));
+  $("count").innerHTML = `<span class="font-semibold text-gray-900">${data.length}</span> medicamentos en el catálogo general`;
+  $("empty").classList.toggle("hidden", l.length > 0);
+  $("list").innerHTML = l.map((m) => `
+    <article class="bg-white rounded-2xl shadow-soft p-5 flex flex-col sm:flex-row sm:items-center gap-4">
+      <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas fa-pills"></i></div>
+      <div class="flex-1 min-w-0">
+        <h3 class="font-semibold text-gray-900">${esc(m.nombre)}</h3>
+        <p class="text-gray-500 text-sm">${esc(m.pres)}</p>
+        <div class="flex flex-wrap gap-2 mt-2">
+          <span class="bg-blue-100 text-blue-800 px-2 py-0.5 rounded text-xs">${esc(m.cat)}</span>
+          <span class="${m.sedes ? "bg-amber-100 text-amber-800" : "bg-gray-100 text-gray-600"} px-2 py-0.5 rounded text-xs"><i class="fas fa-hospital mr-1"></i>${m.sedes} ${m.sedes === 1 ? "sede lo ofrece" : "sedes lo ofrecen"}</span>
+        </div>
+      </div>
+      <button type="button" data-id="${m.id}" class="del border border-red-200 text-red-600 bg-red-50 px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-100 whitespace-nowrap"><i class="fas fa-trash-alt mr-2"></i>Eliminar del catálogo general</button>
+    </article>`).join("");
+}
+
+$("list").addEventListener("click", (e) => {
+  const b = e.target.closest(".del"); if (!b) return;
+  pendiente = data.find((m) => m.id === Number(b.dataset.id));
+  $("mNombre").textContent = pendiente.nombre;
+  $("mAviso").textContent = pendiente.sedes ? `Actualmente lo ofrecen ${pendiente.sedes} sede(s); se retirará de todas.` : "Ninguna sede lo ofrece actualmente.";
+  $("chk").checked = false; $("confirm").disabled = true;
+  $("modal").classList.replace("hidden", "flex");
+});
+$("chk").addEventListener("change", (e) => { $("confirm").disabled = !e.target.checked; });
+const cerrar = () => { $("modal").classList.replace("flex", "hidden"); pendiente = null; };
+$("cancel").addEventListener("click", cerrar);
+$("modal").addEventListener("click", (e) => { if (e.target === $("modal")) cerrar(); });
+
+/* Simula DELETE /api/medicamento?id= */
+$("confirm").addEventListener("click", () => {
+  data = data.filter((m) => m.id !== pendiente.id);
+  cerrar(); pintar();
+  toast("Medicamento eliminado del catálogo general");
+});
+$("q").addEventListener("input", pintar);
+$("reset").addEventListener("click", () => { data = SEED.slice(); $("q").value = ""; pintar(); });
+pintar();
+</script>
+</body>
+</html>

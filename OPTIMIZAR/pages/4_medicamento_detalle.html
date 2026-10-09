@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Ficha de medicamento - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+    <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+      <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+      <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+    </a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+      <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Búsqueda</a>
+      <a href="4_medicamentos.html" class="text-blue-600 font-semibold">Medicamentos</a>
+      <a href="6_favorites.html" class="text-gray-600 hover:text-blue-600 font-medium">Favoritos</a>
+      <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+    </div>
+    <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold" aria-label="Mi perfil">U</a>
+  </div>
+</nav>
+
+<main id="app" class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6"></main>
+<footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+<script src="../js/components/footer.js"></script>
+<script src="../js/services/auth.js"></script>
+<script src="../js/services/usuario.js?v=3"></script>
+<script>document.addEventListener("DOMContentLoaded", function () { if (window.UsuarioService) UsuarioService.pintarCabecera(); });</script>
+<script>
+/* Simula GET /api/medicamento?id= (tabla Medicamento con contraindicaciones y advertencias) */
+const MEDS = {
+  1: { nombre:"Paracetamol 500 mg", pres:"Caja x 20 tabletas", cat:"Analgésicos", precio:12.50, rating:4.8, rev:312, sede:"Clínica Médica Central", rx:false, activo:"Paracetamol",
+    desc:"Analgésico y antipirético para el alivio del dolor leve a moderado y la reducción de la fiebre.",
+    usos:["Dolor de cabeza y muscular","Fiebre","Dolor dental y de garganta"],
+    adv:["No exceder la dosis máxima diaria indicada por el médico o el prospecto.","Evita otros productos que contengan paracetamol al mismo tiempo.","El consumo de alcohol aumenta el riesgo de daño hepático."],
+    contra:["Alergia al paracetamol","Enfermedad hepática grave"],
+    rec:["Tomar con agua, con o sin alimentos.","Si la fiebre dura más de 3 días, consulta a un médico.","Guardar a menos de 30 °C y fuera del alcance de los niños."] },
+  2: { nombre:"Ibuprofeno 400 mg", pres:"Caja x 10 tabletas", cat:"Antiinflamatorios", precio:8.50, rating:4.6, rev:198, sede:"Laboratorio Médico Central", rx:false, activo:"Ibuprofeno",
+    desc:"Antiinflamatorio no esteroideo para dolor, inflamación y fiebre.",
+    usos:["Dolor muscular y articular","Dolor de cabeza y menstrual","Fiebre"],
+    adv:["Puede irritar el estómago; tómalo con alimentos.","Usar la menor dosis por el menor tiempo posible.","Precaución en personas con problemas renales o de presión."],
+    contra:["Úlcera gástrica activa","Alergia a antiinflamatorios (AINE)","Embarazo avanzado"],
+    rec:["Tomar con comida o leche.","No combinar con otros antiinflamatorios.","Suspender y consultar si aparece dolor de estómago intenso."] },
+  3: { nombre:"Losartán 50 mg", pres:"Caja x 30 tabletas", cat:"Cardiovasculares", precio:18.00, rating:4.7, rev:145, sede:"Centro Cardiológico", rx:true, activo:"Losartán potásico",
+    desc:"Antihipertensivo de uso diario que ayuda a controlar la presión arterial.",
+    usos:["Hipertensión arterial","Protección renal en diabetes tipo 2"],
+    adv:["Puede causar mareo al ponerse de pie rápidamente.","Se requieren controles periódicos de presión y función renal.","No suspender sin indicación médica."],
+    contra:["Embarazo","Alergia al losartán","Uso con aliskireno en personas diabéticas"],
+    rec:["Tomar a la misma hora cada día.","Evitar suplementos de potasio sin indicación.","Requiere receta médica."] },
+  4: { nombre:"Amoxicilina 500 mg", pres:"Caja x 12 cápsulas", cat:"Antibióticos", precio:15.90, rating:4.4, rev:176, sede:"Clínica Miraflores Salud", rx:true, activo:"Amoxicilina",
+    desc:"Antibiótico de amplio espectro para infecciones bacterianas.",
+    usos:["Infecciones respiratorias","Infecciones de garganta y oído","Infecciones urinarias"],
+    adv:["Completar el tratamiento aunque los síntomas mejoren.","Puede causar diarrea o malestar estomacal.","Suspender ante erupción cutánea o dificultad para respirar."],
+    contra:["Alergia a penicilinas","Antecedente de reacción grave a betalactámicos"],
+    rec:["Tomar a intervalos regulares.","Nunca automedicarse con antibióticos.","Requiere receta médica."] },
+  5: { nombre:"Omeprazol 20 mg", pres:"Caja x 14 cápsulas", cat:"Gastrointestinales", precio:11.20, rating:4.5, rev:121, sede:"Centro Médico San Isidro", rx:false, activo:"Omeprazol",
+    desc:"Inhibidor de la bomba de protones que reduce la producción de ácido gástrico.",
+    usos:["Acidez y reflujo","Gastritis","Protección gástrica"],
+    adv:["El uso prolongado debe ser supervisado por un médico.","Puede reducir la absorción de algunas vitaminas y minerales."],
+    contra:["Alergia al omeprazol o similares","Uso con ciertos antirretrovirales"],
+    rec:["Tomar en ayunas, 30 minutos antes del desayuno.","Tragar la cápsula entera.","Si los síntomas persisten más de 2 semanas, consulta."] },
+  6: { nombre:"Loratadina 10 mg", pres:"Caja x 10 tabletas", cat:"Antialérgicos", precio:6.80, rating:4.3, rev:89, sede:"Policlínico La Molina", rx:false, activo:"Loratadina",
+    desc:"Antihistamínico que alivia los síntomas de la alergia sin producir somnolencia en la mayoría de personas.",
+    usos:["Rinitis alérgica","Urticaria","Picazón y estornudos"],
+    adv:["Precaución en enfermedad hepática.","Rara vez puede producir somnolencia o dolor de cabeza."],
+    contra:["Alergia a la loratadina","Menores de 2 años sin indicación médica"],
+    rec:["Una tableta al día.","Puede tomarse con o sin alimentos.","Consulta a tu médico si estás embarazada o en lactancia."] },
+  7: { nombre:"Metformina 850 mg", pres:"Caja x 30 tabletas", cat:"Endocrinológicos", precio:14.50, rating:4.7, rev:210, sede:"Clínica Surco Vital", rx:true, activo:"Metformina clorhidrato",
+    desc:"Antidiabético oral que ayuda a controlar la glucosa en sangre en diabetes tipo 2.",
+    usos:["Diabetes mellitus tipo 2","Control de glucosa junto con dieta y ejercicio"],
+    adv:["Puede causar molestias digestivas al inicio.","Suspender antes de estudios con contraste yodado.","Requiere controles de glucosa y función renal."],
+    contra:["Insuficiencia renal grave","Cetoacidosis diabética","Alcoholismo"],
+    rec:["Tomar con las comidas.","No suspender sin indicación médica.","Requiere receta médica."] },
+  8: { nombre:"Atorvastatina 20 mg", pres:"Caja x 30 tabletas", cat:"Cardiovasculares", precio:24.00, rating:4.9, rev:97, sede:"Laboratorio Miraflores Diagnóstica", rx:true, activo:"Atorvastatina cálcica",
+    desc:"Estatina que reduce el colesterol LDL y los triglicéridos.",
+    usos:["Colesterol alto","Prevención cardiovascular"],
+    adv:["Reportar dolor o debilidad muscular inexplicable.","Se recomiendan controles periódicos de función hepática.","Evitar el consumo excesivo de jugo de toronja."],
+    contra:["Enfermedad hepática activa","Embarazo y lactancia","Alergia a estatinas"],
+    rec:["Tomar a la misma hora cada día.","Acompañar con dieta baja en grasas.","Requiere receta médica."] },
+  9: { nombre:"Salbutamol inhalador", pres:"Frasco 200 dosis", cat:"Respiratorios", precio:19.90, rating:4.6, rev:133, sede:"Clínica San Juan", rx:false, activo:"Salbutamol sulfato",
+    desc:"Broncodilatador de acción rápida para aliviar la falta de aire y la sibilancia.",
+    usos:["Crisis de asma","Broncoespasmo","Prevención de asma por ejercicio"],
+    adv:["Puede causar temblor y palpitaciones.","Si necesitas usarlo con mucha frecuencia, consulta a tu médico.","No exceder las dosis indicadas."],
+    contra:["Alergia al salbutamol","Precaución en problemas cardíacos o hipertiroidismo"],
+    rec:["Agitar antes de usar y enjuagarse la boca después.","Llevarlo siempre contigo si eres asmático.","Guardar lejos del calor."] },
+  10: { nombre:"Azitromicina 500 mg", pres:"Caja x 3 tabletas", cat:"Antibióticos", precio:22.00, rating:4.2, rev:64, sede:"Clínica Angloamericana", rx:true, activo:"Azitromicina dihidrato",
+    desc:"Antibiótico macrólido para infecciones respiratorias y de piel.",
+    usos:["Bronquitis y neumonía leve","Faringitis","Infecciones de piel"],
+    adv:["Puede alterar el ritmo cardíaco en personas susceptibles.","Puede causar náuseas o diarrea.","Completar el esquema indicado."],
+    contra:["Alergia a macrólidos","Enfermedad hepática grave","Arritmias conocidas"],
+    rec:["Tomar una vez al día a la misma hora.","Evitar antiácidos con aluminio cerca de la toma.","Requiere receta médica."] }
+};
+const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+const est = (r) => [1,2,3,4,5].map((n) => `<i class="${r >= n - 0.25 ? "fas" : r >= n - 0.75 ? "fas fa-star-half-alt" : "far"} ${r >= n - 0.75 && r < n - 0.25 ? "" : "fa-star"} text-yellow-400"></i>`).join("");
+const lista = (arr, ic, color) => arr.map((t) => `<li class="flex items-start gap-3"><i class="fas ${ic} ${color} mt-1"></i><span class="text-gray-700">${esc(t)}</span></li>`).join("");
+const bloque = (titulo, ic, bg, color, ico, arr) => `<section class="bg-white rounded-2xl shadow-soft p-6 border-l-4 ${bg}"><h2 class="text-lg font-bold text-gray-900 mb-3"><i class="fas ${ic} ${color} mr-2"></i>${titulo}</h2><ul class="space-y-2">${lista(arr, ico, color)}</ul></section>`;
+
+const id = new URLSearchParams(location.search).get("id");
+const m = MEDS[id], app = document.getElementById("app");
+
+if (!m) {
+  app.innerHTML = `<div class="bg-white rounded-2xl shadow-soft p-10 text-center max-w-xl mx-auto mt-10"><i class="fas fa-pills text-4xl text-gray-300 mb-4"></i><h1 class="text-xl font-semibold text-gray-900 mb-2">No encontramos este medicamento</h1><p class="text-gray-600 mb-6">El enlace puede estar incompleto o el producto ya no existe.</p><a href="4_medicamentos.html" class="inline-block health-gradient text-white px-6 py-2.5 rounded-xl font-medium hover:opacity-90">Volver al catálogo</a></div>`;
+} else {
+  document.title = m.nombre + " - ComparaSalud";
+  app.innerHTML = `
+  <nav class="text-sm text-gray-500 mb-4"><a href="4_medicamentos.html" class="hover:text-blue-600"><i class="fas fa-arrow-left mr-1"></i>Volver a medicamentos</a></nav>
+
+  <div class="bg-white rounded-2xl shadow-soft p-6 mb-6 flex flex-col md:flex-row md:items-center gap-6">
+    <div class="w-20 h-20 rounded-2xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas fa-pills text-3xl"></i></div>
+    <div class="flex-1 min-w-0">
+      <div class="flex flex-wrap gap-2 mb-2">
+        <span class="bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full text-xs font-medium">${esc(m.cat)}</span>
+        ${m.rx ? '<span class="bg-red-100 text-red-800 px-2.5 py-1 rounded-full text-xs font-medium"><i class="fas fa-file-prescription mr-1"></i>Con receta</span>' : '<span class="bg-green-100 text-green-800 px-2.5 py-1 rounded-full text-xs font-medium">Venta libre</span>'}
+      </div>
+      <h1 class="text-2xl md:text-3xl font-bold text-gray-900">${esc(m.nombre)}</h1>
+      <p class="text-gray-500">${esc(m.pres)} · Principio activo: ${esc(m.activo)}</p>
+      <div class="flex flex-wrap items-center gap-x-2 mt-2">${est(m.rating)}<span class="font-semibold text-gray-900">${m.rating.toFixed(1)}</span><span class="text-gray-500 text-sm">(${m.rev} reseñas)</span></div>
+    </div>
+    <div class="text-left md:text-right">
+      <p class="text-sm text-gray-500">Precio desde</p>
+      <p class="text-3xl font-bold text-green-600">S/ ${m.precio.toFixed(2)}</p>
+      <p class="text-sm text-gray-500 mt-1"><i class="fas fa-hospital mr-1"></i>${esc(m.sede)}</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="lg:col-span-2 space-y-6">
+      <section class="bg-white rounded-2xl shadow-soft p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-3"><i class="fas fa-circle-info text-[#2563EB] mr-2"></i>Descripción</h2>
+        <p class="text-gray-600 leading-relaxed">${esc(m.desc)}</p>
+        <h3 class="font-semibold text-gray-900 mt-5 mb-3">Para qué se usa</h3>
+        <div class="flex flex-wrap gap-2">${m.usos.map((u) => `<span class="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm">${esc(u)}</span>`).join("")}</div>
+      </section>
+      ${bloque("Advertencias", "fa-triangle-exclamation", "border-amber-400", "text-amber-500", "fa-exclamation-circle", m.adv)}
+      ${bloque("Contraindicaciones", "fa-ban", "border-red-400", "text-red-500", "fa-times-circle", m.contra)}
+      ${bloque("Recomendaciones de uso", "fa-lightbulb", "border-green-400", "text-green-500", "fa-check-circle", m.rec)}
+    </div>
+    <aside class="space-y-6">
+      <section class="bg-white rounded-2xl shadow-soft p-6">
+        <h2 class="text-lg font-bold text-gray-900 mb-4">Ficha rápida</h2>
+        <dl class="space-y-3 text-sm">
+          <div class="flex justify-between"><dt class="text-gray-500">Presentación</dt><dd class="font-medium text-gray-900 text-right">${esc(m.pres)}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-500">Categoría</dt><dd class="font-medium text-gray-900">${esc(m.cat)}</dd></div>
+          <div class="flex justify-between"><dt class="text-gray-500">Venta</dt><dd class="font-medium text-gray-900">${m.rx ? "Con receta" : "Libre"}</dd></div>
+        </dl>
+        <a href="4_comparativa_medicamento.html?med=${encodeURIComponent(m.nombre.toLowerCase())}" class="mt-5 w-full health-gradient text-white py-3 rounded-xl font-semibold hover:opacity-90 flex items-center justify-center"><i class="fas fa-balance-scale mr-2"></i>Comparar precios</a>
+      </section>
+      <div class="bg-amber-50 border border-amber-200 text-amber-900 rounded-2xl p-5 text-sm"><i class="fas fa-user-doctor mr-2"></i>Esta información es referencial. Consulta siempre a tu médico o farmacéutico antes de usar un medicamento.</div>
+    </aside>
+  </div>`;
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>Resultados de Búsqueda - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      body { font-family: "Inter", sans-serif; }
+      .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+      .star-rating { color: #fbbf24; }
+      .availability-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+      .available { background-color: #10b981; }
+      .limited { background-color: #f59e0b; }
+      .result-card { transition: all 0.3s ease; }
+      .result-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1); }
+      .tab-btn { border-bottom: 3px solid transparent; color: #4b5563; }
+      .tab-btn.active { border-bottom-color: #2563eb; color: #2563eb; }
+      @media (prefers-reduced-motion: reduce) { .result-card { transition: none; } .result-card:hover { transform: none; } }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Header Principal -->
+    <header class="bg-white sticky top-0 z-50">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+            <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+            <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+          </a>
+
+          <div class="hidden lg:block flex-1 max-w-2xl mx-8">
+            <div class="relative search-focus">
+              <input id="desktop-search-input" type="text" placeholder="Buscar médicos, especialidades, servicios..."
+                class="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] transition-colors" />
+              <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <button id="desktop-search-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 health-gradient text-white px-4 py-1.5 rounded-lg text-sm font-medium">Buscar</button>
+            </div>
+          </div>
+
+          <div class="flex items-center space-x-4">
+            <button onclick="window.location.href='6_favorites.html'" class="relative text-gray-600 p-2 rounded-lg hover:bg-gray-100" aria-label="Favoritos">
+              <i class="far fa-heart text-lg"></i>
+              <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+            </button>
+            <button class="relative text-gray-600 p-2 rounded-lg hover:bg-gray-100" aria-label="Notificaciones">
+              <i class="far fa-bell text-lg"></i>
+              <span class="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center">5</span>
+            </button>
+            <div class="relative group">
+              <button class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100">
+                <img src="../assets/img/usuarios/usuario9.png" alt="Juan Sánchez" class="w-10 h-10 rounded-full" />
+                <span class="hidden md:block text-gray-700 font-medium">Juan Sánchez</span>
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </button>
+              <div class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                <a href="6_user_profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-50"><i class="far fa-user mr-3"></i>Mi Perfil</a>
+                <a href="6_user_profile.html" class="block px-4 py-2 text-gray-700 hover:bg-gray-50"><i class="fas fa-cog mr-3"></i>Configuración</a>
+                <a href="8_help_center.html" class="block lg:hidden px-4 py-2 text-gray-700 hover:bg-gray-50"><i class="fa-solid fa-life-ring mr-3"></i>Ayuda</a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <a href="1_2_auth.html" onclick="sessionStorage.removeItem('cs_session')" class="block px-4 py-2 text-gray-700 hover:bg-gray-50"><i class="fas fa-sign-out-alt mr-3"></i>Cerrar Sesión</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:hidden mt-3 search-focus">
+          <div class="relative">
+            <input id="mobile-search-input" type="text" placeholder="Buscar médicos, especialidades, servicios..."
+              class="w-full pl-12 pr-4 py-3 bg-gray-100 rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] transition-colors" />
+            <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+            <button id="mobile-search-btn" class="absolute right-2 top-1/2 transform -translate-y-1/2 health-gradient text-white px-4 py-1.5 rounded-lg text-sm font-medium">Buscar</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <div class="container mx-auto px-4 py-6">
+      <div class="mb-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900 mb-2">Resultados de Búsqueda</h1>
+          <p id="summary" class="text-gray-600" aria-live="polite"></p>
+        </div>
+        <div class="flex items-center space-x-4">
+          <button id="mobile-filter-toggle" class="lg:hidden bg-blue-600 text-white px-4 py-2 rounded-lg"><i class="fas fa-filter mr-2"></i>Filtros</button>
+          <select id="sortSelect" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Ordenar por">
+            <option value="rel">Relevancia</option>
+            <option value="asc">Precio: Menor a Mayor</option>
+            <option value="desc">Precio: Mayor a Menor</option>
+            <option value="rating">Calificación</option>
+            <option value="dist">Distancia</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Barra de opciones: Servicios / Médicos / Clínicas -->
+      <div class="bg-white rounded-lg shadow-sm mb-6">
+        <div class="flex border-b overflow-x-auto" role="tablist" aria-label="Tipo de resultado">
+          <button type="button" role="tab" data-tipo="servicios" class="tab-btn active px-6 py-4 font-medium whitespace-nowrap transition-colors"><i class="fas fa-stethoscope mr-2"></i>Servicios <span id="cnt-servicios" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"></span></button>
+          <button type="button" role="tab" data-tipo="medicos" class="tab-btn px-6 py-4 font-medium whitespace-nowrap transition-colors"><i class="fas fa-user-md mr-2"></i>Médicos <span id="cnt-medicos" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"></span></button>
+          <button type="button" role="tab" data-tipo="clinicas" class="tab-btn px-6 py-4 font-medium whitespace-nowrap transition-colors"><i class="fas fa-hospital mr-2"></i>Clínicas <span id="cnt-clinicas" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full"></span></button>
+          <a href="4_medicamentos.html" class="px-6 py-4 font-medium whitespace-nowrap text-gray-600 border-b-[3px] border-transparent hover:text-blue-600 transition-colors"><i class="fas fa-pills mr-2"></i>Medicamentos <span class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">10</span></a>
+        </div>
+      </div>
+
+      <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Panel de Filtros -->
+        <div class="lg:w-1/4">
+          <div id="filterPanel" class="bg-white rounded-lg shadow-sm p-6 hidden lg:block">
+            <h3 class="font-semibold text-gray-800 mb-4">Filtros</h3>
+
+            <div class="mb-6">
+              <h4 class="font-medium text-gray-700 mb-3">Ubicación</h4>
+              <select id="fDistrito" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Lima - Todos los distritos</option>
+                <option>Miraflores</option>
+                <option>San Isidro</option>
+                <option>La Molina</option>
+                <option>San Borja</option>
+                <option>Santiago de Surco</option>
+                <option>Lince</option>
+              </select>
+            </div>
+
+            <div class="mb-6">
+              <h4 class="font-medium text-gray-700 mb-3">Precio máximo: <span id="fPrecioLbl" class="text-blue-600">S/ 500</span></h4>
+              <input id="fPrecio" type="range" min="50" max="500" step="10" value="500" class="w-full accent-blue-600" />
+              <div class="flex justify-between text-sm text-gray-600"><span>S/ 50</span><span>S/ 500</span></div>
+            </div>
+
+            <div class="mb-6">
+              <h4 id="catTitle" class="font-medium text-gray-700 mb-3">Categoría</h4>
+              <div id="fCats" class="space-y-2"></div>
+            </div>
+
+            <div class="mb-6">
+              <h4 class="font-medium text-gray-700 mb-3">Seguro aceptado</h4>
+              <select id="fSeguro" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"><option value="">Todos los seguros</option></select>
+            </div>
+            <div id="boxCentro" class="mb-6 hidden">
+              <h4 class="font-medium text-gray-700 mb-3">Clínica / centro</h4>
+              <select id="fCentro" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"><option value="">Todas las clínicas</option></select>
+            </div>
+            <div class="mb-6">
+              <label class="flex items-center"><input id="fDisp" type="checkbox" class="mr-2 accent-blue-600" /> Solo con disponibilidad esta semana</label>
+            </div>
+
+            <button id="applyBtn" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">Aplicar Filtros</button>
+            <button id="clearBtn" type="button" class="w-full mt-2 border border-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-50 transition-colors">Limpiar filtros</button>
+          </div>
+        </div>
+
+        <!-- Resultados -->
+        <div class="lg:w-3/4">
+          <div id="results" class="space-y-4"></div>
+          <div id="empty" class="hidden bg-white rounded-lg shadow-sm p-10 text-center">
+            <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">No hay resultados con esos filtros</h3>
+            <p class="text-gray-600 mb-4">Amplía el precio máximo o limpia los filtros para ver más opciones.</p>
+            <button id="emptyClear" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Limpiar filtros</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cmpBar" class="hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 shadow-lg">
+      <div class="container mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="min-w-0">
+          <p class="text-gray-700 text-sm"><i class="fas fa-balance-scale text-blue-600 mr-2"></i><span id="cmpCount" class="font-semibold">0</span> de 3 servicios seleccionados <span id="cmpHint" class="text-gray-500">· elige al menos 2</span></p>
+          <div id="cmpChips" class="flex flex-wrap gap-2 mt-2"></div>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <button type="button" id="cmpClear" class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50 text-sm">Limpiar</button>
+          <button type="button" id="cmpQuick" class="border border-blue-600 text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-50 text-sm font-medium opacity-50 pointer-events-none"><i class="fas fa-bolt mr-2"></i>Vista rápida</button>
+          <a id="cmpGo" href="#" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-medium opacity-50 pointer-events-none">Comparar y exportar PDF</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: comparación simulada -->
+    <div id="cmpModal" class="hidden fixed inset-0 z-[60] bg-gray-900/55 items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="cmpTitle">
+      <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-start justify-between gap-4 p-6 border-b border-gray-100">
+          <div>
+            <h2 id="cmpTitle" class="text-xl font-bold text-gray-900"><i class="fas fa-balance-scale text-blue-600 mr-2"></i>Comparación de servicios</h2>
+            <p class="text-gray-500 text-sm">Lo mejor de cada fila aparece en verde.</p>
+          </div>
+          <button type="button" id="cmpClose" class="text-gray-400 hover:text-gray-700 p-2" aria-label="Cerrar"><i class="fas fa-times text-xl"></i></button>
+        </div>
+        <div class="p-6">
+          <div class="overflow-x-auto border border-gray-100 rounded-xl">
+            <table class="w-full text-left text-sm min-w-[560px]">
+              <thead id="cmpHead" class="bg-gray-50 text-gray-700"></thead>
+              <tbody id="cmpBody" class="divide-y divide-gray-100"></tbody>
+            </table>
+          </div>
+          <div id="cmpSummary" class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm mt-4"></div>
+          <p class="text-gray-500 text-xs mt-3">Comparación referencial de precios y datos publicados. Confirma el alcance de cada servicio con la sede.</p>
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-5">
+            <button type="button" id="cmpClose2" class="px-5 py-2.5 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50">Seguir buscando</button>
+            <a id="cmpFull" href="#" class="text-center bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700"><i class="fas fa-file-pdf mr-2"></i>Ver comparador completo</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/services/usuario.js?v=3"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () { UsuarioService.pintarCabecera(); });</script>
+    <script src="../js/voice-search.js"></script>
+    <script>
+      
+      /* Datos simulados. dist = km desde el usuario; disp: true = disponible esta semana */
+      const DATA = (function () {
+      /* [nombre, sub, categoría, precio, rating, reseñas, distrito, km, disponible, ícono, etiquetas, descripción] */
+      const mk = (a, ic, img) => a.map((x, i) => {
+        const o = { id: i + 1, nombre: x[0], sub: x[1], cat: x[2], precio: x[3], rating: x[4], rev: x[5], distrito: x[6], dist: x[7], disp: !!x[8], icon: x[9] || ic, tags: x[10].split("|"), desc: x[11] };
+        if (img) o.img = "doctor" + ((i % 4) + 1) + ".png";
+        return o;
+      });
+      return {
+        servicios: mk([
+          ["Consulta Médica General","Clínica San Juan","Consultas",80,4.8,124,"Miraflores",1.2,1,"","30 minutos|Receta incluida","Evaluación inicial con médico general. Incluye receta y orientación."],
+          ["Chequeo Cardiovascular","Centro Cardiológico","Chequeos",180,4.7,67,"San Borja",4.0,1,"fa-heartbeat","ECG|Informe digital","Evaluación cardíaca completa con electrocardiograma."],
+          ["Análisis de Sangre Completo","Laboratorio Médico Central","Laboratorio",65,4.6,89,"Lince",0.8,1,"fa-microscope","Resultados en 24h","Hemograma, glucosa, colesterol y triglicéridos."],
+          ["Ecografía Abdominal","Clínica Médica Central","Imágenes",180,4.5,128,"San Isidro",5.2,0,"fa-x-ray","45 minutos|Con informe","Evaluación completa de órganos abdominales."],
+          ["Limpieza Dental","Clínica Surco Vital","Odontología",60,4.8,156,"Santiago de Surco",6.4,1,"fa-teeth","Sin dolor|Control incluido","Profilaxis y control de placa con instrumental esterilizado."],
+          ["Examen Visual","Clínica San Juan","Oftalmología",50,4.4,73,"Miraflores",1.2,0,"fa-eye","Lentes opcionales","Medición de agudeza visual y revisión de salud ocular."],
+          ["Vacunación Adulto","Policlínico La Molina","Consultas",35,4.6,98,"La Molina",8.3,1,"fa-syringe","Carné incluido","Aplicación de vacunas con registro en carné."],
+          ["Radiografía de Tórax","Clínica Miraflores Salud","Imágenes",45,4.5,112,"Miraflores",1.6,1,"fa-x-ray","Resultado el mismo día","Imagen diagnóstica con informe médico."],
+          ["Control Prenatal","Clínica Surco Vital","Chequeos",140,4.9,201,"Santiago de Surco",6.4,0,"fa-baby","Ecografía incluida","Seguimiento del embarazo con especialista."],
+          ["Perfil Lipídico","Laboratorio Miraflores Diagnóstica","Laboratorio",55,4.3,64,"Lince",1.1,1,"fa-flask","Ayuno 12h|Resultados en 24h","Colesterol total, HDL, LDL y triglicéridos."]
+        ], "fa-stethoscope"),
+        medicos: mk([
+          ["Dr. Carlos García Mendoza","Cardiólogo • 15 años de experiencia","Cardiología",150,4.8,124,"Miraflores",2.5,1,"","ECG|Ecocardiograma|Prueba de esfuerzo","Especialista en cardiología intervencionista y enfermedades cardiovasculares."],
+          ["Dra. Ana López Rodríguez","Dermatóloga • 12 años de experiencia","Dermatología",180,4.9,89,"San Isidro",5.2,0,"","Acné|Dermatoscopía","Experta en dermatología clínica y estética."],
+          ["Dr. Roberto Martínez Sánchez","Neurólogo • 20 años de experiencia","Neurología",220,4.7,156,"La Molina",8.1,1,"","EEG|Migrañas","Diagnóstico y tratamiento de migrañas, epilepsia y trastornos del movimiento."],
+          ["Dra. Laura Mendoza","Ginecóloga • 10 años de experiencia","Ginecología",130,4.7,245,"Santiago de Surco",6.4,1,"","Control prenatal|Papanicolau","Control prenatal, salud preventiva y atención ginecológica integral."],
+          ["Dr. Roberto Silva","Traumatólogo • 12 años de experiencia","Traumatología",160,4.8,287,"San Borja",4.0,0,"","Rodilla|Columna","Lesiones deportivas, fracturas y rehabilitación."],
+          ["Dra. María González","Pediatra • 15 años de experiencia","Pediatría",110,4.9,312,"Miraflores",1.8,1,"","Vacunación|Control niño sano","Control de crecimiento y atención de niños desde recién nacidos."],
+          ["Dr. Luis Paredes","Médico general • 8 años de experiencia","Medicina General",70,4.5,178,"Lince",0.9,1,"","Chequeo|Receta","Consulta general y orientación preventiva."],
+          ["Dra. Patricia Núñez","Oftalmóloga • 14 años de experiencia","Oftalmología",140,4.6,95,"San Isidro",5.0,1,"","Fondo de ojo|Glaucoma","Salud visual de adultos y niños."],
+          ["Dr. Andrés Vega","Endocrinólogo • 11 años de experiencia","Endocrinología",190,4.7,83,"San Borja",4.2,0,"","Diabetes|Tiroides","Manejo de diabetes y trastornos hormonales."],
+          ["Dra. Sofía Ramírez","Psicóloga clínica • 9 años de experiencia","Psicología",100,4.8,141,"La Molina",7.9,1,"","Ansiedad|Terapia","Terapia individual y de pareja."]
+        ], "fa-user-md", true),
+        clinicas: mk([
+          ["Clínica San Juan","Médico general • Odontología","Clínica",80,4.8,124,"Miraflores",1.2,1,"fa-hospital","Abierto hasta 20:00|Pago con tarjeta","Atención ambulatoria con consulta general, odontología y exámenes básicos."],
+          ["Laboratorio Médico Central","Análisis clínicos • Diagnóstico","Laboratorio",45,4.6,89,"Lince",0.8,1,"fa-flask","Resultados online|Abierto hasta 18:00","Toma de muestras y resultados en línea con entrega rápida."],
+          ["Clínica Médica Central","Centro de salud de primer nivel","Clínica",80,4.5,128,"San Isidro",5.2,1,"fa-clinic-medical","Estacionamiento|Seguros aceptados","Más de 15 años con medicina general, pediatría y ginecología."],
+          ["Centro Cardiológico","Especialidad en corazón","Centro especializado",150,4.9,203,"San Borja",4.0,0,"fa-heartbeat","Ecocardiograma|Holter","Diagnóstico y seguimiento cardiovascular."],
+          ["Clínica Angloamericana","Hospital • Servicios completos","Hospital",200,4.6,342,"La Molina",8.1,1,"fa-hospital-alt","24 horas|Emergencias","Hospitalización, emergencias 24 horas y especialidades."],
+          ["Clínica Surco Vital","Centro médico • Especialidades","Centro especializado",120,4.4,218,"Santiago de Surco",6.4,0,"fa-stethoscope","8:00 - 20:00|Pago con Yape","Consultas de especialidad, odontología y laboratorio."],
+          ["Clínica Miraflores Salud","Consultas • Imágenes","Clínica",95,4.5,167,"Miraflores",1.6,1,"fa-hospital","Rayos X|Farmacia","Atención ambulatoria con imágenes diagnósticas."],
+          ["Centro Médico San Isidro","Especialidades médicas","Centro especializado",170,4.7,139,"San Isidro",4.8,1,"fa-clinic-medical","Citas el mismo día","Consultas de especialidad y chequeos ejecutivos."],
+          ["Policlínico La Molina","Medicina familiar","Policlínico",65,4.3,102,"La Molina",8.3,1,"fa-house-medical","Vacunas|Pediatría","Atención familiar a precio accesible."],
+          ["Laboratorio Miraflores Diagnóstica","Análisis clínicos","Laboratorio",50,4.4,76,"Miraflores",1.4,0,"fa-microscope","Abierto hasta 18:00","Exámenes de sangre y orina con resultados en línea."]
+        ], "fa-hospital")
+      };
+    })();
+
+      /* Información que viaja a 4_detalle.html: se guarda al pulsar "Ver más información" */
+      const CLI = [
+        ["Av. Larco 345, Miraflores", "(01) 445-1200"], ["Av. Arequipa 1450, Lince", "(01) 500-1200"],
+        ["Av. Principal 123, San Isidro", "(01) 234-5678"], ["Av. Javier Prado Este 2100, San Borja", "987 654 321"],
+        ["Av. La Molina 1200, La Molina", "(01) 616-8900"], ["Av. Caminos del Inca 2200, Santiago de Surco", "987 321 654"],
+        ["Av. Larco 812, Miraflores", "(01) 445-2100"], ["Calle Los Pinos 340, San Isidro", "(01) 421-7788"],
+        ["Av. La Molina 1560, La Molina", "(01) 349-0045"], ["Av. Benavides 1234, Miraflores", "(01) 242-5566"],
+      ];
+      const MED_CLI = [1, 3, 5, 6, 4, 7, 2, 8, 4, 9]; // clínica donde atiende cada médico
+      function armarDetalle(tipo, id) {
+        const x = DATA[tipo].find((i) => String(i.id) === String(id));
+        if (!x) return null;
+        const c = tipo === "clinicas" ? x : tipo === "servicios" ? DATA.clinicas.find((k) => k.nombre === x.sub) : DATA.clinicas[MED_CLI[x.id - 1] - 1];
+        const serviciosDe = (k) => DATA.servicios.filter((s) => s.sub === k.nombre);
+        const medicosDe = (k) => DATA.medicos.filter((m, i) => MED_CLI[i] === k.id);
+        return {
+          tipo, item: x,
+          clinica: { nombre: c.nombre, distrito: c.distrito, dir: CLI[c.id - 1][0], tel: CLI[c.id - 1][1] },
+          servicios: tipo === "clinicas" ? serviciosDe(x) : tipo === "servicios" ? serviciosDe(c).filter((s) => s.id !== x.id) : [],
+          medicos: tipo === "clinicas" ? medicosDe(x) : tipo === "medicos" ? medicosDe(c).filter((m) => m.id !== x.id) : [],
+        };
+      }
+
+
+      const SEGUROS = ["Pacífico Seguros","Rimac Seguros","La Positiva","Mapfre"];
+      const SEG_CLI = {"Clínica Médica Central":[0,1,2,3],"Clínica San Juan":[0,1],"Laboratorio Médico Central":[1,2],"Centro Cardiológico":[0,1,3],"Clínica Angloamericana":[0,1,2,3],"Clínica Surco Vital":[1,3],"Clínica Miraflores Salud":[0,2],"Centro Médico San Isidro":[0,1,2],"Policlínico La Molina":[2,3],"Laboratorio Miraflores Diagnóstica":[0,3]};
+      function clinicaDe(t, x) { return t === "clinicas" ? x.nombre : t === "servicios" ? x.sub : DATA.clinicas[MED_CLI[x.id - 1] - 1].nombre; }
+      const ESP_DEFECTO = ["Cardiología","Dermatología","Endocrinología","Foniatría","Gastroenterología","Ginecología","Hidrología Médica","Medicina General","Nefrología","Neumología","Neurología","Nutrición","Odontología","Oftalmología","Oncología","Otorrinolaringología","Pediatría","Psicología","Psiquiatría","Reumatología","Traumatología","Urología"];
+      const TITULO_CAT = { servicios: "Tipo de servicio", medicos: "Especialidad", clinicas: "Tipo de establecimiento" };
+      const ETIQ = { servicios: "servicios", medicos: "médicos", clinicas: "clínicas" };
+      const estado = { tipo: "servicios", texto: "", distrito: "", precio: 500, cats: [], disp: false, orden: "rel", seguro: "", centro: "" };
+      const $ = (id) => document.getElementById(id);
+      const comparar = new Set();
+      try { (JSON.parse(sessionStorage.getItem("cs_cmp")) || []).slice(0, 3).forEach((n) => comparar.add(n)); } catch (e) {}
+
+      function norm(s) { return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase(); }
+
+      function filtrar() {
+        const q = norm(estado.texto);
+        let lista = DATA[estado.tipo].filter((x) => {
+          if (q && !norm([x.nombre, x.sub, x.cat, x.distrito, x.tags.join(" ")].join(" ")).includes(q)) return false;
+          if (estado.distrito && x.distrito !== estado.distrito) return false;
+          if (x.precio > estado.precio) return false;
+          if (estado.cats.length && !estado.cats.includes(x.cat)) return false;
+          if (estado.disp && !x.disp) return false;
+          const cn = clinicaDe(estado.tipo, x);
+          if (estado.seguro !== "" && !(SEG_CLI[cn] || []).includes(Number(estado.seguro))) return false;
+          if (estado.centro && estado.tipo !== "clinicas" && cn !== estado.centro) return false;
+          return true;
+        });
+        const o = estado.orden;
+        if (o === "asc") lista.sort((a, b) => a.precio - b.precio);
+        else if (o === "desc") lista.sort((a, b) => b.precio - a.precio);
+        else if (o === "rating") lista.sort((a, b) => b.rating - a.rating || b.rev - a.rev);
+        else if (o === "dist") lista.sort((a, b) => a.dist - b.dist);
+        return lista;
+      }
+
+      function esc(s) { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; }
+      function tarjeta(x) {
+        const avatar = x.img
+          ? `<img src="../assets/img/doctores/${x.img}" alt="${esc(x.nombre)}" class="w-20 h-20 rounded-full object-cover flex-shrink-0" />`
+          : `<div class="w-20 h-20 rounded-2xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas ${x.icon} text-3xl"></i></div>`;
+        const etiquetaPrecio = estado.tipo === "clinicas" ? "consulta desde" : estado.tipo === "medicos" ? "por consulta" : "por servicio";
+        return `
+        <div class="result-card bg-white rounded-lg shadow-sm p-6">
+          <div class="flex flex-col sm:flex-row gap-4">
+            ${avatar}
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-start mb-2 gap-3">
+                <div class="min-w-0">
+                  <h3 class="text-lg font-semibold text-gray-900">${esc(x.nombre)}</h3>
+                  <p class="text-blue-600 font-medium">${esc(x.sub)}</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <div class="text-2xl font-bold text-green-600">S/ ${x.precio}</div>
+                  <div class="text-sm text-gray-500">${etiquetaPrecio}</div>
+                </div>
+              </div>
+              <div class="flex flex-wrap items-center mb-2 gap-y-1">
+                <div class="flex items-center mr-4">
+                  <div class="star-rating mr-1"><i class="fas fa-star"></i></div>
+                  <span class="font-medium">${x.rating.toFixed(1)}</span>
+                  <span class="text-gray-500 ml-1">(${x.rev} reseñas)</span>
+                </div>
+                ${x.disp
+                  ? '<span class="availability-dot available"></span><span class="text-green-600 text-sm">Disponible esta semana</span>'
+                  : '<span class="availability-dot limited"></span><span class="text-yellow-600 text-sm">Disponibilidad limitada</span>'}
+              </div>
+              <p class="text-gray-600 mb-3">${esc(x.desc)}</p>
+              <div class="flex flex-wrap gap-2 mb-4">
+                ${x.tags.map((t) => `<span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">${esc(t)}</span>`).join("")}
+              </div>
+              <div class="flex justify-between items-center">
+                <div class="text-sm text-gray-500"><i class="fas fa-map-marker-alt mr-1"></i>${esc(x.distrito)} • ${x.dist.toFixed(1)} km</div>
+                <div class="flex space-x-2">
+                  ${estado.tipo === "servicios" ? (() => { const on = comparar.has(x.nombre); return `<button type="button" class="cmp-btn border px-4 py-2 rounded-lg ${on ? "bg-blue-50 border-blue-600 text-blue-700" : "border-gray-300 text-gray-700 hover:bg-gray-50"}" data-nombre="${esc(x.nombre)}" aria-pressed="${on}"><i class="fas ${on ? "fa-check" : "fa-balance-scale"} mr-2"></i>${on ? "Añadido" : "Comparar"}</button>`; })() : ""}
+                  <button type="button" class="fav-btn border border-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-50" aria-label="Guardar en favoritos"><i class="far fa-heart"></i></button>
+                  <a href="4_detalle.html?tipo=${estado.tipo}&id=${x.id}" data-tipo="${estado.tipo}" data-id="${x.id}" class="ver-mas bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors">Ver más información</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+      }
+
+      function pintar() {
+        const lista = filtrar();
+        $("results").innerHTML = lista.map(tarjeta).join("");
+        $("empty").classList.toggle("hidden", lista.length > 0);
+        const q = estado.texto.trim();
+        $("summary").innerHTML = `Se encontraron <span class="font-semibold text-blue-600">${lista.length}</span> ${ETIQ[estado.tipo]}${q ? ` para "${esc(q)}"` : " en Lima"}`;
+        ["servicios", "medicos", "clinicas"].forEach((t) => ($("cnt-" + t).textContent = DATA[t].length));
+        actualizarBarra();
+      }
+
+      function pintarCategorias() {
+        let cats = Array.from(new Set(DATA[estado.tipo].map((x) => x.cat)));
+        if (estado.tipo === "medicos") {
+          // HU39: las especialidades vienen del catálogo que administra el admin
+          let esp = null;
+          try { esp = JSON.parse(localStorage.getItem("cs_especialidades")); } catch (e) {}
+          cats = Array.isArray(esp) && esp.length ? esp.slice().sort((a, b) => a.localeCompare(b, "es")) : ESP_DEFECTO;
+        }
+        $("catTitle").textContent = TITULO_CAT[estado.tipo];
+        $("fCats").innerHTML = cats.map((c) => `<label class="flex items-center"><input type="checkbox" value="${esc(c)}" class="cat-chk mr-2 accent-blue-600" /> ${esc(c)}</label>`).join("");
+      }
+
+      function limpiar() {
+        Object.assign(estado, { distrito: "", precio: 500, cats: [], disp: false, orden: "rel", seguro: "", centro: "" });
+        $("fSeguro").value = ""; $("fCentro").value = "";
+        $("fDistrito").value = ""; $("fPrecio").value = 500; $("fPrecioLbl").textContent = "S/ 500";
+        $("fDisp").checked = false; $("sortSelect").value = "rel";
+        pintarCategorias();
+        pintar();
+      }
+
+      function cambiarTab(tipo) {
+        estado.tipo = tipo;
+        estado.cats = []; estado.centro = ""; $("fCentro").value = "";
+        $("boxCentro").classList.toggle("hidden", tipo === "clinicas");
+        document.querySelectorAll(".tab-btn").forEach((b) => {
+          const on = b.dataset.tipo === tipo;
+          b.classList.toggle("active", on);
+          b.setAttribute("aria-selected", on);
+        });
+        pintarCategorias();
+        pintar();
+      }
+
+      function buscar(texto) {
+        estado.texto = texto || "";
+        $("desktop-search-input").value = estado.texto;
+        $("mobile-search-input").value = estado.texto;
+        pintar();
+      }
+
+      const money = (n) => "S/ " + Number(n).toFixed(2);
+      function seleccion() { return DATA.servicios.filter((x) => comparar.has(x.nombre)); }
+      function actualizarBarra() {
+        const n = comparar.size, ok = n >= 2, enServ = estado.tipo === "servicios";
+        try { sessionStorage.setItem("cs_cmp", JSON.stringify(Array.from(comparar))); } catch (e) {}
+        $("cmpBar").classList.toggle("hidden", !enServ || n === 0);
+        document.body.classList.toggle("pb-28", enServ && n > 0);
+        $("cmpCount").textContent = n;
+        $("cmpHint").classList.toggle("hidden", ok);
+        $("cmpChips").innerHTML = Array.from(comparar).map((nm) => `<span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium pl-3 pr-1 py-1 rounded-full">${esc(nm)}<button type="button" class="cmp-x ml-1 w-5 h-5 rounded-full hover:bg-blue-100" data-nombre="${esc(nm)}" aria-label="Quitar ${esc(nm)}"><i class="fas fa-times text-[10px]"></i></button></span>`).join("");
+        [$("cmpGo"), $("cmpQuick")].forEach((el) => { el.classList.toggle("opacity-50", !ok); el.classList.toggle("pointer-events-none", !ok); });
+        $("cmpGo").href = "4_comparativa_medicamento.html?modo=servicios&sel=" + encodeURIComponent(Array.from(comparar).join("|"));
+        $("cmpFull").href = $("cmpGo").href;
+      }
+
+      /* Simula la comparación con los datos ya cargados en la búsqueda */
+      function abrirComparacion() {
+        const l = seleccion(); if (l.length < 2) return;
+        const best = (f, dir) => { const v = l.map(f); return dir === "min" ? Math.min(...v) : Math.max(...v); };
+        const bp = best((x) => x.precio, "min"), br = best((x) => x.rating, "max"), bd = best((x) => x.dist, "min"), bv = best((x) => x.rev, "max");
+        const th = (x) => `<th class="px-4 py-3 align-top ${x.precio === bp ? "bg-green-50" : ""}"><p class="font-semibold text-gray-900">${esc(x.nombre)}</p><p class="text-blue-600 text-xs font-medium">${esc(x.sub)}</p>${x.precio === bp ? '<span class="inline-block mt-1 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-check mr-1"></i>Más económico</span>' : ""}</th>`;
+        $("cmpHead").innerHTML = `<tr><th class="px-4 py-3 text-xs uppercase text-gray-500 font-semibold w-36">Característica</th>${l.map(th).join("")}</tr>`;
+        const fila = (k, f, win) => `<tr><td class="px-4 py-3 text-gray-500">${k}</td>${l.map((x) => `<td class="px-4 py-3 ${win && win(x) ? "bg-green-50/60 font-semibold text-green-700" : "text-gray-800"}">${f(x)}</td>`).join("")}</tr>`;
+        $("cmpBody").innerHTML =
+          fila("Categoría", (x) => esc(x.cat)) +
+          fila("Precio", (x) => money(x.precio), (x) => x.precio === bp) +
+          fila("Calificación", (x) => `<i class="fas fa-star text-yellow-400 mr-1"></i>${x.rating.toFixed(1)}`, (x) => x.rating === br) +
+          fila("Reseñas", (x) => x.rev, (x) => x.rev === bv) +
+          fila("Distrito", (x) => esc(x.distrito)) +
+          fila("Distancia", (x) => x.dist.toFixed(1) + " km", (x) => x.dist === bd) +
+          fila("Disponibilidad", (x) => x.disp ? '<span class="text-green-600">Esta semana</span>' : '<span class="text-yellow-600">Limitada</span>', (x) => x.disp) +
+          fila("Detalles", (x) => esc(x.tags.join(" · ")));
+        const o = l.slice().sort((a, b) => a.precio - b.precio), dif = o[o.length - 1].precio - o[0].precio;
+        const mejorRating = l.slice().sort((a, b) => b.rating - a.rating)[0];
+        $("cmpSummary").innerHTML = dif === 0
+          ? '<i class="fas fa-equals mr-2"></i>Las opciones tienen el mismo precio.'
+          : `<i class="fas fa-piggy-bank mr-2"></i><strong>${esc(o[0].nombre)}</strong> (${esc(o[0].sub)}) es la más económica: ahorras <strong>${money(dif)}</strong> frente a <strong>${esc(o[o.length - 1].nombre)}</strong>. La mejor calificada es <strong>${esc(mejorRating.nombre)}</strong> (${mejorRating.rating.toFixed(1)}).`;
+        $("cmpModal").classList.replace("hidden", "flex");
+        $("cmpClose").focus();
+      }
+      const cerrarComp = () => $("cmpModal").classList.replace("flex", "hidden");
+      $("cmpQuick").addEventListener("click", abrirComparacion);
+      ["cmpClose", "cmpClose2"].forEach((i) => $(i).addEventListener("click", cerrarComp));
+      $("cmpModal").addEventListener("click", (e) => { if (e.target === $("cmpModal")) cerrarComp(); });
+      document.addEventListener("keydown", (e) => { if (e.key === "Escape") cerrarComp(); });
+      $("cmpBar").addEventListener("click", (e) => { const x = e.target.closest(".cmp-x"); if (!x) return; comparar.delete(x.dataset.nombre); pintar(); });
+
+      $("results").addEventListener("click", (e) => {
+        const b = e.target.closest(".cmp-btn"); if (!b) return;
+        const n = b.dataset.nombre;
+        if (comparar.has(n)) comparar.delete(n);
+        else if (comparar.size < 3) comparar.add(n);
+        else { $("cmpHint").classList.remove("hidden"); $("cmpHint").textContent = "· máximo 3, quita uno para añadir otro"; return; }
+        $("cmpHint").textContent = "· elige al menos 2";
+        pintar();
+      });
+      $("cmpClear").addEventListener("click", () => { comparar.clear(); pintar(); });
+      document.querySelectorAll(".tab-btn").forEach((b) => b.addEventListener("click", () => cambiarTab(b.dataset.tipo)));
+      $("sortSelect").addEventListener("change", (e) => { estado.orden = e.target.value; pintar(); });
+      $("fPrecio").addEventListener("input", (e) => { $("fPrecioLbl").textContent = "S/ " + e.target.value; });
+      $("applyBtn").addEventListener("click", () => {
+        estado.distrito = $("fDistrito").value;
+        estado.precio = Number($("fPrecio").value);
+        estado.disp = $("fDisp").checked;
+        estado.seguro = $("fSeguro").value; estado.centro = $("fCentro").value;
+        estado.cats = Array.from(document.querySelectorAll(".cat-chk:checked")).map((c) => c.value);
+        pintar();
+        if (window.innerWidth < 1024) $("filterPanel").classList.add("hidden");
+      });
+      $("clearBtn").addEventListener("click", limpiar);
+      $("emptyClear").addEventListener("click", limpiar);
+      $("mobile-filter-toggle").addEventListener("click", () => $("filterPanel").classList.toggle("hidden"));
+
+      [["desktop-search-btn", "desktop-search-input"], ["mobile-search-btn", "mobile-search-input"]].forEach(([b, i]) => {
+        $(b).addEventListener("click", () => buscar($(i).value));
+        $(i).addEventListener("keydown", (e) => { if (e.key === "Enter") buscar($(i).value); });
+      });
+
+      $("results").addEventListener("click", (e) => {
+        const f = e.target.closest(".fav-btn");
+        if (!f) return;
+        const i = f.querySelector("i");
+        const on = i.classList.contains("far");
+        i.classList.toggle("far", !on); i.classList.toggle("fas", on);
+        f.classList.toggle("text-red-500", on);
+      });
+
+      $("results").addEventListener("click", (e) => {
+        const v = e.target.closest(".ver-mas");
+        if (!v) return;
+        const d = armarDetalle(v.dataset.tipo, v.dataset.id);
+        try { localStorage.setItem("cs_detalle", JSON.stringify(d)); } catch (err) {}
+      });
+
+      // Admite ?tipo=medicos|clinicas|servicios y ?search=texto
+      SEGUROS.forEach((s, i) => { const o = document.createElement("option"); o.value = i; o.textContent = s; $("fSeguro").appendChild(o); });
+      DATA.clinicas.forEach((c) => { const o = document.createElement("option"); o.value = c.nombre; o.textContent = c.nombre; $("fCentro").appendChild(o); });
+      const params = new URLSearchParams(location.search);
+      const tipoInicial = params.get("tipo");
+      cambiarTab(DATA[tipoInicial] ? tipoInicial : "servicios");
+      buscar(params.get("search") || "");
+    
+    </script>
+  </body>
+</html>

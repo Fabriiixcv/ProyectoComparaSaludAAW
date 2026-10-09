@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clínica Médica Central - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .health-gradient {
+            background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+        }
+        
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .gallery-item {
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .map-container {
+            height: 300px;
+            background: linear-gradient(135deg, #e0f2fe 0%, #bbf7d0 100%);
+        }
+        
+        /* Animaciones personalizadas */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+        
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            backdrop-filter: blur(10px);
+        }
+        
+        .star-rating .star {
+            color: #e5e7eb;
+        }
+        
+        .star-rating .star.active {
+            color: #f59e0b;
+        }
+    
+        html { scroll-behavior: smooth; }
+        .sec-pill.active { background: #eff6ff; color: #2563eb; }
+        .tar-tab.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+        .tar-row { transition: transform .2s ease, box-shadow .2s ease; }
+        .tar-row:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -3px rgba(0,0,0,.1); }
+        @media (prefers-reduced-motion: reduce) { .tar-row { transition: none; } .tar-row:hover { transform: none; } }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Header de Navegación Principal -->
+    <nav class="bg-white shadow-sm sticky-header">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center">
+                    <a href="3_user_dashboard.html" class="flex items-center">
+                        <div class="w-8 h-8 health-gradient rounded-lg mr-2"></div>
+                        <span class="font-bold text-gray-800">ComparaSalud</span>
+                    </a>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="3_user_dashboard.html" class="text-gray-600 hover:text-gray-900">Inicio</a>
+                    <a href="4_search_results.html" class="text-gray-600 hover:text-gray-900">Buscar</a>
+                    <a href="6_favorites.html" class="text-gray-600 hover:text-gray-900">Favoritos</a>
+                    <a href="8_help_center.html" class="text-gray-600 hover:text-gray-900">Ayuda</a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    
+                    
+                    <a href="6_user_profile.html" class="w-8 h-8 bg-gray-300 rounded-full block"></a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Página Principal del Proveedor -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <!-- Header del Proveedor -->
+        <div class="bg-white rounded-2xl shadow-sm overflow-hidden mb-6 fade-in">
+            <!-- Foto de Portada -->
+            <div class="h-48 md:h-64 bg-gradient-to-r from-blue-500 to-green-400 relative">
+                <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+                <button class="absolute top-4 right-4 bg-white bg-opacity-90 rounded-full p-2 shadow-lg hover:bg-opacity-100 transition-all">
+                    <i class="fas fa-camera text-gray-700"></i>
+                </button>
+            </div>
+
+            <!-- Información del Proveedor -->
+            <div class="relative px-6 pb-6">
+                <!-- Logo y Información Básica -->
+                <div class="flex flex-col md:flex-row md:items-end -mt-16 md:-mt-20">
+                    <!-- Logo -->
+                    <div class="w-32 h-32 md:w-40 md:h-40 bg-white rounded-2xl shadow-lg p-2 flex items-center justify-center">
+                        <div class="w-full h-full health-gradient rounded-xl flex items-center justify-center">
+                            <i class="fas fa-stethoscope text-white text-4xl"></i>
+                        </div>
+                    </div>
+
+                    <!-- Información Principal -->
+                    <div class="flex-1 md:ml-6 mt-4 md:mt-0">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div>
+                                <h1 class="text-2xl md:text-3xl font-bold text-gray-900">
+                                    Clínica Médica Central
+                                </h1>
+                                <div class="flex items-center mt-2">
+                                    <div class="star-rating flex">
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star text-yellow-400"></i>
+                                        <i class="fas fa-star-half-alt text-yellow-400"></i>
+                                    </div>
+                                    <span class="ml-2 text-gray-600 font-medium">4.5</span>
+                                    <span class="ml-1 text-gray-500">(128 reseñas)</span>
+                                </div>
+                                <p class="text-gray-600 mt-1">
+                                    <i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>
+                                    <span id="addrHeader">Av. Principal 123, Distrito Médico, Lima</span>
+                                </p>
+                            </div>
+
+                            <!-- Botones de Acción -->
+                            <div class="flex space-x-3 mt-4 md:mt-0">
+                                <button id="favoriteBtn" class="flex items-center justify-center w-12 h-12 bg-red-50 text-red-500 rounded-xl hover:bg-red-100 transition-colors">
+                                    <i class="far fa-heart text-xl"></i>
+                                </button>
+                                <button id="shareBtn" class="flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-500 rounded-xl hover:bg-blue-100 transition-colors">
+                                    <i class="far fa-share-square text-xl"></i>
+                                </button>
+                                
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Barra de secciones del perfil -->
+        <nav class="bg-white rounded-2xl shadow-sm mb-6 p-2 flex gap-2 overflow-x-auto sticky top-16 z-30" aria-label="Secciones del perfil">
+            <a href="#info" data-sec="info" class="sec-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-700 whitespace-nowrap hover:bg-gray-100"><i class="fas fa-circle-info mr-2"></i>Información</a>
+            <a href="#tarifario" data-sec="tarifario" class="sec-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-700 whitespace-nowrap hover:bg-gray-100"><i class="fas fa-tags mr-2"></i>Tarifario y Servicios</a>
+            <a href="#ubicacion" data-sec="ubicacion" class="sec-pill px-4 py-2 rounded-xl text-sm font-medium text-gray-700 whitespace-nowrap hover:bg-gray-100"><i class="fas fa-location-dot mr-2"></i>Ubicación y contacto</a>
+            <a href="4_provider_reviews.html" class="px-4 py-2 rounded-xl text-sm font-medium text-gray-700 whitespace-nowrap hover:bg-gray-100"><i class="fas fa-star mr-2"></i>Reseñas</a>
+        </nav>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Columna Principal -->
+            <div class="lg:col-span-2 space-y-6">
+                <!-- Sección de Información General -->
+                <div id="info" class="bg-white rounded-2xl shadow-sm p-6 fade-in scroll-mt-24">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">
+                        Información General
+                    </h2>
+
+                    <div class="prose prose-gray max-w-none">
+                        <p class="text-gray-600 leading-relaxed">
+                            La Clínica Médica Central es un centro de salud de primer nivel
+                            con más de 15 años de experiencia brindando atención médica
+                            integral. Contamos con tecnología de punta y un equipo de
+                            profesionales altamente calificados comprometidos con tu
+                            bienestar.
+                        </p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                            <!-- Especialidades -->
+                            <div>
+                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="fas fa-stethoscope text-blue-500 mr-2"></i>
+                                    Especialidades Principales
+                                </h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-sm">Medicina General</span>
+                                    <span class="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm">Pediatría</span>
+                                    <span class="bg-purple-50 text-purple-700 px-3 py-1 rounded-full text-sm">Ginecología</span>
+                                    <span class="bg-yellow-50 text-yellow-700 px-3 py-1 rounded-full text-sm">Cardiología</span>
+                                    <span class="bg-red-50 text-red-700 px-3 py-1 rounded-full text-sm">Dermatología</span>
+                                    <span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-full text-sm">Ortopedia</span>
+                                </div>
+                            </div>
+
+                            <!-- Experiencia y Certificaciones -->
+                            <div>
+                                <h3 class="font-semibold text-gray-900 mb-3 flex items-center">
+                                    <i class="fas fa-award text-green-500 mr-2"></i>
+                                    Certificaciones
+                                </h3>
+                                <ul class="space-y-2 text-gray-600">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Acreditación Internacional JCI
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        Ministerio de Salud Certificado
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 mr-2"></i>
+                                        ISO 9001:2015
+                                    </li>
+                                </ul>
+
+                                <div class="mt-4 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-history text-amber-500 mr-2"></i>
+                                        <span class="font-semibold text-amber-800">15 años</span>
+                                        <span class="text-amber-700 ml-1">de experiencia</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- HU44: Tarifario y Servicios (GET /api/servicio) -->
+                <div id="tarifario" class="bg-white rounded-2xl shadow-sm p-6 fade-in scroll-mt-24">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
+                        <div>
+                            <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-tags text-blue-500 mr-2"></i>Tarifario y Servicios</h2>
+                            <p class="text-gray-600 text-sm">Servicios y medicamentos de esta sede con sus precios</p>
+                        </div>
+                        <span id="tarSede" class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-3 py-1 rounded-full"><i class="fas fa-hospital mr-2"></i><span>Sede</span></span>
+                    </div>
+
+                    <!-- Cargando -->
+                    <div id="tarLoading" class="hidden text-center text-gray-600 py-10">
+                        <i class="fas fa-spinner fa-spin text-2xl text-blue-600 mb-3"></i>
+                        <p>Consultando servicios y medicamentos...</p>
+                        <p class="text-xs text-gray-400 mt-1">GET /api/servicio</p>
+                    </div>
+
+                    <!-- Error -->
+                    <div id="tarError" class="hidden items-center justify-between gap-4 flex-wrap bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm" role="alert">
+                        <span><i class="fas fa-exclamation-circle mr-2"></i>No pudimos cargar el tarifario (GET /api/servicio). Inténtalo nuevamente.</span>
+                        <button id="tarRetry" type="button" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700"><i class="fas fa-redo mr-2"></i>Reintentar</button>
+                    </div>
+
+                    <!-- Contenido -->
+                    <div id="tarContent" class="hidden">
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
+                            <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500">Total de ítems</p><p id="stTotal" class="text-2xl font-bold text-gray-900">0</p></div>
+                            <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500">Servicios</p><p id="stServ" class="text-2xl font-bold text-blue-600">0</p></div>
+                            <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500">Medicamentos</p><p id="stMed" class="text-2xl font-bold text-purple-600">0</p></div>
+                            <div class="bg-gray-50 rounded-xl p-4"><p class="text-xs text-gray-500">Más económico</p><p id="stMin" class="text-2xl font-bold text-green-600">-</p></div>
+                        </div>
+
+                        <div class="flex flex-col lg:flex-row gap-3 mb-4">
+                            <div class="flex gap-2 flex-wrap" role="tablist" aria-label="Filtrar tarifario">
+                                <button type="button" data-t="todos" class="tar-tab px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700">Todos <span id="ctTodos" class="ml-1 text-xs opacity-80"></span></button>
+                                <button type="button" data-t="servicio" class="tar-tab px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700"><i class="fas fa-stethoscope mr-1"></i>Servicios <span id="ctServ" class="ml-1 text-xs opacity-80"></span></button>
+                                <button type="button" data-t="medicamento" class="tar-tab px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700"><i class="fas fa-pills mr-1"></i>Medicamentos <span id="ctMed" class="ml-1 text-xs opacity-80"></span></button>
+                            </div>
+                            <div class="flex-1 flex gap-2">
+                                <div class="relative flex-1">
+                                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                                    <input id="tarQ" type="text" maxlength="60" placeholder="Buscar servicio o medicamento" class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-600" />
+                                </div>
+                                <select id="tarSort" class="border border-gray-300 rounded-lg px-3 py-2 text-sm" aria-label="Ordenar">
+                                    <option value="rel">Relevancia</option>
+                                    <option value="asc">Precio: menor a mayor</option>
+                                    <option value="desc">Precio: mayor a menor</option>
+                                    <option value="az">Nombre A-Z</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <p id="tarSummary" class="text-sm text-gray-500 mb-3" aria-live="polite"></p>
+                        <div id="tarList" class="space-y-3"></div>
+
+                        <div id="tarEmpty" class="hidden text-center bg-gray-50 rounded-xl p-8">
+                            <i class="fas fa-box-open text-3xl text-gray-300 mb-3"></i>
+                            <p class="text-gray-700 font-medium mb-1">No hay resultados para este filtro</p>
+                            <button id="tarClear" type="button" class="mt-2 text-blue-600 font-medium hover:underline">Limpiar filtros</button>
+                        </div>
+
+                        <div class="mt-5 flex flex-wrap gap-3">
+                            <a href="4_comparativa_servicios.html" class="border border-blue-600 text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50"><i class="fas fa-balance-scale mr-2"></i>Comparar servicios entre sedes</a>
+                            <a href="4_comparativa_medicamento.html" class="border border-purple-600 text-purple-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-purple-50"><i class="fas fa-pills mr-2"></i>Comparar medicamentos</a>
+                            <a href="4_medicamentos.html" class="border border-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium hover:bg-gray-50"><i class="fas fa-capsules mr-2"></i>Catálogo de medicamentos</a>
+                        </div>
+                        <p class="text-center text-xs text-gray-400 mt-4"><a href="#tarifario" id="tarSimErr" class="underline hover:text-gray-600">Simular error del servidor</a> · <a href="#tarifario" id="tarSimVacio" class="underline hover:text-gray-600">Simular sede sin tarifas</a></p>
+                    </div>
+
+                    <!-- Información de costos y seguros -->
+                    <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                        <h3 class="font-semibold text-blue-900 mb-3 flex items-center"><i class="fas fa-info-circle text-blue-500 mr-2"></i>Información sobre Costos</h3>
+                        <ul class="text-blue-800 text-sm space-y-2">
+                            <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>Precios transparentes sin cargos ocultos</li>
+                            <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>Pago seguro con tarjeta, transferencia, Yape o efectivo</li>
+                            <li class="flex items-center"><i class="fas fa-check-circle text-blue-500 mr-2"></i>Facturación electrónica incluida</li>
+                        </ul>
+                    </div>
+                    <div class="mt-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">Seguros Médicos Aceptados</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <div class="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700">Pacífico Seguros</div>
+                            <div class="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700">Rimac Seguros</div>
+                            <div class="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700">La Positiva</div>
+                            <div class="bg-white border border-gray-300 rounded-lg px-4 py-2 text-sm font-medium text-gray-700">Mapfre</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección de Galería -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-gray-900">Galería</h2>
+                        <button class="text-blue-600 font-semibold text-sm flex items-center">
+                            Ver todas
+                            <i class="fas fa-chevron-right ml-1 text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <!-- Foto 1 -->
+                        <div class="gallery-item aspect-square bg-gray-200 rounded-xl overflow-hidden cursor-pointer relative group">
+                            <div class="w-full h-full bg-gradient-to-br from-blue-400 to-green-300"></div>
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                <i class="fas fa-expand text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300"></i>
+                            </div>
+                        </div>
+
+                        <!-- Foto 2 -->
+                        <div class="gallery-item aspect-square bg-gray-200 rounded-xl overflow-hidden cursor-pointer relative group">
+                            <div class="w-full h-full bg-gradient-to-br from-purple-400 to-pink-300"></div>
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                <i class="fas fa-expand text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300"></i>
+                            </div>
+                        </div>
+
+                        <!-- Foto 3 -->
+                        <div class="gallery-item aspect-square bg-gray-200 rounded-xl overflow-hidden cursor-pointer relative group">
+                            <div class="w-full h-full bg-gradient-to-br from-green-400 to-blue-300"></div>
+                            <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
+                                <i class="fas fa-expand text-white opacity-0 group-hover:opacity-100 transform scale-75 group-hover:scale-100 transition-all duration-300"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tour Virtual -->
+                    <div class="mt-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-xl border border-purple-200">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h3 class="font-semibold text-purple-900 flex items-center">
+                                    <i class="fas fa-vr-cardboard text-purple-500 mr-2"></i>
+                                    Tour Virtual Disponible
+                                </h3>
+                                <p class="text-purple-700 text-sm mt-1">
+                                    Recorre nuestras instalaciones desde la comodidad de tu hogar
+                                </p>
+                            </div>
+                            <button class="bg-purple-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-purple-700 transition-colors flex items-center">
+                                <i class="fas fa-play mr-2"></i>
+                                Iniciar Tour
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Columna Lateral -->
+            <div class="space-y-6">
+                <!-- Sección de Ubicación y Contacto -->
+                <div id="ubicacion" class="bg-white rounded-2xl shadow-sm p-6 fade-in scroll-mt-24">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">
+                        Ubicación y Contacto
+                    </h2>
+
+                    <!-- Mapa (HU11) -->
+                    <div class="mb-4">
+                        <div class="map-container rounded-xl relative overflow-hidden">
+                            <div id="map" class="absolute inset-0"></div>
+                            <div id="mapPlaceholder" class="absolute inset-0 flex flex-col items-center justify-center text-center bg-gradient-to-br from-blue-100 to-green-100" style="z-index:1000">
+                                <i class="fas fa-map-marker-alt text-blue-500 text-4xl mb-2"></i>
+                                <p class="text-blue-800 font-semibold mb-3">Mapa interactivo</p>
+                                <button id="viewMapBtn" type="button" class="health-gradient text-white px-5 py-2 rounded-lg font-medium shadow hover:shadow-md transition-all">
+                                    <i class="fas fa-map-marked-alt mr-2"></i><span id="viewMapLabel">Ver en mapa</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="mapStatus" class="hidden mt-3 text-sm rounded-lg px-3 py-2 flex items-center" role="status"></div>
+                    </div>
+
+                    <!-- Dirección -->
+                    <div class="space-y-4">
+                        <div class="flex items-start">
+                            <i class="fas fa-map-marker-alt text-gray-400 mt-1 mr-3"></i>
+                            <div>
+                                <p id="addrMain" class="font-medium text-gray-900">Av. Principal 123</p>
+                                <p id="addrSub" class="text-gray-600 text-sm">Distrito Médico, Lima 15048</p>
+                            </div>
+                        </div>
+
+                        <!-- Teléfonos -->
+                        <div class="flex items-start">
+                            <i class="fas fa-phone-alt text-gray-400 mt-1 mr-3"></i>
+                            <div>
+                                <p id="phoneMain" class="font-medium text-gray-900">(01) 234-5678</p>
+                                <p class="text-gray-600 text-sm">Línea principal</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <i class="fas fa-mobile-alt text-gray-400 mt-1 mr-3"></i>
+                            <div>
+                                <p class="font-medium text-gray-900">987 654 321</p>
+                                <p class="text-gray-600 text-sm">Emergencias 24/7</p>
+                            </div>
+                        </div>
+
+                        <!-- Horarios -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <h3 class="font-semibold text-gray-900 mb-3">
+                                Horarios de Atención
+                            </h3>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Lunes - Viernes</span>
+                                    <span class="font-medium text-gray-900">7:00 AM - 10:00 PM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Sábados</span>
+                                    <span class="font-medium text-gray-900">8:00 AM - 6:00 PM</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-600">Domingos</span>
+                                    <span class="font-medium text-gray-900">9:00 AM - 1:00 PM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Estacionamiento -->
+                        <div class="pt-4 border-t border-gray-200">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center">
+                                    <i class="fas fa-parking text-green-500 mr-2"></i>
+                                    <span class="font-medium text-gray-900">Estacionamiento</span>
+                                </div>
+                                <span class="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                                    Disponible
+                                </span>
+                            </div>
+                            <p class="text-gray-600 text-sm mt-1">
+                                Gratuito para pacientes por 2 horas
+                            </p>
+                        </div>
+
+                        <!-- Botones de Acción -->
+                        <div class="pt-4 border-t border-gray-200 space-y-3">
+                            <button class="w-full health-gradient text-white py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center justify-center">
+                                <i class="fas fa-directions mr-2"></i>
+                                Cómo Llegar
+                            </button>
+                            <button class="w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center">
+                                <i class="far fa-copy mr-2"></i>
+                                Copiar Dirección
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Información Adicional -->
+                <div class="bg-white rounded-2xl shadow-sm p-6 fade-in">
+                    <h3 class="font-semibold text-gray-900 mb-4">
+                        Información Adicional
+                    </h3>
+
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-wheelchair text-blue-500 mr-3"></i>
+                                <span class="text-gray-700">Acceso para discapacitados</span>
+                            </div>
+                            <i class="fas fa-check text-green-500"></i>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-wifi text-blue-500 mr-3"></i>
+                                <span class="text-gray-700">Wi-Fi Gratuito</span>
+                            </div>
+                            <i class="fas fa-check text-green-500"></i>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-credit-card text-blue-500 mr-3"></i>
+                                <span class="text-gray-700">Pago con tarjeta</span>
+                            </div>
+                            <i class="fas fa-check text-green-500"></i>
+                        </div>
+
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                            <div class="flex items-center">
+                                <i class="fas fa-language text-blue-500 mr-3"></i>
+                                <span class="text-gray-700">Médicos bilingües</span>
+                            </div>
+                            <i class="fas fa-check text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer Component -->
+    <div id="toast" class="hidden fixed top-20 right-4 z-[60] max-w-sm bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 flex items-start" role="status">
+        <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+        <span id="toastText" class="text-sm font-medium"></span>
+        <button type="button" onclick="document.getElementById('toast').classList.add('hidden')" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></button>
+    </div>
+    <div id="footer-container"></div>
+
+    <script>
+        // Load footer component
+        fetch('../js/components/footer.js')
+            .then(response => response.text())
+            .then(data => {
+                const script = document.createElement('script');
+                script.textContent = data;
+                document.getElementById('footer-container').appendChild(script);
+            });
+
+        // Favorite button functionality
+        document.getElementById('favoriteBtn').addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.classList.remove('bg-red-50', 'text-red-500');
+                this.classList.add('bg-red-500', 'text-white');
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.classList.remove('bg-red-500', 'text-white');
+                this.classList.add('bg-red-50', 'text-red-500');
+            }
+        });
+
+        // Share button functionality
+        document.getElementById('shareBtn').addEventListener('click', function() {
+            alert('Compartir proveedor: Clínica Médica Central\n\nEnlace copiado al portapapeles');
+        });
+
+        // Scroll animation for fade-in elements
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.6s ease-out forwards';
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with fade-in class
+        document.querySelectorAll('.fade-in').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
+<script src="../js/services/centro_medico.js"></script>
+    <script>
+        // HU11: Ver ubicación del centro médico en el mapa
+        const centroId = new URLSearchParams(location.search).get('id') || 1;
+        let leafletMap = null, leafletMarker = null, centroActual = null;
+
+        function showMapStatus(msg, ok) {
+            const el = document.getElementById('mapStatus');
+            el.className = 'mt-3 text-sm rounded-lg px-3 py-2 flex items-center ' +
+                (ok ? 'bg-green-50 text-green-800 border border-green-200' : 'bg-red-50 text-red-700 border border-red-200');
+            el.innerHTML = '<i class="fas ' + (ok ? 'fa-check-circle' : 'fa-exclamation-circle') + ' mr-2"></i>';
+            el.appendChild(document.createTextNode(msg));
+        }
+
+        async function cargarUbicacion() {
+            const btn = document.getElementById('viewMapBtn');
+            const label = document.getElementById('viewMapLabel');
+            btn.disabled = true;
+            label.textContent = 'Cargando...';
+
+            const r = await CentroMedicoService.obtenerPorId(centroId); // GET /api/centro-medico
+            if (!r.ok) {
+                showMapStatus(r.error, false);
+                btn.disabled = false;
+                label.textContent = 'Reintentar';
+                return null;
+            }
+
+            centroActual = r.data;
+            const pos = [centroActual.Latitud, centroActual.Longitud];
+            document.getElementById('mapPlaceholder').classList.add('hidden');
+
+            if (!leafletMap) {
+                leafletMap = L.map('map').setView(pos, 16);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(leafletMap);
+            } else {
+                leafletMap.setView(pos, 16);
+            }
+            if (leafletMarker) leafletMarker.remove();
+            leafletMarker = L.marker(pos).addTo(leafletMap)
+                .bindPopup('<strong>' + document.querySelector('h1').textContent.trim().replace(/</g, '&lt;') + '</strong>').openPopup();
+            setTimeout(() => leafletMap.invalidateSize(), 50);
+
+            showMapStatus('Ubicación cargada correctamente', true);
+            return centroActual;
+        }
+
+        document.getElementById('viewMapBtn').addEventListener('click', cargarUbicacion);
+
+        // HU15: mostrar dirección/teléfono guardados y mensaje de confirmación
+        CentroMedicoService.obtenerPerfil(centroId).then((r) => {
+            const d = r.data;
+            if (d.Direccion) {
+                document.getElementById('addrHeader').textContent = d.Direccion;
+                document.getElementById('addrMain').textContent = d.Direccion;
+                document.getElementById('addrSub').classList.add('hidden');
+            }
+            if (d.Telefono) document.getElementById('phoneMain').textContent = d.Telefono;
+        });
+        const flashMsg = CentroMedicoService.Flash.take();
+        if (flashMsg) {
+            document.getElementById('toastText').textContent = flashMsg;
+            const toast = document.getElementById('toast');
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 5000);
+        }
+
+
+        // "Cómo Llegar" abre la ruta hacia las coordenadas del centro
+        const comoLlegarBtn = document.querySelector('.fa-directions')?.closest('button');
+        if (comoLlegarBtn) {
+            comoLlegarBtn.addEventListener('click', async function () {
+                const c = centroActual || await cargarUbicacion();
+                if (c) window.open('https://www.google.com/maps/dir/?api=1&destination=' + c.Latitud + ',' + c.Longitud, '_blank', 'noopener');
+            });
+        }
+    </script>
+<script>
+    // HU44: Tarifario y Servicios por sede (simula GET /api/servicio?idCentroMedico=)
+    (function () {
+        const $ = (id) => document.getElementById(id);
+        const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+        const norm = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        const money = (n) => "S/ " + Number(n).toFixed(2);
+        const sedeId = Number(new URLSearchParams(location.search).get("id")) || 1;
+
+        const ICON = { Consultas: "fa-stethoscope", Laboratorio: "fa-microscope", "Imágenes": "fa-x-ray", Chequeos: "fa-heartbeat", "Odontología": "fa-teeth", "Oftalmología": "fa-eye", "Vacunación": "fa-syringe", Urgencias: "fa-truck-medical" };
+        // id de ficha en 4_medicamento_ficha.html : [nombre, presentación, categoría, requiere receta, descripción]
+        const MED = {
+            1: ["Paracetamol 500 mg", "Caja x 20 tabletas", "Analgésicos", 0, "Analgésico y antipirético para dolor leve y fiebre."],
+            2: ["Ibuprofeno 400 mg", "Caja x 10 tabletas", "Antiinflamatorios", 0, "Antiinflamatorio para dolor muscular y de cabeza."],
+            3: ["Losartán 50 mg", "Caja x 30 tabletas", "Cardiovasculares", 1, "Antihipertensivo de uso diario."],
+            4: ["Amoxicilina 500 mg", "Caja x 12 cápsulas", "Antibióticos", 1, "Antibiótico de amplio espectro con receta médica."],
+            5: ["Omeprazol 20 mg", "Caja x 14 cápsulas", "Gastrointestinales", 0, "Reduce la acidez y protege el estómago."],
+            6: ["Loratadina 10 mg", "Caja x 10 tabletas", "Antialérgicos", 0, "Antialérgico que no produce somnolencia."],
+            7: ["Metformina 850 mg", "Caja x 30 tabletas", "Endocrinológicos", 1, "Control de la glucosa en diabetes tipo 2."],
+            8: ["Atorvastatina 20 mg", "Caja x 30 tabletas", "Cardiovasculares", 1, "Reduce el colesterol y los triglicéridos."],
+            9: ["Salbutamol inhalador", "Frasco 200 dosis", "Respiratorios", 0, "Broncodilatador para crisis de asma."],
+            10: ["Azitromicina 500 mg", "Caja x 3 tabletas", "Antibióticos", 1, "Antibiótico para infecciones respiratorias."]
+        };
+        // Sedes: nombre, servicios [nombre, categoría, precio, duración, descripción], medicamentos [idFicha, precio]
+        const SEDES = {
+            1: { n: "Clínica Médica Central", s: [
+                ["Consulta Médica General", "Consultas", 70, "30 minutos", "Evaluación inicial con médico general. Incluye receta."],
+                ["Consulta con Especialista", "Consultas", 120, "45 minutos", "Consulta con médico especialista en su área."],
+                ["Control Pediátrico", "Consultas", 90, "30 minutos", "Control de crecimiento y desarrollo del niño."],
+                ["Análisis de Sangre Completo", "Laboratorio", 65, "Resultados en 24h", "Hemograma, glucosa, colesterol y triglicéridos."],
+                ["Ecografía Abdominal", "Imágenes", 180, "45 minutos", "Evaluación completa de órganos abdominales."]],
+              m: [[1, 12.50], [4, 15.90], [2, 8.80], [5, 11.20], [6, 6.80]] },
+            2: { n: "Laboratorio Médico Central", s: [
+                ["Análisis de Sangre Completo", "Laboratorio", 65, "Resultados en 24h", "Hemograma, glucosa, colesterol y triglicéridos."],
+                ["Hemograma Completo", "Laboratorio", 45, "Resultados en 12h", "Recuento de células sanguíneas."],
+                ["Perfil Lipídico", "Laboratorio", 55, "Resultados en 24h", "Colesterol total, HDL, LDL y triglicéridos."],
+                ["Examen de Orina", "Laboratorio", 25, "Resultados en 6h", "Examen físico, químico y microscópico."],
+                ["Glucosa en Ayunas", "Laboratorio", 20, "Resultados en 6h", "Control de glucosa; requiere ayuno de 8 horas."]],
+              m: [[2, 8.50]] },
+            3: { n: "Centro Cardiológico", s: [
+                ["Consulta con Especialista", "Consultas", 120, "45 minutos", "Consulta con cardiólogo."],
+                ["Chequeo Cardiovascular", "Chequeos", 180, "60 minutos", "Evaluación cardíaca completa con electrocardiograma."],
+                ["Electrocardiograma", "Chequeos", 70, "20 minutos", "Registro de la actividad eléctrica del corazón."],
+                ["Ecocardiograma", "Imágenes", 220, "40 minutos", "Imagen del corazón por ultrasonido."],
+                ["Holter de 24 horas", "Chequeos", 260, "24 horas", "Monitoreo continuo del ritmo cardíaco."]],
+              m: [[3, 18.00], [2, 9.50], [8, 24.00]] },
+            4: { n: "Clínica Miraflores Salud", s: [
+                ["Consulta Médica General", "Consultas", 85, "30 minutos", "Evaluación inicial con médico general."],
+                ["Radiografía de Tórax", "Imágenes", 45, "20 minutos", "Imagen diagnóstica con informe médico."],
+                ["Ecografía Abdominal", "Imágenes", 170, "45 minutos", "Evaluación de órganos abdominales."],
+                ["Vacunación Adulto", "Vacunación", 40, "15 minutos", "Aplicación de vacunas con registro en carné."]],
+              m: [[4, 15.90], [1, 12.00], [5, 11.50]] },
+            5: { n: "Centro Médico San Isidro", s: [
+                ["Consulta Médica General", "Consultas", 90, "30 minutos", "Evaluación inicial con médico general."],
+                ["Consulta con Especialista", "Consultas", 170, "45 minutos", "Consulta de especialidad."],
+                ["Chequeo Ejecutivo", "Chequeos", 320, "3 horas", "Evaluación integral con laboratorio e imágenes."],
+                ["Consulta de Endocrinología", "Consultas", 190, "45 minutos", "Diabetes, tiroides y trastornos hormonales."]],
+              m: [[5, 11.20], [7, 15.00], [1, 12.90]] },
+            6: { n: "Policlínico La Molina", s: [
+                ["Consulta Médica General", "Consultas", 65, "30 minutos", "Atención familiar a precio accesible."],
+                ["Vacunación Adulto", "Vacunación", 35, "15 minutos", "Aplicación de vacunas con registro en carné."],
+                ["Control Niño Sano", "Consultas", 80, "30 minutos", "Control pediátrico preventivo."],
+                ["Limpieza Dental", "Odontología", 60, "40 minutos", "Profilaxis y control de placa."]],
+              m: [[6, 6.80], [1, 11.80], [2, 9.20]] },
+            7: { n: "Clínica Surco Vital", s: [
+                ["Consulta Médica General", "Consultas", 95, "30 minutos", "Evaluación inicial con médico general."],
+                ["Limpieza Dental", "Odontología", 60, "40 minutos", "Profilaxis y control de placa."],
+                ["Control Prenatal", "Chequeos", 140, "45 minutos", "Seguimiento del embarazo con especialista."],
+                ["Ecografía Obstétrica", "Imágenes", 150, "45 minutos", "Evaluación del desarrollo fetal."]],
+              m: [[7, 14.50], [1, 10.90], [4, 16.50]] },
+            8: { n: "Laboratorio Miraflores Diagnóstica", s: [
+                ["Perfil Lipídico", "Laboratorio", 55, "Resultados en 24h", "Colesterol total, HDL, LDL y triglicéridos."],
+                ["Hemograma Completo", "Laboratorio", 48, "Resultados en 12h", "Recuento de células sanguíneas."],
+                ["Glucosa en Ayunas", "Laboratorio", 22, "Resultados en 6h", "Requiere ayuno de 8 horas."],
+                ["Perfil Tiroideo", "Laboratorio", 90, "Resultados en 48h", "TSH, T3 y T4 libres."]],
+              m: [[8, 24.00]] },
+            9: { n: "Clínica San Juan", s: [
+                ["Consulta Médica General", "Consultas", 80, "30 minutos", "Evaluación inicial con médico general."],
+                ["Examen Visual", "Oftalmología", 50, "30 minutos", "Medición de agudeza visual y salud ocular."],
+                ["Vacunación Adulto", "Vacunación", 35, "15 minutos", "Aplicación de vacunas con registro en carné."],
+                ["Limpieza Dental", "Odontología", 65, "40 minutos", "Profilaxis con instrumental esterilizado."]],
+              m: [[9, 19.90], [1, 12.50], [2, 9.00], [6, 7.20]] },
+            10: { n: "Clínica Angloamericana", s: [
+                ["Consulta Médica General", "Consultas", 120, "30 minutos", "Evaluación inicial con médico general."],
+                ["Consulta de Emergencia 24 h", "Urgencias", 200, "Inmediata", "Atención de urgencias las 24 horas."],
+                ["Radiografía de Tórax", "Imágenes", 60, "20 minutos", "Imagen diagnóstica con informe médico."],
+                ["Resonancia Magnética", "Imágenes", 650, "60 minutos", "Imágenes avanzadas con informe."]],
+              m: [[10, 22.00], [4, 17.50]] }
+        };
+        const sede = SEDES[sedeId] || SEDES[1];
+
+        // Nombre de la sede en cabecera y pestaña
+        document.querySelector("h1").textContent = sede.n;
+        document.title = sede.n + " - ComparaSalud";
+        $("tarSede").querySelector("span").textContent = sede.n;
+
+        const estado = { t: "todos", q: "", orden: "rel", items: [], cargado: false, vacio: false };
+        let timer = null;
+
+        /* Equivale a GET /api/servicio?idCentroMedico= : lista combinada de atenciones y medicamentos */
+        function getServicio() {
+            return new Promise((resolve) => {
+                timer = setTimeout(() => {
+                    if (window.__tarFallar) { window.__tarFallar = false; resolve({ ok: false }); return; }
+                    if (estado.vacio) { estado.vacio = false; resolve({ ok: true, data: [] }); return; }
+                    const sv = sede.s.map((x, i) => ({ tipo: "servicio", id: i + 1, nombre: x[0], cat: x[1], precio: x[2], extra: x[3], desc: x[4] }));
+                    const md = sede.m.map(([id, p]) => ({ tipo: "medicamento", id, nombre: MED[id][0], cat: MED[id][2], precio: p, extra: MED[id][1], rx: !!MED[id][3], desc: MED[id][4] }));
+                    resolve({ ok: true, data: sv.concat(md) });
+                }, 600);
+            });
+        }
+
+        function vista(v) {
+            ["tarLoading", "tarContent"].forEach((i) => $(i).classList.toggle("hidden", i !== v));
+            $("tarError").classList.add("hidden"); $("tarError").classList.remove("flex");
+        }
+
+        async function cargar() {
+            vista("tarLoading");
+            const r = await getServicio();
+            if (!r.ok) {
+                vista("none");
+                $("tarError").classList.remove("hidden"); $("tarError").classList.add("flex");
+                return;
+            }
+            estado.items = r.data; estado.cargado = true;
+            vista("tarContent");
+            pintar();
+        }
+
+        function fila(x) {
+            const esServ = x.tipo === "servicio";
+            const icono = esServ ? (ICON[x.cat] || "fa-stethoscope") : "fa-pills";
+            const badge = esServ
+                ? '<span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">Servicio</span>'
+                : '<span class="bg-purple-50 text-purple-700 px-2 py-0.5 rounded-full text-xs font-medium">Medicamento</span>';
+            const rx = !esServ ? (x.rx ? '<span class="bg-red-100 text-red-800 px-2 py-0.5 rounded-full text-xs"><i class="fas fa-file-prescription mr-1"></i>Con receta</span>' : '<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs">Venta libre</span>') : "";
+            const acciones = esServ
+                ? `<a href="4_servicio_resenas.html?id=${x.id}" class="text-blue-600 text-sm font-medium hover:underline"><i class="fas fa-star mr-1"></i>Ver reseñas</a>
+                   <a href="4_comparativa_servicios.html" class="text-gray-600 text-sm font-medium hover:underline"><i class="fas fa-balance-scale mr-1"></i>Comparar</a>`
+                : `<a href="4_medicamento_ficha.html?id=${x.id}#ficha" class="text-blue-600 text-sm font-medium hover:underline"><i class="fas fa-file-medical mr-1"></i>Ver ficha</a>
+                   <a href="4_comparativa_medicamento.html?med=${encodeURIComponent(x.nombre.split(" ")[0].toLowerCase())}" class="text-gray-600 text-sm font-medium hover:underline"><i class="fas fa-balance-scale mr-1"></i>Comparar precios</a>`;
+            return `<article class="tar-row bg-gray-50 rounded-xl p-4 border border-gray-200">
+                <div class="flex items-start justify-between gap-4">
+                    <div class="flex items-start gap-3 min-w-0">
+                        <div class="w-11 h-11 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas ${icono}"></i></div>
+                        <div class="min-w-0">
+                            <h3 class="font-semibold text-gray-900">${esc(x.nombre)}</h3>
+                            <div class="flex flex-wrap items-center gap-2 mt-1">${badge}<span class="bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full text-xs">${esc(x.cat)}</span>${rx}</div>
+                            <p class="text-gray-600 text-sm mt-2">${esc(x.desc)}</p>
+                            <p class="text-gray-500 text-xs mt-1"><i class="${esServ ? "far fa-clock" : "fas fa-box"} mr-1"></i>${esc(x.extra)}</p>
+                        </div>
+                    </div>
+                    <span class="text-lg font-bold text-green-600 whitespace-nowrap">${money(x.precio)}</span>
+                </div>
+                <div class="flex gap-4 mt-3 pt-3 border-t border-gray-200">${acciones}</div>
+            </article>`;
+        }
+
+        function visibles() {
+            const q = norm(estado.q);
+            const l = estado.items.filter((x) => (estado.t === "todos" || x.tipo === estado.t) && (!q || norm(x.nombre + " " + x.cat + " " + x.desc).includes(q)));
+            if (estado.orden === "asc") l.sort((a, b) => a.precio - b.precio);
+            else if (estado.orden === "desc") l.sort((a, b) => b.precio - a.precio);
+            else if (estado.orden === "az") l.sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+            return l;
+        }
+
+        function pintar() {
+            const it = estado.items, sv = it.filter((x) => x.tipo === "servicio"), md = it.filter((x) => x.tipo === "medicamento");
+            $("stTotal").textContent = it.length; $("stServ").textContent = sv.length; $("stMed").textContent = md.length;
+            $("ctTodos").textContent = "(" + it.length + ")"; $("ctServ").textContent = "(" + sv.length + ")"; $("ctMed").textContent = "(" + md.length + ")";
+            const min = it.length ? it.reduce((a, b) => (a.precio <= b.precio ? a : b)) : null;
+            $("stMin").textContent = min ? money(min.precio) : "-";
+            $("stMin").title = min ? min.nombre : "";
+            document.querySelectorAll(".tar-tab").forEach((b) => b.classList.toggle("active", b.dataset.t === estado.t));
+            const l = visibles();
+            $("tarList").innerHTML = l.map(fila).join("");
+            $("tarEmpty").classList.toggle("hidden", l.length > 0);
+            $("tarSummary").textContent = it.length
+                ? `Mostrando ${l.length} de ${it.length} ítems de ${sede.n}`
+                : "Esta sede aún no ha registrado servicios ni medicamentos.";
+            if (!it.length) $("tarEmpty").querySelector("p").textContent = "Esta sede aún no tiene tarifas publicadas";
+            else $("tarEmpty").querySelector("p").textContent = "No hay resultados para este filtro";
+        }
+
+        function abrirTarifario(scroll) {
+            if (scroll) $("tarifario").scrollIntoView({ behavior: "smooth", block: "start" });
+            if (!estado.cargado) cargar();
+        }
+        $("tarRetry").addEventListener("click", () => cargar());
+        document.querySelector('.sec-pill[data-sec="tarifario"]').addEventListener("click", (e) => { e.preventDefault(); abrirTarifario(true); });
+        document.querySelectorAll(".tar-tab").forEach((b) => b.addEventListener("click", () => { estado.t = b.dataset.t; pintar(); }));
+        $("tarQ").addEventListener("input", (e) => { estado.q = e.target.value; pintar(); });
+        $("tarSort").addEventListener("change", (e) => { estado.orden = e.target.value; pintar(); });
+        $("tarClear").addEventListener("click", () => { estado.t = "todos"; estado.q = ""; estado.orden = "rel"; $("tarQ").value = ""; $("tarSort").value = "rel"; pintar(); });
+        $("tarSimErr").addEventListener("click", (e) => { e.preventDefault(); window.__tarFallar = true; estado.cargado = false; cargar(); });
+        $("tarSimVacio").addEventListener("click", (e) => { e.preventDefault(); estado.vacio = true; estado.cargado = false; cargar(); });
+
+        // Pestaña activa de la barra de secciones
+        const pills = document.querySelectorAll(".sec-pill");
+        function marcar(id) { pills.forEach((p) => p.classList.toggle("active", p.dataset.sec === id)); }
+        marcar("info");
+        if ("IntersectionObserver" in window) {
+            const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) marcar(e.target.id); }), { rootMargin: "-30% 0px -60% 0px" });
+            ["info", "tarifario", "ubicacion"].forEach((id) => io.observe($(id)));
+        }
+
+        // Entrada directa: 4_provider_profile.html?id=3#tarifario
+        cargar(); if (location.hash === "#tarifario") setTimeout(() => $("tarifario").scrollIntoView({ behavior: "smooth" }), 150);
+    })();
+    </script>
+</body>
+</html>

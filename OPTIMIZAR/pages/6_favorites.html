@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon">
+    <title>Mis Favoritos - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: "Inter", sans-serif; }
+        .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+        .result-card { transition: all 0.3s ease; }
+        .result-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1); }
+        .star-rating { color: #fbbf24; }
+        .availability-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+        .available { background-color: #10b981; }
+        .limited { background-color: #f59e0b; }
+        .tab-button { border-bottom: 2px solid transparent; }
+        .tab-button.active { border-bottom-color: #2563eb; color: #2563eb; }
+        @media (prefers-reduced-motion: reduce) { .result-card { transition: none; } .result-card:hover { transform: none; } }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+    <div id="toast" class="hidden fixed top-20 right-4 z-[60] max-w-sm bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 flex items-start" role="status">
+        <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+        <span id="toastText" class="text-sm font-medium"></span>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+                    <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10">
+                    <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+                    <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Búsqueda</a>
+                    <a href="6_favorites.html" class="text-blue-600 font-semibold">Favoritos</a>
+                    <a href="6_user_profile.html" class="text-gray-600 hover:text-blue-600 font-medium">Perfil</a>
+                    <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+                </div>
+                <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold" aria-label="Mi perfil">U</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-1 container mx-auto px-4 py-8">
+        <div class="max-w-5xl mx-auto">
+            <div class="mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Mis Favoritos</h1>
+                <p id="subtitle" class="text-gray-600">Gestiona tus proveedores de salud favoritos</p>
+            </div>
+
+            <div class="bg-white rounded-lg shadow-sm mb-6">
+                <div class="flex border-b overflow-x-auto" role="tablist" aria-label="Tipo de favorito">
+                    <button type="button" data-tipo="medicos" class="tab-button active px-6 py-4 font-medium text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap"><i class="fas fa-user-md mr-2"></i>Médicos <span id="cnt-medicos" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">0</span></button>
+                    <button type="button" data-tipo="clinicas" class="tab-button px-6 py-4 font-medium text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap"><i class="fas fa-hospital mr-2"></i>Clínicas <span id="cnt-clinicas" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">0</span></button>
+                    <button type="button" data-tipo="servicios" class="tab-button px-6 py-4 font-medium text-gray-700 hover:text-blue-600 transition-colors whitespace-nowrap"><i class="fas fa-stethoscope mr-2"></i>Servicios <span id="cnt-servicios" class="ml-1 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">0</span></button>
+                </div>
+            </div>
+
+            <div id="list" class="space-y-4"></div>
+
+            <div id="empty" class="hidden bg-white rounded-lg shadow-sm p-8 text-center">
+                <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4"><i class="far fa-heart text-gray-400 text-2xl"></i></div>
+                <h2 id="emptyTitle" class="text-lg font-medium text-gray-900 mb-2">No tienes favoritos aún</h2>
+                <p class="text-gray-600 mb-4">Pulsa el corazón en cualquier tarjeta de la búsqueda para guardarla aquí.</p>
+                <a id="emptyLink" href="4_search_results.html" class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">Explorar proveedores</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="bg-gray-900 text-white mt-16" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/services/usuario.js?v=3"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () { UsuarioService.pintarCabecera(); });</script>
+    <script src="../js/services/catalogo.js"></script>
+    <script>
+      if (typeof Catalogo === "undefined") {
+        document.addEventListener("DOMContentLoaded", function () {
+          var b = document.createElement("div");
+          b.style.cssText = "margin:16px;padding:16px;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;border-radius:12px;font:14px Inter,sans-serif";
+          b.textContent = "No se cargó js/services/catalogo.js. Copia catalogo.js a la carpeta js/services/ y recarga la página (Ctrl+F5).";
+          document.body.insertBefore(b, document.body.firstChild);
+        });
+      }
+    </script>
+    <script>
+      (function () {
+      if (typeof Catalogo === "undefined") return;
+        const { Favoritos, TIPOS } = Catalogo;
+        const $ = (id) => document.getElementById(id);
+        const NOMBRES = { medicos: "médicos", clinicas: "clínicas", servicios: "servicios" };
+        let tipoActivo = new URLSearchParams(location.search).get("tipo");
+        if (!NOMBRES[tipoActivo]) tipoActivo = "medicos";
+
+        function toast(msg) {
+            $("toastText").textContent = msg;
+            const t = $("toast");
+            t.classList.remove("hidden");
+            clearTimeout(toast.h);
+            toast.h = setTimeout(() => t.classList.add("hidden"), 2500);
+        }
+
+        function pintar() {
+            const todos = Favoritos.items();
+            Object.keys(NOMBRES).forEach((t) => ($("cnt-" + t).textContent = todos.filter((f) => f.tipo === t).length));
+            document.querySelectorAll(".tab-button").forEach((b) => b.classList.toggle("active", b.dataset.tipo === tipoActivo));
+
+            const lista = todos.filter((f) => f.tipo === tipoActivo);
+            $("list").innerHTML = lista.map((f) => Catalogo.tarjeta(f.item, f.tipo)).join("");
+            $("empty").classList.toggle("hidden", lista.length > 0);
+            $("emptyTitle").textContent = "No tienes " + NOMBRES[tipoActivo] + " favoritos aún";
+            $("emptyLink").href = "4_search_results.html?tipo=" + tipoActivo;
+            $("subtitle").textContent = todos.length
+                ? todos.length + (todos.length === 1 ? " proveedor guardado" : " proveedores guardados")
+                : "Gestiona tus proveedores de salud favoritos";
+            Catalogo.actualizarBadge();
+        }
+
+        document.querySelectorAll(".tab-button").forEach((b) =>
+            b.addEventListener("click", () => { tipoActivo = b.dataset.tipo; pintar(); })
+        );
+
+        // El corazón (relleno) quita el favorito y la tarjeta desaparece de la lista
+        Catalogo.bindFavoritos($("list"), (on) => { if (!on) { toast("Quitado de favoritos"); pintar(); } });
+
+        pintar();
+    
+      })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>Perfil - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      body { font-family: "Inter", sans-serif; }
+      .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+      .shadow-soft { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+      .rel-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .rel-card:hover { transform: translateY(-4px); box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1); }
+      @media (prefers-reduced-motion: reduce) { .rel-card { transition: none; } .rel-card:hover { transform: none; } }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <div id="toast" class="hidden fixed top-20 right-4 z-[60] max-w-sm bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 flex items-start" role="status">
+      <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+      <span id="toastText" class="text-sm font-medium"></span>
+    </div>
+
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+            <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+            <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+          </a>
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+            <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Buscar</a>
+            <a href="6_favorites.html" class="text-gray-600 hover:text-blue-600 font-medium">Favoritos</a>
+            <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+          </div>
+          <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold" aria-label="Mi perfil">U</a>
+        </div>
+      </div>
+    </nav>
+
+    <main id="app" class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6"></main>
+
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/services/usuario.js?v=3"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () { UsuarioService.pintarCabecera(); });</script>
+    <script src="../js/services/catalogo.js"></script>
+    <script>
+      if (typeof Catalogo === "undefined") {
+        document.addEventListener("DOMContentLoaded", function () {
+          var b = document.createElement("div");
+          b.style.cssText = "margin:16px;padding:16px;border:1px solid #fecaca;background:#fef2f2;color:#b91c1c;border-radius:12px;font:14px Inter,sans-serif";
+          b.textContent = "No se cargó js/services/catalogo.js. Copia catalogo.js a la carpeta js/services/ y recarga la página (Ctrl+F5).";
+          document.body.insertBefore(b, document.body.firstChild);
+        });
+      }
+    </script>
+    <script>
+      (function () {
+      if (typeof Catalogo === "undefined") return;
+      const { esc, Favoritos, TIPOS } = Catalogo;
+      const params = new URLSearchParams(location.search);
+      const tipo = params.get("tipo");
+      const x = Catalogo.buscar(tipo, params.get("id"));
+      const app = document.getElementById("app");
+
+      function toast(msg) {
+        document.getElementById("toastText").textContent = msg;
+        const t = document.getElementById("toast");
+        t.classList.remove("hidden");
+        clearTimeout(toast.h);
+        toast.h = setTimeout(() => t.classList.add("hidden"), 3000);
+      }
+
+      const HORARIOS = {
+        medicos: [["Lunes - Viernes", "9:00 AM - 6:00 PM"], ["Sábados", "9:00 AM - 1:00 PM"], ["Domingos", "Cerrado"]],
+        clinicas: [["Lunes - Viernes", "7:00 AM - 10:00 PM"], ["Sábados", "8:00 AM - 6:00 PM"], ["Domingos", "9:00 AM - 1:00 PM"]],
+        servicios: [["Lunes - Viernes", "8:00 AM - 7:00 PM"], ["Sábados", "8:00 AM - 1:00 PM"], ["Domingos", "Cerrado"]],
+      };
+      const RESENAS = {
+        medicos: ["Muy atento y claro al explicar el diagnóstico. Me sentí en confianza durante toda la consulta.", "Puntual y profesional. El tratamiento funcionó bien y el precio fue el indicado.", "Excelente trato. Resolvió todas mis dudas y me dio seguimiento por mensaje."],
+        clinicas: ["Instalaciones limpias y personal amable. La atención fue rápida y sin sorpresas en el cobro.", "Buena atención en general, aunque hubo algo de espera. Los precios coinciden con lo publicado.", "Fácil de ubicar y con buen servicio. Lo recomiendo para consultas de rutina."],
+        servicios: ["El servicio fue rápido y bien explicado. El precio coincidió con lo que vi en la plataforma.", "Muy buena experiencia, entregaron todo a tiempo y con indicaciones claras.", "Buen servicio y trato amable. Volvería a contratarlo sin dudar."],
+      };
+      const AUTORES = ["María Rodríguez", "Carlos Pérez", "Ana García"];
+      const FECHAS = ["Hace 2 semanas", "Hace 1 mes", "Hace 2 meses"];
+
+      function tarjetaRel(t, it) {
+        const av = it.img
+          ? `<img src="../assets/img/doctores/${it.img}" alt="" class="w-14 h-14 rounded-full object-cover flex-shrink-0" />`
+          : `<div class="w-14 h-14 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas ${it.icon}"></i></div>`;
+        return `<a href="${Catalogo.urlPerfil(t, it.id)}" class="rel-card bg-white rounded-2xl shadow-soft p-4 flex items-center gap-4 block">
+          ${av}
+          <div class="min-w-0 flex-1"><p class="font-semibold text-gray-900 truncate">${esc(it.nombre)}</p><p class="text-gray-500 text-sm truncate">${esc(TIPOS[t].singular)} • ${esc(it.distrito)}</p></div>
+          <span class="font-bold text-green-600 whitespace-nowrap">S/ ${it.precio}</span></a>`;
+      }
+
+      // Contenido relacionado según el tipo de perfil
+      function relacionados() {
+        const D = Catalogo.DATA, out = [];
+        if (tipo === "medicos") {
+          const cl = D.clinicas.filter((c) => c.distrito === x.distrito);
+          if (cl.length) out.push({ titulo: "Clínicas en " + x.distrito, items: cl.map((i) => ["clinicas", i]) });
+          out.push({ titulo: "Otros médicos", items: D.medicos.filter((m) => m.id !== x.id).slice(0, 3).map((i) => ["medicos", i]) });
+        } else if (tipo === "clinicas") {
+          const sv = D.servicios.filter((s) => s.sub === x.nombre);
+          if (sv.length) out.push({ titulo: "Servicios que ofrece", items: sv.map((i) => ["servicios", i]) });
+          const md = D.medicos.filter((m) => m.distrito === x.distrito);
+          if (md.length) out.push({ titulo: "Médicos en " + x.distrito, items: md.map((i) => ["medicos", i]) });
+        } else {
+          const cl = D.clinicas.filter((c) => c.nombre === x.sub);
+          if (cl.length) out.push({ titulo: "Dónde se ofrece", items: cl.map((i) => ["clinicas", i]) });
+          out.push({ titulo: "Otros servicios", items: D.servicios.filter((s) => s.id !== x.id).slice(0, 3).map((i) => ["servicios", i]) });
+        }
+        return out;
+      }
+
+      function pintarCorazon() {
+        const on = Favoritos.es(tipo, x.id);
+        const b = document.getElementById("favBtn");
+        b.querySelector("i").className = (on ? "fas" : "far") + " fa-heart text-xl";
+        b.className = "flex items-center justify-center w-12 h-12 rounded-xl transition-colors " + (on ? "bg-red-500 text-white" : "bg-red-50 text-red-500 hover:bg-red-100");
+        b.setAttribute("aria-pressed", on);
+        b.setAttribute("aria-label", on ? "Quitar de favoritos" : "Guardar en favoritos");
+      }
+
+      function render() {
+        document.title = x.nombre + " - ComparaSalud";
+        const T = TIPOS[tipo];
+        const lleno = Math.round(x.rating);
+        const estrellas = [1, 2, 3, 4, 5].map((n) => `<i class="${n <= lleno ? "fas" : "far"} fa-star text-yellow-400"></i>`).join("");
+        const logo = x.img
+          ? `<img src="../assets/img/doctores/${x.img}" alt="${esc(x.nombre)}" class="w-full h-full object-cover rounded-xl" />`
+          : `<div class="w-full h-full health-gradient rounded-xl flex items-center justify-center"><i class="fas ${x.icon} text-white text-4xl"></i></div>`;
+        const horas = x.tags.some((t) => t.includes("24 horas")) ? [["Todos los días", "24 horas"]] : HORARIOS[tipo];
+        const rev = RESENAS[tipo].map((t, i) => {
+          const r = i === 2 ? Math.max(4, lleno - 1) : Math.min(5, lleno);
+          return `<div class="border-t border-gray-100 pt-4 first:border-0 first:pt-0">
+            <div class="flex items-center justify-between mb-1"><div class="flex items-center space-x-3"><div class="w-9 h-9 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold text-sm">${AUTORES[i].split(" ").map((p) => p[0]).join("")}</div><div><p class="font-medium text-gray-900 text-sm">${AUTORES[i]}</p><p class="text-gray-500 text-xs">${FECHAS[i]}</p></div></div>
+            <div class="text-sm">${[1, 2, 3, 4, 5].map((n) => `<i class="${n <= r ? "fas" : "far"} fa-star text-yellow-400"></i>`).join("")}</div></div>
+            <p class="text-gray-600 text-sm">${esc(t)}</p></div>`;
+        }).join("");
+        const rels = relacionados().map((g) => `<section class="mt-8"><h2 class="text-xl font-bold text-gray-900 mb-4">${esc(g.titulo)}</h2><div class="grid grid-cols-1 md:grid-cols-3 gap-4">${g.items.map(([t, it]) => tarjetaRel(t, it)).join("")}</div></section>`).join("");
+        const incluye = tipo === "servicios" ? "Qué incluye" : tipo === "medicos" ? "Áreas de atención" : "Especialidades y servicios";
+
+        app.innerHTML = `
+        <nav class="text-sm text-gray-500 mb-4" aria-label="Ruta">
+          <a href="4_search_results.html?tipo=${tipo}" class="hover:text-blue-600"><i class="fas fa-arrow-left mr-1"></i>Volver a ${T.plural.toLowerCase()}</a>
+        </nav>
+
+        <div class="bg-white rounded-2xl shadow-soft overflow-hidden mb-6">
+          <div class="h-40 md:h-52 bg-gradient-to-r from-blue-500 to-green-400"></div>
+          <div class="px-6 pb-6">
+            <div class="flex flex-col md:flex-row md:items-end -mt-14 md:-mt-16">
+              <div class="w-28 h-28 md:w-36 md:h-36 bg-white rounded-2xl shadow-lg p-2 flex-shrink-0">${logo}</div>
+              <div class="flex-1 md:ml-6 mt-4 md:mt-0 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div class="min-w-0">
+                  <span class="inline-block bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium mb-2">${T.singular} • ${esc(x.cat)}</span>
+                  <h1 class="text-2xl md:text-3xl font-bold text-gray-900">${esc(x.nombre)}</h1>
+                  <p class="text-blue-600 font-medium">${esc(x.sub)}</p>
+                  <div class="flex flex-wrap items-center mt-2 gap-x-3 text-gray-600">
+                    <span>${estrellas}</span><span class="font-medium">${x.rating.toFixed(1)}</span><span class="text-gray-500">(${x.rev} reseñas)</span>
+                  </div>
+                  <p class="text-gray-600 mt-1"><i class="fas fa-map-marker-alt text-gray-400 mr-1"></i>${esc(x.dir)}</p>
+                </div>
+                <div class="flex space-x-3">
+                  <button id="favBtn" type="button"><i class="far fa-heart text-xl"></i></button>
+                  <button id="shareBtn" type="button" class="flex items-center justify-center w-12 h-12 bg-blue-50 text-blue-500 rounded-xl hover:bg-blue-100 transition-colors" aria-label="Compartir"><i class="far fa-share-square text-xl"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div class="lg:col-span-2 space-y-6">
+            <section class="bg-white rounded-2xl shadow-soft p-6">
+              <h2 class="text-xl font-bold text-gray-900 mb-3">Información general</h2>
+              <p class="text-gray-600 leading-relaxed">${esc(x.desc)}</p>
+              <h3 class="font-semibold text-gray-900 mt-5 mb-3">${incluye}</h3>
+              <div class="flex flex-wrap gap-2">${x.tags.map((t) => `<span class="bg-green-50 text-green-700 px-3 py-1 rounded-full text-sm">${esc(t)}</span>`).join("")}</div>
+              <div class="mt-5 p-4 bg-blue-50 rounded-xl border border-blue-200 flex items-center justify-between gap-4">
+                <div><p class="text-blue-900 font-semibold">${tipo === "clinicas" ? "Consulta desde" : tipo === "medicos" ? "Precio de la consulta" : "Precio del servicio"}</p><p class="text-blue-700 text-sm">Precio transparente, sin cargos ocultos.</p></div>
+                <p class="text-3xl font-bold text-green-600 whitespace-nowrap">S/ ${x.precio}</p>
+              </div>
+            </section>
+
+            <section class="bg-white rounded-2xl shadow-soft p-6">
+              <h2 class="text-xl font-bold text-gray-900 mb-4">Reseñas de pacientes</h2>
+              <div class="space-y-4">${rev}</div>
+            </section>
+          </div>
+
+          <aside class="space-y-6">
+            <section class="bg-white rounded-2xl shadow-soft p-6">
+              <h2 class="text-xl font-bold text-gray-900 mb-4">Ubicación y contacto</h2>
+              <div class="space-y-4">
+                <div class="flex items-start"><i class="fas fa-map-marker-alt text-gray-400 mt-1 mr-3"></i><div><p class="font-medium text-gray-900">${esc(x.dir)}</p><p class="text-gray-600 text-sm">${x.dist.toFixed(1)} km de ti</p></div></div>
+                <div class="flex items-start"><i class="fas fa-phone-alt text-gray-400 mt-1 mr-3"></i><div><p class="font-medium text-gray-900">${esc(x.tel)}</p><p class="text-gray-600 text-sm">Línea de atención</p></div></div>
+                <div class="pt-4 border-t border-gray-200">
+                  <h3 class="font-semibold text-gray-900 mb-3">Horarios de atención</h3>
+                  <div class="space-y-2 text-sm">${horas.map(([d, h]) => `<div class="flex justify-between"><span class="text-gray-600">${d}</span><span class="font-medium text-gray-900">${h}</span></div>`).join("")}</div>
+                </div>
+                <div class="pt-4 border-t border-gray-200 flex items-center justify-between">
+                  ${x.disp ? '<span class="text-green-600 text-sm font-medium"><i class="fas fa-circle text-[8px] mr-2"></i>Disponible esta semana</span>' : '<span class="text-yellow-600 text-sm font-medium"><i class="fas fa-circle text-[8px] mr-2"></i>Disponibilidad limitada</span>'}
+                </div>
+                <div class="space-y-3 pt-2">
+                  <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(x.dir + ", Lima, Perú")}" target="_blank" rel="noopener" class="w-full health-gradient text-white py-3 rounded-xl font-semibold shadow hover:shadow-lg transition-all flex items-center justify-center"><i class="fas fa-directions mr-2"></i>Cómo llegar</a>
+                  <button id="copyBtn" type="button" class="w-full border border-gray-300 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-50 transition-colors flex items-center justify-center"><i class="far fa-copy mr-2"></i>Copiar dirección</button>
+                </div>
+              </div>
+            </section>
+            <a href="tel:${esc(x.tel.replace(/[^\d+]/g, ""))}" class="block bg-gradient-to-br from-blue-500 to-green-400 rounded-2xl p-6 text-white text-center font-bold shadow-soft hover:opacity-95"><i class="fas fa-phone-alt mr-2"></i>Llamar ahora</a>
+          </aside>
+        </div>
+        ${rels}`;
+
+        pintarCorazon();
+        document.getElementById("favBtn").addEventListener("click", () => {
+          const on = Favoritos.alternar(tipo, x.id);
+          pintarCorazon();
+          toast(on ? "Guardado en favoritos" : "Quitado de favoritos");
+        });
+        const copiar = (texto, ok) => {
+          const fin = () => toast(ok);
+          if (navigator.clipboard) navigator.clipboard.writeText(texto).then(fin, fin); else fin();
+        };
+        document.getElementById("shareBtn").addEventListener("click", () => copiar(location.href, "Enlace copiado"));
+        document.getElementById("copyBtn").addEventListener("click", () => copiar(x.dir, "Dirección copiada"));
+      }
+
+      if (!x) {
+        app.innerHTML = `<div class="bg-white rounded-2xl shadow-soft p-10 text-center max-w-xl mx-auto mt-10">
+          <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+          <h1 class="text-xl font-semibold text-gray-900 mb-2">No encontramos este perfil</h1>
+          <p class="text-gray-600 mb-6">El enlace puede estar incompleto o el perfil ya no existe.</p>
+          <a href="4_search_results.html" class="inline-block health-gradient text-white px-6 py-2.5 rounded-xl font-medium hover:opacity-90">Volver a la búsqueda</a></div>`;
+      } else {
+        render();
+      }
+    
+      })();
+    </script>
+  </body>
+</html>

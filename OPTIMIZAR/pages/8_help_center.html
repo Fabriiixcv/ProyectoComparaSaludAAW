@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>Centro de Ayuda - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+      .health-gradient {
+        background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+      }
+      .help-card {
+        transition: all 0.3s ease;
+      }
+      .help-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+      }
+      .accordion-header {
+        cursor: pointer;
+      }
+      .accordion-content {
+        display: none;
+      }
+      .accordion-content.active {
+        display: block;
+      }
+      .accordion-icon {
+        transition: transform 0.3s ease;
+      }
+      .accordion-header.active .accordion-icon {
+        transform: rotate(180deg);
+      }
+      .search-input:focus {
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      }
+      .contact-card {
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen">
+    <!-- Header Principal -->
+    <header class="bg-white sticky top-0 z-50">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <!-- Logo -->
+          <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+            <img
+              src="../assets/img/logo.png"
+              alt="ComparaSalud"
+              class="w-10 h-10"
+            />
+            <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+          </a>
+
+          <!-- Barra de Búsqueda - Desktop -->
+          
+
+          <!-- Iconos de Acceso Rápido -->
+          <div class="flex items-center space-x-4">
+            <!-- Favoritos -->
+            <button
+              onclick="window.location.href='6_favorites.html'"
+              class="relative text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+            >
+              <i class="far fa-heart text-lg"></i>
+              <span
+                class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center"
+                >3</span
+              >
+            </button>
+
+            <!-- Notificaciones -->
+            <button
+              class="relative text-gray-600 p-2 rounded-lg hover:bg-gray-100"
+            >
+              <i class="far fa-bell text-lg"></i>
+              <span
+                class="absolute -top-1 -right-1 w-5 h-5 bg-yellow-500 text-white text-xs rounded-full flex items-center justify-center"
+                >5</span
+              >
+            </button>
+
+            <!-- Perfil -->
+            <div class="relative group">
+              <button
+                class="flex items-center space-x-2 p-2 rounded-lg hover:bg-gray-100"
+              >
+                <img
+                  src="../assets/img/usuarios/usuario9.png"
+                  alt="Juan Sánchez"
+                  class="w-10 h-10 rounded-full"
+                />
+                <span class="hidden md:block text-gray-700 font-medium"
+                  >Juan Sánchez</span
+                >
+                <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+              </button>
+
+              <!-- Menú desplegable del perfil -->
+              <div
+                class="absolute right-0 top-full mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-200 py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50"
+              >
+                <a
+                  href="6_user_profile.html"
+                  class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="far fa-user mr-3"></i>Mi Perfil
+                </a>
+                <a href="6_user_profile.html"
+                  class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="fas fa-cog mr-3"></i>Configuración
+                </a>
+                <a
+                  href="8_help_center.html"
+                  class="block lg:hidden px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="fa-solid fa-life-ring mr-3"></i>Ayuda
+                </a>
+                <div class="border-t border-gray-200 my-2"></div>
+                <a href="1_2_auth.html" onclick="sessionStorage.removeItem('cs_session')"
+                  class="block px-4 py-2 text-gray-700 hover:bg-gray-50"
+                >
+                  <i class="fas fa-sign-out-alt mr-3"></i>Cerrar Sesión
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section
+      class="bg-gradient-to-r from-blue-600 to-green-500 text-white py-16"
+    >
+      <div class="container mx-auto px-4 text-center">
+        <h1 class="text-4xl font-bold mb-4">Centro de Ayuda</h1>
+        <p class="text-xl mb-8">¿Cómo podemos ayudarte hoy?</p>
+
+        <!-- Search Bar -->
+        <div class="max-w-2xl mx-auto relative">
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Busca respuestas a tus preguntas..."
+            class="w-full px-6 py-4 rounded-lg text-gray-900 placeholder-gray-500 search-input focus:outline-none focus:ring-2 focus:ring-blue-300"
+          />
+          <button
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-600"
+          >
+            <i class="fas fa-search text-xl"></i>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+      <div class="max-w-6xl mx-auto">
+        <!-- Quick Help Cards -->
+        <section class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">Ayuda rápida</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            
+
+            <div
+              class="help-card bg-white rounded-lg p-6 text-center cursor-pointer"
+              onclick="scrollToSection('account')"
+            >
+              <div
+                class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="fas fa-user-cog text-green-600 text-xl"></i>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">Mi cuenta</h3>
+              <p class="text-gray-600 text-sm">
+                Gestiona tu perfil y preferencias
+              </p>
+            </div>
+
+            <div
+              class="help-card bg-white rounded-lg p-6 text-center cursor-pointer"
+              onclick="scrollToSection('payments')"
+            >
+              <div
+                class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="fas fa-credit-card text-purple-600 text-xl"></i>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">Pagos</h3>
+              <p class="text-gray-600 text-sm">Métodos de pago y facturación</p>
+            </div>
+
+            <div
+              class="help-card bg-white rounded-lg p-6 text-center cursor-pointer"
+              onclick="scrollToSection('providers')"
+            >
+              <div
+                class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center mx-auto mb-4"
+              >
+                <i class="fas fa-user-md text-orange-600 text-xl"></i>
+              </div>
+              <h3 class="font-semibold text-gray-900 mb-2">Proveedores</h3>
+              <p class="text-gray-600 text-sm">
+                Encuentra y elige proveedores de salud
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            Preguntas frecuentes
+          </h2>
+          <div class="space-y-4">
+            <!-- Account FAQs -->
+            <div id="account" class="bg-white rounded-lg shadow-sm">
+              <div
+                class="accordion-header p-6 border-b border-gray-100 flex justify-between items-center"
+              >
+                <h3 class="font-semibold text-gray-900">Mi cuenta</h3>
+                <i class="fas fa-chevron-down accordion-icon text-gray-400"></i>
+              </div>
+              <div class="accordion-content">
+                <div class="p-6 border-b border-gray-100">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Cómo actualizo mi información personal?
+                  </h4>
+                  <p class="text-gray-600">
+                    Ingresa a "Mi Perfil" desde el menú principal, selecciona
+                    "Información Personal" y haz clic en "Editar". Puedes
+                    actualizar tu nombre, teléfono, dirección y otros datos de
+                    contacto.
+                  </p>
+                </div>
+                <div class="p-6 border-b border-gray-100">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Cómo cambio mi contraseña?
+                  </h4>
+                  <p class="text-gray-600">
+                    Ve a "Configuración de cuenta" en tu perfil, selecciona
+                    "Cambiar contraseña", ingresa tu contraseña actual y luego
+                    la nueva contraseña dos veces para confirmar.
+                  </p>
+                </div>
+                <div class="p-6">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Cómo gestiono mis notificaciones?
+                  </h4>
+                  <p class="text-gray-600">
+                    En "Preferencias de notificaciones" puedes activar o
+                    desactivar avisos, actualizaciones de
+                    servicios y promociones por correo electrónico, SMS o
+                    notificaciones push.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Payment FAQs -->
+            <div id="payments" class="bg-white rounded-lg shadow-sm">
+              <div
+                class="accordion-header p-6 border-b border-gray-100 flex justify-between items-center"
+              >
+                <h3 class="font-semibold text-gray-900">Pagos y facturación</h3>
+                <i class="fas fa-chevron-down accordion-icon text-gray-400"></i>
+              </div>
+              <div class="accordion-content">
+                <div class="p-6 border-b border-gray-100">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Qué métodos de pago aceptan?
+                  </h4>
+                  <p class="text-gray-600">
+                    Aceptamos tarjetas de crédito y débito (Visa, Mastercard,
+                    American Express), transferencias bancarias, pagos en
+                    efectivo en puntos de pago autorizados, y billeteras
+                    digitales como Yape y Plin.
+                  </p>
+                </div>
+                <div class="p-6 border-b border-gray-100">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Cómo obtengo mi factura?
+                  </h4>
+                  <p class="text-gray-600">
+                    Tu factura electrónica se enviará automáticamente a tu
+                    correo registrado después del pago. También puedes solicitarla a soporte.
+                  </p>
+                </div>
+                
+              </div>
+            </div>
+
+            <!-- Provider FAQs -->
+            <div id="providers" class="bg-white rounded-lg shadow-sm">
+              <div
+                class="accordion-header p-6 border-b border-gray-100 flex justify-between items-center"
+              >
+                <h3 class="font-semibold text-gray-900">
+                  Proveedores de salud
+                </h3>
+                <i class="fas fa-chevron-down accordion-icon text-gray-400"></i>
+              </div>
+              <div class="accordion-content">
+                <div class="p-6 border-b border-gray-100">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Cómo busco un especialista?
+                  </h4>
+                  <p class="text-gray-600">
+                    Usa el buscador principal, ingresa la especialidad o el
+                    nombre del médico, filtra por ubicación, precio y
+                    disponibilidad. También puedes explorar por categorías de
+                    especialidades.
+                  </p>
+                </div>
+                <div class="p-6 border-b border-gray-100">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Cómo sé si un proveedor es confiable?
+                  </h4>
+                  <p class="text-gray-600">
+                    Verifica las calificaciones y reseñas de otros pacientes,
+                    los años de experiencia, certificaciones y la información
+                    verificada del perfil. Todos nuestros proveedores pasan por
+                    un proceso de validación.
+                  </p>
+                </div>
+                <div class="p-6">
+                  <h4 class="font-medium text-gray-900 mb-2">
+                    ¿Puedo guardar proveedores favoritos?
+                  </h4>
+                  <p class="text-gray-600">
+                    Sí, haz clic en el ícono de corazón en el perfil del
+                    proveedor para agregarlo a tus favoritos. Podrás acceder
+                    rápidamente a ellos desde "Mis Favoritos" en tu cuenta.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="mb-12">
+          <h2 class="text-2xl font-bold text-gray-900 mb-6">
+            ¿Necesitas más ayuda?
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="contact-card rounded-lg p-6">
+              <div class="flex items-center mb-4">
+                <div
+                  class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4"
+                >
+                  <i class="fas fa-phone text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">Teléfono</h3>
+                  <p class="text-gray-600">
+                    Llámanos para asistencia inmediata
+                  </p>
+                </div>
+              </div>
+              <p class="text-2xl font-bold text-blue-600 mb-2">(01) 500-0000</p>
+              <p class="text-gray-600 text-sm">
+                Disponible de lunes a viernes de 8:00 AM a 8:00 PM
+              </p>
+            </div>
+
+            <div class="contact-card rounded-lg p-6">
+              <div class="flex items-center mb-4">
+                <div
+                  class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4"
+                >
+                  <i class="fas fa-envelope text-green-600 text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="font-semibold text-gray-900">
+                    Correo electrónico
+                  </h3>
+                  <p class="text-gray-600">
+                    Escríbenos y te responderemos pronto
+                  </p>
+                </div>
+              </div>
+              <p class="text-lg font-semibold text-blue-600 mb-2">
+                soporte@comparasalud.com
+              </p>
+              <p class="text-gray-600 text-sm">
+                Respuesta en 24-48 horas hábiles
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/services/usuario.js?v=3"></script>
+    <script>document.addEventListener("DOMContentLoaded", function () { UsuarioService.pintarCabecera(); });</script>
+    <script>
+      // Accordion functionality
+      document.querySelectorAll(".accordion-header").forEach((header) => {
+        header.addEventListener("click", function () {
+          const content = this.nextElementSibling;
+          const icon = this.querySelector(".accordion-icon");
+
+          // Toggle active class
+          this.classList.toggle("active");
+          content.classList.toggle("active");
+
+          // Rotate icon
+          if (content.classList.contains("active")) {
+            icon.style.transform = "rotate(180deg)";
+          } else {
+            icon.style.transform = "rotate(0deg)";
+          }
+        });
+      });
+
+      // Search functionality
+      document
+        .getElementById("searchInput")
+        .addEventListener("input", function () {
+          const searchTerm = this.value.toLowerCase();
+          const faqs = document.querySelectorAll(".accordion-content > div");
+          document.querySelectorAll(".accordion-content").forEach((c) => c.classList.toggle("active", !!searchTerm));
+
+          faqs.forEach((faq) => {
+            const text = faq.textContent.toLowerCase();
+            if (text.includes(searchTerm)) {
+              faq.style.display = "block";
+            } else {
+              faq.style.display = "none";
+            }
+          });
+        });
+
+      // Smooth scroll to section
+      function scrollToSection(sectionId) {
+        const element = document.getElementById(sectionId);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+          // Open the accordion
+          const header = element.querySelector(".accordion-header");
+          const content = element.querySelector(".accordion-content");
+          if (header && content) {
+            header.classList.add("active");
+            content.classList.add("active");
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

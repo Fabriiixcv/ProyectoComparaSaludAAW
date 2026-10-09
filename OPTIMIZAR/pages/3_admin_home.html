@@ -1,0 +1,1223 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Panel de Administración - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+summary{list-style:none} summary::-webkit-details-marker{display:none}
+details[open] summary::after{content:"  ▲"} details:not([open]) summary::after{content:"  ▼"}
+html{scroll-behavior:smooth}
+
+/* ---------- HU50: administrar cuentas (solo CSS) ---------- */
+.modal{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:60;align-items:center;justify-content:center;padding:1rem}
+.modal:target{display:flex}
+.ok{display:none;position:fixed;top:5rem;right:1rem;z-index:70;max-width:24rem}
+.ok:target{display:flex}
+.bd-sus,.t-sus,.w-sus{display:none}
+tr[data-s=sus] .bd-act{display:none}
+tr[data-s=sus] .bd-sus{display:inline-flex}
+tr:has(.ok:target):has(.rad-sus:checked) .bd-act{display:none!important}
+tr:has(.ok:target):has(.rad-sus:checked) .bd-sus{display:inline-flex!important}
+tr:has(.ok:target):has(.rad-act:checked) .bd-sus{display:none!important}
+tr:has(.ok:target):has(.rad-act:checked) .bd-act{display:inline-flex!important}
+tr:has(.rad-sus:checked) .ok .t-sus{display:block}
+.mbox:has(.rad-sus:checked) .w-sus{display:flex}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-14">
+      <a href="3_admin_home.html" class="flex items-center space-x-3">
+        <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+        <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-8">
+        <a href="#pacientes" class="text-gray-700 hover:text-[#2563EB] font-medium">Clientes</a>
+        <a href="#proveedores" class="text-gray-700 hover:text-[#2563EB] font-medium">Proveedores</a>
+        <a href="#administradores" class="text-gray-700 hover:text-[#2563EB] font-medium">Administradores</a>
+        <a href="#establecimientos" class="text-gray-700 hover:text-[#2563EB] font-medium">Establecimientos</a>
+        <a href="#medicos" class="text-gray-700 hover:text-[#2563EB] font-medium">Médicos</a>
+        <a href="#medicamentos" class="text-gray-700 hover:text-[#2563EB] font-medium">Medicamentos</a>
+        <a href="3_admin_medicamentos.html" class="text-gray-700 hover:text-[#2563EB] font-medium">Catálogo general</a>
+        <a href="3_admin_especialidades.html" class="text-gray-700 hover:text-[#2563EB] font-medium">Especialidades</a>
+      </nav>
+    </div>
+    <a href="1_2_auth.html" class="flex items-center text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100"><i class="fas fa-sign-out-alt mr-2"></i><span class="hidden sm:inline">Cerrar Sesión</span></a>
+  </div>
+</header>
+
+<section class="health-gradient text-white py-12 md:py-16">
+  <div class="container mx-auto px-4 text-center max-w-4xl">
+    <h1 class="text-3xl md:text-5xl font-bold mb-4">Panel de administración</h1>
+    <p class="text-xl md:text-2xl opacity-90">Supervisa usuarios, administra roles y suspende cuentas</p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-10">
+  <div class="max-w-6xl mx-auto space-y-8">
+    <div class="grid grid-cols-2 lg:grid-cols-6 gap-6"><div class="bg-white rounded-2xl shadow-soft p-6"><p class="text-gray-600 text-sm mb-1"><i class="fas fa-user text-[#2563EB] mr-2"></i>Clientes</p><p class="text-2xl font-bold text-gray-900">10</p></div><div class="bg-white rounded-2xl shadow-soft p-6"><p class="text-gray-600 text-sm mb-1"><i class="fas fa-hospital-user text-[#2563EB] mr-2"></i>Proveedores</p><p class="text-2xl font-bold text-gray-900">10</p></div><div class="bg-white rounded-2xl shadow-soft p-6"><p class="text-gray-600 text-sm mb-1"><i class="fas fa-user-shield text-[#2563EB] mr-2"></i>Administradores</p><p class="text-2xl font-bold text-gray-900">10</p></div><div class="bg-white rounded-2xl shadow-soft p-6"><p class="text-gray-600 text-sm mb-1"><i class="fas fa-hospital text-[#2563EB] mr-2"></i>Establecimientos</p><p class="text-2xl font-bold text-gray-900">10</p></div><div class="bg-white rounded-2xl shadow-soft p-6"><p class="text-gray-600 text-sm mb-1"><i class="fas fa-user-doctor text-[#2563EB] mr-2"></i>Médicos</p><p class="text-2xl font-bold text-gray-900">10</p></div><div class="bg-white rounded-2xl shadow-soft p-6"><p class="text-gray-600 text-sm mb-1"><i class="fas fa-pills text-[#2563EB] mr-2"></i>Medicamentos</p><p class="text-2xl font-bold text-gray-900">10</p></div></div>
+    <section id="gestion" class="bg-white rounded-2xl shadow-soft p-6">
+  <h2 class="text-xl font-bold text-gray-900 mb-1"><i class="fas fa-screwdriver-wrench text-[#2563EB] mr-2"></i>Gestión de catálogos</h2>
+  <p class="text-gray-600 mb-5">Administra el listado maestro de medicamentos y las especialidades médicas.</p>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <a href="3_admin_medicamentos.html" class="block border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:shadow-soft transition-all">
+      <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-pills"></i></div>
+      <h3 class="font-semibold text-gray-900 mb-1">Catálogo general de medicamentos</h3>
+      <p class="text-gray-600 text-sm">Elimina del listado maestro los productos retirados del mercado.</p>
+    </a>
+    <a href="3_admin_especialidades.html" class="block border border-gray-200 rounded-2xl p-5 hover:-translate-y-1 hover:shadow-soft transition-all">
+      <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-stethoscope"></i></div>
+      <h3 class="font-semibold text-gray-900 mb-1">Especialidades médicas</h3>
+      <p class="text-gray-600 text-sm">Edita nombre y descripción, o elimina las que están en desuso.</p>
+    </a>
+  </div>
+</section>
+<section id="pacientes" class="bg-white rounded-2xl shadow-soft p-6">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-user text-[#2563EB] mr-2"></i>Clientes (Pacientes) <span class="ml-2 text-sm font-medium bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full">10</span></h2>
+  </div>
+  <details class="mt-4 group">
+    <summary class="inline-block cursor-pointer select-none health-gradient text-white px-5 py-2.5 rounded-xl font-semibold hover:opacity-90">VER CLIENTES</summary>
+    <div class="mt-4 border border-gray-100 rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-gray-50 text-gray-600 text-sm"><tr><th class="px-6 py-3 font-medium">Nombre</th><th class="px-6 py-3 font-medium">Email</th><th class="px-6 py-3 font-medium">Teléfono</th><th class="px-6 py-3 font-medium">Distrito</th><th class="px-6 py-3 font-medium">Registro</th><th class="px-6 py-3 font-medium">Estado</th><th class="px-6 py-3 font-medium">Acciones</th></tr></thead><tbody class="divide-y divide-gray-100 text-sm"><tr><td class="px-6 py-3 font-medium text-gray-900">Juan Sánchez</td><td class="px-6 py-3 text-gray-600">juan.sanchez@correo.com</td><td class="px-6 py-3 text-gray-600">987 654 321</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">03/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c1" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c1" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">J</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Juan Sánchez</h3><p class="text-gray-500 text-sm truncate">juan.sanchez@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c1" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c1" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Juan Sánchez no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c1" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c1" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c1" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c1" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Juan Sánchez quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">María Rodríguez</td><td class="px-6 py-3 text-gray-600">maria.rodriguez@correo.com</td><td class="px-6 py-3 text-gray-600">986 112 345</td><td class="px-6 py-3 text-gray-600">San Isidro</td><td class="px-6 py-3 text-gray-600">18/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c2" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c2" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">M</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">María Rodríguez</h3><p class="text-gray-500 text-sm truncate">maria.rodriguez@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c2" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c2" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y María Rodríguez no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c2" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c2" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c2" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de María Rodríguez quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Carlos Pérez</td><td class="px-6 py-3 text-gray-600">carlos.perez@correo.com</td><td class="px-6 py-3 text-gray-600">985 223 456</td><td class="px-6 py-3 text-gray-600">La Molina</td><td class="px-6 py-3 text-gray-600">02/02/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c3" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c3" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Carlos Pérez</h3><p class="text-gray-500 text-sm truncate">carlos.perez@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c3" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c3" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Carlos Pérez no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c3" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c3" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c3" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Carlos Pérez quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Ana García</td><td class="px-6 py-3 text-gray-600">ana.garcia@correo.com</td><td class="px-6 py-3 text-gray-600">984 334 567</td><td class="px-6 py-3 text-gray-600">Santiago de Surco</td><td class="px-6 py-3 text-gray-600">21/02/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c4" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c4" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">A</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Ana García</h3><p class="text-gray-500 text-sm truncate">ana.garcia@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c4" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c4" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Ana García no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c4" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c4" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c4" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Ana García quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr data-s="sus"><td class="px-6 py-3 font-medium text-gray-900">Luis Paredes</td><td class="px-6 py-3 text-gray-600">luis.paredes@correo.com</td><td class="px-6 py-3 text-gray-600">983 445 678</td><td class="px-6 py-3 text-gray-600">Lince</td><td class="px-6 py-3 text-gray-600">09/03/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c5" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c5" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">L</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Luis Paredes</h3><p class="text-gray-500 text-sm truncate">luis.paredes@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-red-600">Suspendido</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c5" class="rad-act peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c5" class="rad-sus peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Luis Paredes no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c5" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c5" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c5" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c5" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Luis Paredes quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Patricia Núñez</td><td class="px-6 py-3 text-gray-600">patricia.nunez@correo.com</td><td class="px-6 py-3 text-gray-600">982 556 789</td><td class="px-6 py-3 text-gray-600">San Borja</td><td class="px-6 py-3 text-gray-600">27/03/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c6" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c6" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">P</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Patricia Núñez</h3><p class="text-gray-500 text-sm truncate">patricia.nunez@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c6" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c6" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Patricia Núñez no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c6" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c6" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c6" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c6" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Patricia Núñez quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Andrés Vega</td><td class="px-6 py-3 text-gray-600">andres.vega@correo.com</td><td class="px-6 py-3 text-gray-600">981 667 890</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">15/04/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c7" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c7" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">A</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Andrés Vega</h3><p class="text-gray-500 text-sm truncate">andres.vega@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c7" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c7" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Andrés Vega no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c7" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c7" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c7" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c7" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Andrés Vega quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Sofía Ramírez</td><td class="px-6 py-3 text-gray-600">sofia.ramirez@correo.com</td><td class="px-6 py-3 text-gray-600">980 778 901</td><td class="px-6 py-3 text-gray-600">La Molina</td><td class="px-6 py-3 text-gray-600">30/04/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c8" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c8" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">S</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Sofía Ramírez</h3><p class="text-gray-500 text-sm truncate">sofia.ramirez@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c8" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c8" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Sofía Ramírez no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c8" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c8" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c8" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c8" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Sofía Ramírez quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Diego Castillo</td><td class="px-6 py-3 text-gray-600">diego.castillo@correo.com</td><td class="px-6 py-3 text-gray-600">979 889 012</td><td class="px-6 py-3 text-gray-600">San Isidro</td><td class="px-6 py-3 text-gray-600">12/05/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c9" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c9" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">D</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Diego Castillo</h3><p class="text-gray-500 text-sm truncate">diego.castillo@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c9" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c9" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Diego Castillo no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c9" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c9" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c9" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c9" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Diego Castillo quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Lucía Fernández</td><td class="px-6 py-3 text-gray-600">lucia.fernandez@correo.com</td><td class="px-6 py-3 text-gray-600">978 990 123</td><td class="px-6 py-3 text-gray-600">Lince</td><td class="px-6 py-3 text-gray-600">29/05/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-c10" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-c10" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">L</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Lucía Fernández</h3><p class="text-gray-500 text-sm truncate">lucia.fernandez@correo.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Paciente</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-c10" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-c10" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Lucía Fernández no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-c10" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-c10" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente" selected>Paciente</option><option value="proveedor">Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#pacientes" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-c10" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-c10" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Lucía Fernández quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#pacientes" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+</tbody></table></div></div>
+  </details>
+</section>
+<section id="proveedores" class="bg-white rounded-2xl shadow-soft p-6">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-hospital-user text-[#2563EB] mr-2"></i>Proveedores <span class="ml-2 text-sm font-medium bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full">10</span></h2>
+  </div>
+  <details class="mt-4 group">
+    <summary class="inline-block cursor-pointer select-none health-gradient text-white px-5 py-2.5 rounded-xl font-semibold hover:opacity-90">VER PROVEEDORES</summary>
+    <div class="mt-4 border border-gray-100 rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-gray-50 text-gray-600 text-sm"><tr><th class="px-6 py-3 font-medium">Proveedor</th><th class="px-6 py-3 font-medium">Email</th><th class="px-6 py-3 font-medium">Teléfono</th><th class="px-6 py-3 font-medium">Distrito</th><th class="px-6 py-3 font-medium">Registro</th><th class="px-6 py-3 font-medium">Estado</th><th class="px-6 py-3 font-medium">Acciones</th></tr></thead><tbody class="divide-y divide-gray-100 text-sm"><tr><td class="px-6 py-3 font-medium text-gray-900">Clínica Médica Central</td><td class="px-6 py-3 text-gray-600">contacto@clinicamedicacentral.pe</td><td class="px-6 py-3 text-gray-600">(01) 234-5678</td><td class="px-6 py-3 text-gray-600">Cercado de Lima</td><td class="px-6 py-3 text-gray-600">03/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p1" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p1" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Clínica Médica Central</h3><p class="text-gray-500 text-sm truncate">contacto@clinicamedicacentral.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p1" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p1" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Clínica Médica Central no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p1" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p1" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p1" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p1" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Clínica Médica Central quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Laboratorio Médico Central</td><td class="px-6 py-3 text-gray-600">contacto@labmedicocentral.pe</td><td class="px-6 py-3 text-gray-600">(01) 500-1200</td><td class="px-6 py-3 text-gray-600">Lince</td><td class="px-6 py-3 text-gray-600">10/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p2" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p2" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">L</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Laboratorio Médico Central</h3><p class="text-gray-500 text-sm truncate">contacto@labmedicocentral.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p2" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p2" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Laboratorio Médico Central no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p2" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p2" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p2" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Laboratorio Médico Central quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Centro Cardiológico</td><td class="px-6 py-3 text-gray-600">contacto@centrocardiologico.pe</td><td class="px-6 py-3 text-gray-600">987 654 321</td><td class="px-6 py-3 text-gray-600">San Borja</td><td class="px-6 py-3 text-gray-600">24/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p3" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p3" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Centro Cardiológico</h3><p class="text-gray-500 text-sm truncate">contacto@centrocardiologico.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p3" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p3" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Centro Cardiológico no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p3" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p3" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p3" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Centro Cardiológico quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Clínica Miraflores Salud</td><td class="px-6 py-3 text-gray-600">contacto@miraflores-salud.pe</td><td class="px-6 py-3 text-gray-600">(01) 445-2100</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">05/02/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p4" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p4" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Clínica Miraflores Salud</h3><p class="text-gray-500 text-sm truncate">contacto@miraflores-salud.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p4" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p4" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Clínica Miraflores Salud no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p4" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p4" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p4" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Clínica Miraflores Salud quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Centro Médico San Isidro</td><td class="px-6 py-3 text-gray-600">contacto@cmsanisidro.pe</td><td class="px-6 py-3 text-gray-600">(01) 421-7788</td><td class="px-6 py-3 text-gray-600">San Isidro</td><td class="px-6 py-3 text-gray-600">19/02/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p5" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p5" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Centro Médico San Isidro</h3><p class="text-gray-500 text-sm truncate">contacto@cmsanisidro.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p5" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p5" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Centro Médico San Isidro no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p5" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p5" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p5" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p5" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Centro Médico San Isidro quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Policlínico La Molina</td><td class="px-6 py-3 text-gray-600">contacto@policlinicolamolina.pe</td><td class="px-6 py-3 text-gray-600">(01) 349-0045</td><td class="px-6 py-3 text-gray-600">La Molina</td><td class="px-6 py-3 text-gray-600">08/03/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p6" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p6" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">P</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Policlínico La Molina</h3><p class="text-gray-500 text-sm truncate">contacto@policlinicolamolina.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p6" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p6" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Policlínico La Molina no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p6" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p6" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p6" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p6" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Policlínico La Molina quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr data-s="sus"><td class="px-6 py-3 font-medium text-gray-900">Clínica Surco Vital</td><td class="px-6 py-3 text-gray-600">contacto@surcovital.pe</td><td class="px-6 py-3 text-gray-600">987 321 654</td><td class="px-6 py-3 text-gray-600">Santiago de Surco</td><td class="px-6 py-3 text-gray-600">22/03/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p7" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p7" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Clínica Surco Vital</h3><p class="text-gray-500 text-sm truncate">contacto@surcovital.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-red-600">Suspendido</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p7" class="rad-act peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p7" class="rad-sus peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Clínica Surco Vital no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p7" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p7" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p7" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p7" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Clínica Surco Vital quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Laboratorio Miraflores Diagnóstica</td><td class="px-6 py-3 text-gray-600">contacto@labmiraflores.pe</td><td class="px-6 py-3 text-gray-600">(01) 242-5566</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">11/04/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p8" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p8" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">L</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Laboratorio Miraflores Diagnóstica</h3><p class="text-gray-500 text-sm truncate">contacto@labmiraflores.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p8" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p8" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Laboratorio Miraflores Diagnóstica no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p8" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p8" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p8" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p8" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Laboratorio Miraflores Diagnóstica quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Clínica San Juan</td><td class="px-6 py-3 text-gray-600">contacto@clinicasanjuan.pe</td><td class="px-6 py-3 text-gray-600">(01) 445-1200</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">26/04/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p9" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p9" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Clínica San Juan</h3><p class="text-gray-500 text-sm truncate">contacto@clinicasanjuan.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p9" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p9" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Clínica San Juan no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p9" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p9" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p9" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p9" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Clínica San Juan quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Clínica Angloamericana</td><td class="px-6 py-3 text-gray-600">contacto@angloamericana.pe</td><td class="px-6 py-3 text-gray-600">(01) 616-8900</td><td class="px-6 py-3 text-gray-600">La Molina</td><td class="px-6 py-3 text-gray-600">14/05/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-p10" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-p10" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Clínica Angloamericana</h3><p class="text-gray-500 text-sm truncate">contacto@angloamericana.pe</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Proveedor</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-p10" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-p10" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Clínica Angloamericana no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-p10" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-p10" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor" selected>Proveedor</option><option value="administrador">Administrador</option></select>
+  
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#proveedores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-p10" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-p10" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Clínica Angloamericana quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#proveedores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+</tbody></table></div></div>
+  </details>
+</section>
+<section id="administradores" class="bg-white rounded-2xl shadow-soft p-6">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-user-shield text-[#2563EB] mr-2"></i>Administradores <span class="ml-2 text-sm font-medium bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full">10</span></h2>
+  </div>
+  <details class="mt-4 group">
+    <summary class="inline-block cursor-pointer select-none health-gradient text-white px-5 py-2.5 rounded-xl font-semibold hover:opacity-90">VER ADMINISTRADORES</summary>
+    <div class="mt-4 border border-gray-100 rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-gray-50 text-gray-600 text-sm"><tr><th class="px-6 py-3 font-medium">Nombre</th><th class="px-6 py-3 font-medium">Email</th><th class="px-6 py-3 font-medium">Área</th><th class="px-6 py-3 font-medium">Permisos</th><th class="px-6 py-3 font-medium">Registro</th><th class="px-6 py-3 font-medium">Estado</th><th class="px-6 py-3 font-medium">Acciones</th></tr></thead><tbody class="divide-y divide-gray-100 text-sm"><tr><td class="px-6 py-3 font-medium text-gray-900">Carla Mendoza</td><td class="px-6 py-3 text-gray-600">carla.mendoza@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Soporte</td><td class="px-6 py-3 text-gray-600">Total</td><td class="px-6 py-3 text-gray-600">03/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a1" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a1" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">C</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Carla Mendoza</h3><p class="text-gray-500 text-sm truncate">carla.mendoza@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a1" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a1" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Carla Mendoza no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a1" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a1" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a1" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a1" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Carla Mendoza quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Jorge Salas</td><td class="px-6 py-3 text-gray-600">jorge.salas@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Supervisión</td><td class="px-6 py-3 text-gray-600">Total</td><td class="px-6 py-3 text-gray-600">03/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a2" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a2" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">J</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Jorge Salas</h3><p class="text-gray-500 text-sm truncate">jorge.salas@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a2" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a2" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Jorge Salas no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a2" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a2" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a2" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a2" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Jorge Salas quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Rosa Huamán</td><td class="px-6 py-3 text-gray-600">rosa.huaman@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Verificación de proveedores</td><td class="px-6 py-3 text-gray-600">Parcial</td><td class="px-6 py-3 text-gray-600">20/01/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a3" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a3" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">R</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Rosa Huamán</h3><p class="text-gray-500 text-sm truncate">rosa.huaman@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a3" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a3" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Rosa Huamán no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a3" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a3" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a3" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a3" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Rosa Huamán quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Álvaro Delgado</td><td class="px-6 py-3 text-gray-600">alvaro.delgado@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Moderación de reseñas</td><td class="px-6 py-3 text-gray-600">Parcial</td><td class="px-6 py-3 text-gray-600">04/02/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a4" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a4" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">Á</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Álvaro Delgado</h3><p class="text-gray-500 text-sm truncate">alvaro.delgado@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a4" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a4" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Álvaro Delgado no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a4" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a4" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a4" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a4" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Álvaro Delgado quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Karen Cárdenas</td><td class="px-6 py-3 text-gray-600">karen.cardenas@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Soporte</td><td class="px-6 py-3 text-gray-600">Parcial</td><td class="px-6 py-3 text-gray-600">16/02/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a5" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a5" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">K</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Karen Cárdenas</h3><p class="text-gray-500 text-sm truncate">karen.cardenas@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a5" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a5" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Karen Cárdenas no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a5" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a5" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a5" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a5" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Karen Cárdenas quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Bruno Espinoza</td><td class="px-6 py-3 text-gray-600">bruno.espinoza@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Catálogo de medicamentos</td><td class="px-6 py-3 text-gray-600">Parcial</td><td class="px-6 py-3 text-gray-600">01/03/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a6" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a6" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">B</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Bruno Espinoza</h3><p class="text-gray-500 text-sm truncate">bruno.espinoza@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a6" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a6" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Bruno Espinoza no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a6" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a6" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a6" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a6" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Bruno Espinoza quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Milagros Vargas</td><td class="px-6 py-3 text-gray-600">milagros.vargas@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Atención al paciente</td><td class="px-6 py-3 text-gray-600">Lectura</td><td class="px-6 py-3 text-gray-600">18/03/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a7" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a7" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">M</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Milagros Vargas</h3><p class="text-gray-500 text-sm truncate">milagros.vargas@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a7" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a7" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Milagros Vargas no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a7" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a7" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a7" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a7" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Milagros Vargas quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Renzo Quispe</td><td class="px-6 py-3 text-gray-600">renzo.quispe@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Analítica</td><td class="px-6 py-3 text-gray-600">Lectura</td><td class="px-6 py-3 text-gray-600">02/04/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a8" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a8" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">R</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Renzo Quispe</h3><p class="text-gray-500 text-sm truncate">renzo.quispe@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a8" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a8" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Renzo Quispe no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a8" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a8" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a8" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a8" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Renzo Quispe quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr data-s="sus"><td class="px-6 py-3 font-medium text-gray-900">Daniela Flores</td><td class="px-6 py-3 text-gray-600">daniela.flores@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Moderación de reseñas</td><td class="px-6 py-3 text-gray-600">Parcial</td><td class="px-6 py-3 text-gray-600">19/04/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a9" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a9" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">D</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Daniela Flores</h3><p class="text-gray-500 text-sm truncate">daniela.flores@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-red-600">Suspendido</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a9" class="rad-act peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a9" class="rad-sus peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Daniela Flores no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a9" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a9" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a9" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a9" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Daniela Flores quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Gustavo Ramos</td><td class="px-6 py-3 text-gray-600">gustavo.ramos@comparasalud.com</td><td class="px-6 py-3 text-gray-600">Supervisión</td><td class="px-6 py-3 text-gray-600">Total</td><td class="px-6 py-3 text-gray-600">06/05/2025</td><td class="px-6 py-3"><span class="bd-act inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-circle text-[7px] mr-1.5"></i>Activo</span><span class="bd-sus items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full"><i class="fas fa-ban text-[9px] mr-1.5"></i>Suspendido</span></td><td class="px-6 py-3">
+<a href="#adm-a10" class="inline-flex items-center gap-2 border border-gray-300 text-gray-700 px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-gray-50 whitespace-nowrap"><i class="fas fa-user-gear"></i>Administrar</a>
+<!-- HU50: Guardar Estado => PUT /api/comparativa (u /admin) sobre la tabla Usuario -->
+<div id="adm-a10" class="modal"><div class="mbox bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-left whitespace-normal font-normal max-h-[92vh] overflow-y-auto">
+  <div class="flex items-center gap-3 mb-5">
+    <div class="w-12 h-12 rounded-full health-gradient text-white flex items-center justify-center font-bold text-lg flex-shrink-0">G</div>
+    <div class="min-w-0"><h3 class="text-lg font-bold text-gray-900 truncate">Gustavo Ramos</h3><p class="text-gray-500 text-sm truncate">gustavo.ramos@comparasalud.com</p></div>
+  </div>
+  <div class="grid grid-cols-2 gap-3 mb-5 text-sm">
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Rol actual</p><p class="font-semibold text-gray-900">Administrador</p></div>
+    <div class="p-3 bg-gray-50 rounded-xl"><p class="text-gray-500 text-xs">Estado actual</p><p class="font-semibold text-green-600">Activo</p></div>
+  </div>
+  <p class="text-sm font-medium text-gray-700 mb-2">Estado de la cuenta</p>
+  <div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="st-a10" class="rad-act peer sr-only" checked />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50 hover:border-green-400"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Puede ingresar</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="st-a10" class="rad-sus peer sr-only"  />
+      <div class="h-full border border-gray-300 rounded-xl p-3 text-center peer-checked:border-red-600 peer-checked:bg-red-50 hover:border-red-400"><i class="fas fa-ban text-red-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Suspendido</div><div class="text-xs text-gray-500">Bloquea el acceso</div></div></label>
+  </div>
+  <p class="w-sus items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-3"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i>La cuenta quedará bloqueada y Gustavo Ramos no podrá iniciar sesión en la plataforma.</p>
+  <label for="rol-a10" class="block text-sm font-medium text-gray-700 mt-5 mb-2">Rol de la cuenta</label>
+  <select id="rol-a10" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="paciente">Paciente</option><option value="proveedor">Proveedor</option><option value="administrador" selected>Administrador</option></select>
+  <p class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-xs mt-3"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Modificar el rol de un administrador cambia sus permisos sobre la plataforma.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3 mt-6">
+    <a href="#administradores" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+    <a href="#ok-a10" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Estado</a>
+  </div>
+</div></div>
+<div id="ok-a10" class="ok bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start whitespace-normal font-normal text-left" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Estado de usuario actualizado correctamente</p><p class="t-sus text-xs mt-1">La cuenta de Gustavo Ramos quedó bloqueada: ya no puede acceder a la plataforma.</p></div>
+  <a href="#administradores" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+</td></tr>
+</tbody></table></div></div>
+  </details>
+</section>
+<section id="establecimientos" class="bg-white rounded-2xl shadow-soft p-6">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-hospital text-[#2563EB] mr-2"></i>Establecimientos <span class="ml-2 text-sm font-medium bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full">10</span></h2>
+  </div>
+  <details class="mt-4 group">
+    <summary class="inline-block cursor-pointer select-none health-gradient text-white px-5 py-2.5 rounded-xl font-semibold hover:opacity-90">VER ESTABLECIMIENTOS</summary>
+    <div class="mt-4 border border-gray-100 rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-gray-50 text-gray-600 text-sm"><tr><th class="px-6 py-3 font-medium">ID</th><th class="px-6 py-3 font-medium">Establecimiento</th><th class="px-6 py-3 font-medium">Distrito</th><th class="px-6 py-3 font-medium">Dirección</th><th class="px-6 py-3 font-medium">Teléfono</th><th class="px-6 py-3 font-medium">Calificación</th></tr></thead><tbody class="divide-y divide-gray-100 text-sm"><tr><td class="px-6 py-3 font-medium text-gray-900">1</td><td class="px-6 py-3 text-gray-600">Clínica Médica Central</td><td class="px-6 py-3 text-gray-600">Cercado de Lima</td><td class="px-6 py-3 text-gray-600">Av. Principal 123</td><td class="px-6 py-3 text-gray-600">(01) 234-5678</td><td class="px-6 py-3 text-gray-600">★ 4.5</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">2</td><td class="px-6 py-3 text-gray-600">Laboratorio Médico Central</td><td class="px-6 py-3 text-gray-600">Lince</td><td class="px-6 py-3 text-gray-600">Av. Arequipa 1450</td><td class="px-6 py-3 text-gray-600">(01) 500-1200</td><td class="px-6 py-3 text-gray-600">★ 4.6</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">3</td><td class="px-6 py-3 text-gray-600">Centro Cardiológico</td><td class="px-6 py-3 text-gray-600">San Borja</td><td class="px-6 py-3 text-gray-600">Av. Javier Prado Este 2100</td><td class="px-6 py-3 text-gray-600">987 654 321</td><td class="px-6 py-3 text-gray-600">★ 4.9</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">4</td><td class="px-6 py-3 text-gray-600">Clínica Miraflores Salud</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">Av. Larco 812</td><td class="px-6 py-3 text-gray-600">(01) 445-2100</td><td class="px-6 py-3 text-gray-600">★ 4.5</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">5</td><td class="px-6 py-3 text-gray-600">Centro Médico San Isidro</td><td class="px-6 py-3 text-gray-600">San Isidro</td><td class="px-6 py-3 text-gray-600">Calle Los Pinos 340</td><td class="px-6 py-3 text-gray-600">(01) 421-7788</td><td class="px-6 py-3 text-gray-600">★ 4.7</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">6</td><td class="px-6 py-3 text-gray-600">Policlínico La Molina</td><td class="px-6 py-3 text-gray-600">La Molina</td><td class="px-6 py-3 text-gray-600">Av. La Molina 1560</td><td class="px-6 py-3 text-gray-600">(01) 349-0045</td><td class="px-6 py-3 text-gray-600">★ 4.3</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">7</td><td class="px-6 py-3 text-gray-600">Clínica Surco Vital</td><td class="px-6 py-3 text-gray-600">Santiago de Surco</td><td class="px-6 py-3 text-gray-600">Av. Caminos del Inca 2200</td><td class="px-6 py-3 text-gray-600">987 321 654</td><td class="px-6 py-3 text-gray-600">★ 4.4</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">8</td><td class="px-6 py-3 text-gray-600">Laboratorio Miraflores Diagnóstica</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">Av. Benavides 1234</td><td class="px-6 py-3 text-gray-600">(01) 242-5566</td><td class="px-6 py-3 text-gray-600">★ 4.4</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">9</td><td class="px-6 py-3 text-gray-600">Clínica San Juan</td><td class="px-6 py-3 text-gray-600">Miraflores</td><td class="px-6 py-3 text-gray-600">Av. Larco 345</td><td class="px-6 py-3 text-gray-600">(01) 445-1200</td><td class="px-6 py-3 text-gray-600">★ 4.8</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">10</td><td class="px-6 py-3 text-gray-600">Clínica Angloamericana</td><td class="px-6 py-3 text-gray-600">La Molina</td><td class="px-6 py-3 text-gray-600">Av. La Molina 1200</td><td class="px-6 py-3 text-gray-600">(01) 616-8900</td><td class="px-6 py-3 text-gray-600">★ 4.6</td></tr>
+</tbody></table></div></div>
+  </details>
+</section>
+<section id="medicos" class="bg-white rounded-2xl shadow-soft p-6">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-user-doctor text-[#2563EB] mr-2"></i>Médicos <span class="ml-2 text-sm font-medium bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full">10</span></h2>
+  </div>
+  <details class="mt-4 group" id="det-medicos">
+    <summary class="inline-block cursor-pointer select-none health-gradient text-white px-5 py-2.5 rounded-xl font-semibold hover:opacity-90">VER MÉDICOS</summary>
+    <!-- HU3: filtrar médicos por especialidad y centro de atención => GET /api/medicos?especialidad=&centro= -->
+    <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+      <div>
+        <label for="f-esp" class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-stethoscope text-[#2563EB] mr-2"></i>Especialidad</label>
+        <select id="f-esp" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="">Todas las especialidades</option><option value="Cardiología">Cardiología</option><option value="Dermatología">Dermatología</option><option value="Medicina General">Medicina General</option><option value="Pediatría">Pediatría</option><option value="Traumatología">Traumatología</option></select>
+      </div>
+      <div>
+        <label for="f-centro" class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-hospital text-[#2563EB] mr-2"></i>Centro de atención</label>
+        <select id="f-centro" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="">Todos los centros</option><option value="Centro Cardiológico">Centro Cardiológico</option><option value="Centro Médico San Isidro">Centro Médico San Isidro</option><option value="Clínica Angloamericana">Clínica Angloamericana</option><option value="Clínica Miraflores Salud">Clínica Miraflores Salud</option><option value="Clínica Médica Central">Clínica Médica Central</option><option value="Clínica San Juan">Clínica San Juan</option><option value="Clínica Surco Vital">Clínica Surco Vital</option><option value="Policlínico La Molina">Policlínico La Molina</option></select>
+      </div>
+      <button type="button" id="f-limpiar" class="inline-flex items-center justify-center gap-2 border border-gray-300 text-gray-700 px-4 py-3 rounded-xl font-medium hover:bg-gray-50"><i class="fas fa-rotate-left"></i>Limpiar filtros</button>
+    </div>
+    <p class="text-sm text-gray-600 mt-4" aria-live="polite">Mostrando <span id="f-count" class="font-semibold text-gray-900">10</span> de 10 médicos</p>
+    <div class="mt-3 border border-gray-100 rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-gray-50 text-gray-600 text-sm"><tr><th class="px-6 py-3 font-medium">Médico</th><th class="px-6 py-3 font-medium">CMP</th><th class="px-6 py-3 font-medium">Especialidad</th><th class="px-6 py-3 font-medium">Centro de atención</th><th class="px-6 py-3 font-medium">Distrito</th></tr></thead><tbody id="tb-medicos" class="divide-y divide-gray-100 text-sm"><tr data-esp="Cardiología" data-centro="Centro Cardiológico"><td class="px-6 py-3 font-medium text-gray-900">Dr. Ricardo Alarcón</td><td class="px-6 py-3 text-gray-600">45821</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Cardiología</span></td><td class="px-6 py-3 text-gray-600">Centro Cardiológico</td><td class="px-6 py-3 text-gray-600">San Borja</td></tr>
+<tr data-esp="Medicina General" data-centro="Clínica Médica Central"><td class="px-6 py-3 font-medium text-gray-900">Dra. Elena Torres</td><td class="px-6 py-3 text-gray-600">52310</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Medicina General</span></td><td class="px-6 py-3 text-gray-600">Clínica Médica Central</td><td class="px-6 py-3 text-gray-600">Cercado de Lima</td></tr>
+<tr data-esp="Cardiología" data-centro="Clínica Angloamericana"><td class="px-6 py-3 font-medium text-gray-900">Dr. Fernando Quiroz</td><td class="px-6 py-3 text-gray-600">48977</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Cardiología</span></td><td class="px-6 py-3 text-gray-600">Clínica Angloamericana</td><td class="px-6 py-3 text-gray-600">La Molina</td></tr>
+<tr data-esp="Pediatría" data-centro="Clínica Miraflores Salud"><td class="px-6 py-3 font-medium text-gray-900">Dra. Mónica Salazar</td><td class="px-6 py-3 text-gray-600">61204</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Pediatría</span></td><td class="px-6 py-3 text-gray-600">Clínica Miraflores Salud</td><td class="px-6 py-3 text-gray-600">Miraflores</td></tr>
+<tr data-esp="Traumatología" data-centro="Clínica San Juan"><td class="px-6 py-3 font-medium text-gray-900">Dr. Héctor Maldonado</td><td class="px-6 py-3 text-gray-600">39654</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Traumatología</span></td><td class="px-6 py-3 text-gray-600">Clínica San Juan</td><td class="px-6 py-3 text-gray-600">Miraflores</td></tr>
+<tr data-esp="Dermatología" data-centro="Centro Médico San Isidro"><td class="px-6 py-3 font-medium text-gray-900">Dra. Valeria Rojas</td><td class="px-6 py-3 text-gray-600">58432</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Dermatología</span></td><td class="px-6 py-3 text-gray-600">Centro Médico San Isidro</td><td class="px-6 py-3 text-gray-600">San Isidro</td></tr>
+<tr data-esp="Medicina General" data-centro="Policlínico La Molina"><td class="px-6 py-3 font-medium text-gray-900">Dr. Julio Cabrera</td><td class="px-6 py-3 text-gray-600">44190</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Medicina General</span></td><td class="px-6 py-3 text-gray-600">Policlínico La Molina</td><td class="px-6 py-3 text-gray-600">La Molina</td></tr>
+<tr data-esp="Pediatría" data-centro="Clínica Surco Vital"><td class="px-6 py-3 font-medium text-gray-900">Dra. Sandra Bustamante</td><td class="px-6 py-3 text-gray-600">60873</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Pediatría</span></td><td class="px-6 py-3 text-gray-600">Clínica Surco Vital</td><td class="px-6 py-3 text-gray-600">Santiago de Surco</td></tr>
+<tr data-esp="Traumatología" data-centro="Clínica Angloamericana"><td class="px-6 py-3 font-medium text-gray-900">Dr. Miguel Ángel Lozano</td><td class="px-6 py-3 text-gray-600">41562</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Traumatología</span></td><td class="px-6 py-3 text-gray-600">Clínica Angloamericana</td><td class="px-6 py-3 text-gray-600">La Molina</td></tr>
+<tr data-esp="Dermatología" data-centro="Clínica Miraflores Salud"><td class="px-6 py-3 font-medium text-gray-900">Dra. Paola Ibáñez</td><td class="px-6 py-3 text-gray-600">63015</td><td class="px-6 py-3"><span class="inline-flex items-center bg-blue-50 text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-full">Dermatología</span></td><td class="px-6 py-3 text-gray-600">Clínica Miraflores Salud</td><td class="px-6 py-3 text-gray-600">Miraflores</td></tr>
+<tr id="f-vacio" style="display:none"><td colspan="5" class="px-6 py-8 text-center text-gray-500"><i class="fas fa-user-slash mr-2"></i>No se encontraron médicos con los filtros seleccionados.</td></tr>
+</tbody></table></div></div>
+  </details>
+</section>
+<section id="medicamentos" class="bg-white rounded-2xl shadow-soft p-6">
+  <div class="flex items-center justify-between flex-wrap gap-3">
+    <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-pills text-[#2563EB] mr-2"></i>Medicamentos <span class="ml-2 text-sm font-medium bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full">10</span></h2>
+  </div>
+  <details class="mt-4 group">
+    <summary class="inline-block cursor-pointer select-none health-gradient text-white px-5 py-2.5 rounded-xl font-semibold hover:opacity-90">VER MEDICAMENTOS</summary>
+    <div class="mt-4 border border-gray-100 rounded-xl overflow-hidden"><div class="overflow-x-auto"><table class="w-full text-left"><thead class="bg-gray-50 text-gray-600 text-sm"><tr><th class="px-6 py-3 font-medium">Medicamento</th><th class="px-6 py-3 font-medium">Descripción</th><th class="px-6 py-3 font-medium">Proveedor</th><th class="px-6 py-3 font-medium">Precio</th></tr></thead><tbody class="divide-y divide-gray-100 text-sm"><tr><td class="px-6 py-3 font-medium text-gray-900">Paracetamol 500 mg</td><td class="px-6 py-3 text-gray-600">Caja x 20 tabletas</td><td class="px-6 py-3 text-gray-600">Clínica Médica Central</td><td class="px-6 py-3 text-gray-600">S/ 12.50</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Ibuprofeno 400 mg</td><td class="px-6 py-3 text-gray-600">Caja x 10 tabletas</td><td class="px-6 py-3 text-gray-600">Laboratorio Médico Central</td><td class="px-6 py-3 text-gray-600">S/ 8.50</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Losartán 50 mg</td><td class="px-6 py-3 text-gray-600">Caja x 30 tabletas</td><td class="px-6 py-3 text-gray-600">Centro Cardiológico</td><td class="px-6 py-3 text-gray-600">S/ 18.00</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Amoxicilina 500 mg</td><td class="px-6 py-3 text-gray-600">Caja x 12 cápsulas</td><td class="px-6 py-3 text-gray-600">Clínica Miraflores Salud</td><td class="px-6 py-3 text-gray-600">S/ 15.90</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Omeprazol 20 mg</td><td class="px-6 py-3 text-gray-600">Caja x 14 cápsulas</td><td class="px-6 py-3 text-gray-600">Centro Médico San Isidro</td><td class="px-6 py-3 text-gray-600">S/ 11.20</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Loratadina 10 mg</td><td class="px-6 py-3 text-gray-600">Caja x 10 tabletas</td><td class="px-6 py-3 text-gray-600">Policlínico La Molina</td><td class="px-6 py-3 text-gray-600">S/ 6.80</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Metformina 850 mg</td><td class="px-6 py-3 text-gray-600">Caja x 30 tabletas</td><td class="px-6 py-3 text-gray-600">Clínica Surco Vital</td><td class="px-6 py-3 text-gray-600">S/ 14.50</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Atorvastatina 20 mg</td><td class="px-6 py-3 text-gray-600">Caja x 30 tabletas</td><td class="px-6 py-3 text-gray-600">Laboratorio Miraflores Diagnóstica</td><td class="px-6 py-3 text-gray-600">S/ 24.00</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Salbutamol inhalador</td><td class="px-6 py-3 text-gray-600">Frasco 200 dosis</td><td class="px-6 py-3 text-gray-600">Clínica San Juan</td><td class="px-6 py-3 text-gray-600">S/ 19.90</td></tr>
+<tr><td class="px-6 py-3 font-medium text-gray-900">Azitromicina 500 mg</td><td class="px-6 py-3 text-gray-600">Caja x 3 tabletas</td><td class="px-6 py-3 text-gray-600">Clínica Angloamericana</td><td class="px-6 py-3 text-gray-600">S/ 22.00</td></tr>
+</tbody></table></div></div>
+  </details>
+</section>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+<script>
+(function(){
+  var esp=document.getElementById("f-esp"), cen=document.getElementById("f-centro"),
+      cnt=document.getElementById("f-count"), vacio=document.getElementById("f-vacio"),
+      rows=document.querySelectorAll("#tb-medicos tr[data-esp]");
+  function filtrar(){
+    var n=0;
+    rows.forEach(function(r){
+      var ok=(!esp.value||r.dataset.esp===esp.value)&&(!cen.value||r.dataset.centro===cen.value);
+      r.style.display=ok?"":"none"; if(ok)n++;
+    });
+    cnt.textContent=n; vacio.style.display=n?"none":"";
+  }
+  esp.addEventListener("change",filtrar); cen.addEventListener("change",filtrar);
+  document.getElementById("f-limpiar").addEventListener("click",function(){esp.value="";cen.value="";filtrar();});
+})();
+</script>
+</body>
+</html>

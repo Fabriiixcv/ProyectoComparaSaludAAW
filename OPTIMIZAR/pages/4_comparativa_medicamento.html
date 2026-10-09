@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>Comparar Costos por Medicamento - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      body { font-family: "Inter", sans-serif; }
+      .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+      .shadow-soft { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+      .row-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .row-card:hover { transform: translateY(-2px); box-shadow: 0 10px 25px -3px rgba(0,0,0,0.1); }
+      .tab-btn.active { background: #2563eb; color: #fff; border-color: #2563eb; }
+      @media (prefers-reduced-motion: reduce) { .row-card { transition: none; } .row-card:hover { transform: none; } }
+    </style>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+            <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+            <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+          </a>
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Inicio</a>
+            <a href="4_centros_busqueda.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Centros médicos</a>
+            <a href="4_comparativa_medicamento.html" class="text-blue-600 font-semibold">Comparar medicamentos</a>
+            <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Ayuda</a>
+          </div>
+          <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold" aria-label="Mi perfil">U</a>
+        </div>
+      </div>
+    </nav>
+
+    <section class="health-gradient text-white py-14 md:py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Compara el costo global de tu tratamiento</h1>
+          <p class="text-xl md:text-2xl opacity-90 mb-8">Elige un medicamento y mira qué médicos y servicios lo incluyen</p>
+
+          <form id="compareForm" class="bg-white rounded-2xl p-3 shadow-soft max-w-2xl mx-auto">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="relative flex-1 text-left">
+                <label for="medSelect" class="sr-only">Medicamento</label>
+                <i class="fas fa-pills absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <select id="medSelect" class="w-full pl-12 pr-4 py-3 rounded-xl text-gray-800 bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#2563EB]">
+                  <option value="">Selecciona un medicamento</option>
+                </select>
+              </div>
+              <button type="submit" id="compareBtn" class="health-gradient text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
+                <i class="fas fa-balance-scale mr-2"></i>Comparar
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <main class="flex-1 container mx-auto px-4 py-10">
+      <div class="max-w-5xl mx-auto">
+        <div id="errorBox" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm" role="alert"></div>
+
+        <div id="intro" class="bg-white rounded-2xl shadow-soft p-10 text-center">
+          <i class="fas fa-pills text-4xl text-gray-300 mb-4"></i>
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">Elige un medicamento para empezar</h2>
+          <p class="text-gray-600">Verás los médicos y servicios que lo incluyen, ordenados por costo global.</p>
+        </div>
+
+        <div id="loading" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center text-gray-600">
+          <i class="fas fa-spinner fa-spin text-2xl text-[#2563EB] mb-3"></i>
+          <p>Consultando la comparativa...</p>
+        </div>
+
+        <div id="emptyState" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center">
+          <i class="fas fa-user-md text-4xl text-gray-300 mb-4"></i>
+          <h2 class="text-xl font-semibold text-gray-900 mb-2">Ningún médico o servicio incluye este medicamento</h2>
+          <p class="text-gray-600">Prueba con otro medicamento de la lista.</p>
+        </div>
+
+        <section id="results" class="hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+            <div>
+              <h2 id="resTitle" class="text-2xl font-bold text-gray-800"></h2>
+              <p id="resSub" class="text-gray-600" aria-live="polite"></p>
+            </div>
+            <div class="flex gap-2" role="tablist" aria-label="Filtrar por tipo">
+              <button type="button" data-tipo="todos" class="tab-btn active px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700">Todos</button>
+              <button type="button" data-tipo="medico" class="tab-btn px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700"><i class="fas fa-user-md mr-1"></i>Médicos</button>
+              <button type="button" data-tipo="servicio" class="tab-btn px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700"><i class="fas fa-stethoscope mr-1"></i>Servicios</button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-2xl shadow-soft p-5">
+              <p class="text-gray-600 text-sm">Costo global más bajo</p>
+              <p id="sMin" class="text-2xl font-bold text-green-600"></p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-soft p-5">
+              <p class="text-gray-600 text-sm">Costo global más alto</p>
+              <p id="sMax" class="text-2xl font-bold text-gray-900"></p>
+            </div>
+            <div class="bg-white rounded-2xl shadow-soft p-5">
+              <p class="text-gray-600 text-sm">Diferencia entre opciones</p>
+              <p id="sDiff" class="text-2xl font-bold text-[#2563EB]"></p>
+            </div>
+          </div>
+
+          <div id="list" class="space-y-4"></div>
+          <p class="text-gray-500 text-xs mt-4">Costo global = costo de la atención + precio del medicamento en esa sede (o el más bajo registrado si la sede no lo ofrece).</p>
+        </section>
+
+        <!-- HU48: comparador de 3 medicamentos + reporte PDF -->
+        <section id="comparador" class="mt-14 scroll-mt-24">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div>
+              <h2 id="cmpTitle" class="text-2xl font-bold text-gray-800">Compara 3 medicamentos lado a lado</h2>
+              <p id="cmpSub" class="text-gray-600">Elige tres productos y revisa sus datos y precios. Luego descarga el reporte para verlo sin conexión.</p>
+            </div>
+            <button id="btnPdf" type="button" class="health-gradient text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed whitespace-nowrap"><i class="fas fa-file-pdf mr-2"></i><span>Descargar PDF</span></button>
+          </div>
+
+          <div class="flex gap-2 mb-4" role="tablist" aria-label="Qué comparar">
+            <button type="button" id="modoMedicamentos" class="mode-btn px-5 py-2 rounded-lg border text-sm font-medium"><i class="fas fa-pills mr-2"></i>Medicamentos</button>
+            <button type="button" id="modoServicios" class="mode-btn px-5 py-2 rounded-lg border text-sm font-medium"><i class="fas fa-stethoscope mr-2"></i>Servicios</button>
+          </div>
+          <div class="bg-white rounded-2xl shadow-soft p-6 mb-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div><label for="cmp0" class="block text-sm font-medium text-gray-700 mb-2">Medicamento 1</label><select id="cmp0" class="cmp-sel w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"></select></div>
+              <div><label for="cmp1" class="block text-sm font-medium text-gray-700 mb-2">Medicamento 2</label><select id="cmp1" class="cmp-sel w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"></select></div>
+              <div><label for="cmp2" class="block text-sm font-medium text-gray-700 mb-2">Medicamento 3</label><select id="cmp2" class="cmp-sel w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"></select></div>
+            </div>
+            <p id="cmpWarn" class="hidden items-center bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-4"><i class="fas fa-exclamation-triangle mr-2"></i><span>Elige tres medicamentos distintos para poder compararlos.</span></p>
+          </div>
+
+          <div id="cmpBox">
+            <div class="bg-white rounded-2xl shadow-soft overflow-x-auto">
+              <table class="w-full text-left text-sm min-w-[640px]">
+                <thead id="cmpHead" class="bg-gray-50 text-gray-700"></thead>
+                <tbody id="cmpBody" class="divide-y divide-gray-100"></tbody>
+              </table>
+            </div>
+            <div id="cmpSummary" class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm mt-4"></div>
+            <p id="cmpAviso" class="text-gray-500 text-xs mt-3"></p>
+          </div>
+
+          <div id="cmpToast" class="hidden fixed top-20 right-4 z-[70] max-w-sm rounded-xl shadow-lg px-4 py-3 items-start" role="status"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/comparativa.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const money = (n) => "S/ " + Number(n).toFixed(2);
+      let filas = [];
+      let tipoActivo = "todos";
+
+      function esc(s) {
+        const d = document.createElement("div");
+        d.textContent = s == null ? "" : s;
+        return d.innerHTML;
+      }
+
+      function pintar() {
+        const vis = filas.filter((f) => tipoActivo === "todos" || f.Tipo === tipoActivo);
+        const min = Math.min(...filas.map((f) => f.CostoGlobal));
+        $("list").innerHTML = vis.length
+          ? vis.map((f) => {
+              const mejor = f.CostoGlobal === min;
+              const icono = f.Tipo === "medico" ? "fa-user-md" : "fa-stethoscope";
+              return `
+            <article class="row-card bg-white rounded-2xl shadow-soft p-5 ${mejor ? "border-2 border-green-500" : "border border-gray-100"}">
+              <div class="flex flex-col md:flex-row md:items-center gap-4">
+                <div class="flex items-start space-x-4 flex-1 min-w-0">
+                  <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas ${icono}"></i></div>
+                  <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h3 class="text-lg font-semibold text-gray-900">${esc(f.Nombre)}</h3>
+                      <span class="bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full text-xs font-medium">${f.Tipo === "medico" ? "Médico" : "Servicio"}</span>
+                      ${mejor ? '<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-check mr-1"></i>Menor costo</span>' : ""}
+                    </div>
+                    <p class="text-gray-600 text-sm">${esc(f.Detalle)}</p>
+                    <p class="text-gray-500 text-sm mt-1"><i class="fas fa-hospital mr-1"></i>${esc(f.Centro)}</p>
+                  </div>
+                </div>
+                <dl class="grid grid-cols-3 gap-4 text-center md:text-right md:w-80">
+                  <div><dt class="text-xs text-gray-500">Atención</dt><dd class="font-semibold text-gray-800">${money(f.CostoAtencion)}</dd></div>
+                  <div><dt class="text-xs text-gray-500">Medicamento</dt><dd class="font-semibold text-gray-800">${money(f.PrecioMedicamento)}</dd></div>
+                  <div><dt class="text-xs text-gray-500">Global</dt><dd class="text-xl font-bold ${mejor ? "text-green-600" : "text-[#2563EB]"}">${money(f.CostoGlobal)}</dd></div>
+                </dl>
+              </div>
+              <div class="mt-4 text-right">
+                <a href="4_provider_profile.html?id=${encodeURIComponent(f.IdCentroMedico)}" class="text-[#2563EB] font-medium hover:underline">Ver perfil de la sede</a>
+              </div>
+            </article>`;
+            }).join("")
+          : '<div class="bg-white rounded-2xl shadow-soft p-8 text-center text-gray-600">No hay resultados de este tipo para el medicamento elegido.</div>';
+      }
+
+      async function comparar(clave) {
+        $("errorBox").classList.add("hidden");
+        $("intro").classList.add("hidden");
+        $("results").classList.add("hidden");
+        $("emptyState").classList.add("hidden");
+        $("loading").classList.remove("hidden");
+        $("compareBtn").disabled = true;
+
+        const r = await ComparativaService.consultar(clave); // GET /api/comparativa
+
+        $("loading").classList.add("hidden");
+        $("compareBtn").disabled = false;
+
+        if (!r.ok) {
+          $("errorBox").textContent = r.error;
+          $("errorBox").classList.remove("hidden");
+          if (!clave) $("intro").classList.remove("hidden");
+          return;
+        }
+        if (!r.data.length) { $("emptyState").classList.remove("hidden"); return; }
+
+        filas = r.data.slice().sort((a, b) => a.CostoGlobal - b.CostoGlobal);
+        tipoActivo = "todos";
+        document.querySelectorAll(".tab-btn").forEach((b) => b.classList.toggle("active", b.dataset.tipo === "todos"));
+
+        const costos = filas.map((f) => f.CostoGlobal);
+        const min = Math.min(...costos), max = Math.max(...costos);
+        $("resTitle").textContent = r.medicamento.Nombre;
+        $("resSub").textContent = `${filas.length} ${filas.length === 1 ? "opción incluye" : "opciones incluyen"} este medicamento`;
+        $("sMin").textContent = money(min);
+        $("sMax").textContent = money(max);
+        $("sDiff").textContent = money(max - min);
+        pintar();
+        $("results").classList.remove("hidden");
+      }
+
+      // Selector de medicamentos
+      ComparativaService.listarMedicamentos().forEach((m) => {
+        const o = document.createElement("option");
+        o.value = m.Clave;
+        o.textContent = `${m.Nombre} (${m.Sedes} ${m.Sedes === 1 ? "sede" : "sedes"}, desde ${money(m.PrecioMin)})`;
+        $("medSelect").appendChild(o);
+      });
+
+      $("compareForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        comparar($("medSelect").value);
+      });
+      document.querySelectorAll(".tab-btn").forEach((b) =>
+        b.addEventListener("click", () => {
+          tipoActivo = b.dataset.tipo;
+          document.querySelectorAll(".tab-btn").forEach((x) => x.classList.toggle("active", x === b));
+          pintar();
+        })
+      );
+
+      // Soporta ?med= (clave del medicamento) desde otras páginas
+      const inicial = new URLSearchParams(location.search).get("med");
+      if (inicial) {
+        const op = Array.from($("medSelect").options).find((o) => o.value === inicial.trim().toLowerCase());
+        if (op) { $("medSelect").value = op.value; comparar(op.value); }
+      }
+    </script>
+  
+    <script>
+/* HU48: comparador de 3 opciones (medicamentos o servicios) + reporte PDF */
+const COMP = {
+  medicamentos: {
+    titulo: "Compara 3 medicamentos lado a lado", label: "Medicamento", archivo: "medicamentos",
+    sub: "Elige tres productos y revisa sus datos y precios. Luego descarga el reporte para verlo sin conexión.",
+    aviso: "Los medicamentos comparados pueden no ser intercambiables entre sí. Esta comparación es solo referencial de precios y datos; consulta a tu médico o farmacéutico.",
+    defecto: ["Paracetamol 500 mg", "Ibuprofeno 400 mg", "Amoxicilina 500 mg"],
+    items: {
+      "Paracetamol 500 mg":  { activo:"Paracetamol",       pres:"Caja x 20 tabletas", cat:"Analgésicos",       rx:false, sedes:{"Clínica Surco Vital":10.90,"Clínica San Juan":12.50,"Clínica Médica Central":12.50} },
+      "Ibuprofeno 400 mg":   { activo:"Ibuprofeno",        pres:"Caja x 10 tabletas", cat:"Antiinflamatorios", rx:false, sedes:{"Clínica Médica Central":8.80,"Clínica San Juan":9.00,"Centro Cardiológico":9.50} },
+      "Amoxicilina 500 mg":  { activo:"Amoxicilina",       pres:"Caja x 12 cápsulas", cat:"Antibióticos",      rx:true,  sedes:{"Clínica Médica Central":15.90,"Clínica Surco Vital":16.50} },
+      "Metformina 850 mg":   { activo:"Metformina",        pres:"Caja x 30 tabletas", cat:"Endocrinológicos",  rx:true,  sedes:{"Clínica Surco Vital":14.50} },
+      "Losartán 50 mg":      { activo:"Losartán potásico", pres:"Caja x 30 tabletas", cat:"Cardiovasculares",  rx:true,  sedes:{"Centro Cardiológico":18.00} },
+      "Salbutamol inhalador":{ activo:"Salbutamol",        pres:"Frasco 200 dosis",   cat:"Respiratorios",     rx:false, sedes:{"Clínica San Juan":19.90} }
+    },
+    filas: [["Principio activo", x=>x.activo], ["Presentación", x=>x.pres], ["Categoría", x=>x.cat], ["Tipo de venta", x=>x.rx ? "Con receta" : "Venta libre"],
+      ["Precio más bajo", x=>m2(x.min), true], ["Sede más económica", x=>x.sedeMin], ["Precio más alto", x=>m2(x.max)], ["Diferencia entre sedes", x=>m2(x.max - x.min)], ["Sedes que lo ofrecen", x=>x.n + (x.n === 1 ? " sede" : " sedes")]]
+  },
+  servicios: {
+    titulo: "Compara 3 servicios lado a lado", label: "Servicio", archivo: "servicios",
+    sub: "Elige tres servicios y revisa su precio en cada sede. Luego descarga el reporte para verlo sin conexión.",
+    aviso: "Los servicios comparados pueden diferir en alcance y duración. Esta comparación es solo referencial de precios; confirma los detalles con la sede.",
+    defecto: ["Consulta Médica General", "Ecografía Abdominal", "Limpieza Dental"],
+    items: {
+      "Consulta Médica General":   { cat:"Consultas",    dur:"30 minutos",        sedes:{"Policlínico La Molina":65,"Clínica Médica Central":70,"Clínica San Juan":80,"Clínica Miraflores Salud":85,"Centro Médico San Isidro":90,"Clínica Surco Vital":95,"Clínica Angloamericana":120} },
+      "Consulta con Especialista": { cat:"Consultas",    dur:"45 minutos",        sedes:{"Centro Cardiológico":120,"Clínica Médica Central":120,"Centro Médico San Isidro":170} },
+      "Análisis de Sangre Completo":{ cat:"Laboratorio", dur:"Resultados en 24h", sedes:{"Clínica Médica Central":65,"Laboratorio Médico Central":65} },
+      "Perfil Lipídico":           { cat:"Laboratorio",  dur:"Resultados en 24h", sedes:{"Laboratorio Médico Central":55,"Laboratorio Miraflores Diagnóstica":55} },
+      "Ecografía Abdominal":       { cat:"Imágenes",     dur:"45 minutos",        sedes:{"Clínica Miraflores Salud":170,"Clínica Médica Central":180} },
+      "Radiografía de Tórax":      { cat:"Imágenes",     dur:"20 minutos",        sedes:{"Clínica Miraflores Salud":45,"Clínica Angloamericana":60} },
+      "Limpieza Dental":           { cat:"Odontología",  dur:"40 minutos",        sedes:{"Policlínico La Molina":60,"Clínica Surco Vital":60,"Clínica San Juan":65} },
+      "Vacunación Adulto":         { cat:"Vacunación",   dur:"15 minutos",        sedes:{"Policlínico La Molina":35,"Clínica San Juan":35,"Clínica Miraflores Salud":40} },
+      "Chequeo Cardiovascular":    { cat:"Chequeos",     dur:"60 minutos",        sedes:{"Centro Cardiológico":180} },
+      "Examen Visual":             { cat:"Oftalmología", dur:"30 minutos",        sedes:{"Clínica San Juan":50} },
+      "Control Prenatal":          { cat:"Chequeos",     dur:"45 minutos",        sedes:{"Clínica Surco Vital":140} }
+    },
+    filas: [["Categoría", x=>x.cat], ["Duración", x=>x.dur],
+      ["Precio más bajo", x=>m2(x.min), true], ["Sede más económica", x=>x.sedeMin], ["Precio más alto", x=>m2(x.max)], ["Diferencia entre sedes", x=>m2(x.max - x.min)], ["Sedes que lo ofrecen", x=>x.n + (x.n === 1 ? " sede" : " sedes")]]
+  }
+};
+const m2 = (n) => "S/ " + Number(n).toFixed(2);
+const e2 = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+const sel = [0, 1, 2].map((i) => document.getElementById("cmp" + i));
+let MODO = "medicamentos", comp = null;
+
+function resumen(nombre) {
+  const c = COMP[MODO].items[nombre], e = Object.entries(c.sedes).sort((a, b) => a[1] - b[1]);
+  return { nombre, ...c, min: e[0][1], sedeMin: e[0][0], max: e[e.length - 1][1], n: e.length };
+}
+
+function pintarComparador() {
+  const C = COMP[MODO], v = sel.map((s) => s.value), dup = new Set(v).size < 3;
+  const w = document.getElementById("cmpWarn");
+  w.classList.toggle("hidden", !dup); w.classList.toggle("flex", dup);
+  document.getElementById("cmpBox").classList.toggle("hidden", dup);
+  document.getElementById("btnPdf").disabled = dup;
+  if (dup) { comp = null; return; }
+  comp = v.map(resumen);
+  const mejor = Math.min(...comp.map((x) => x.min));
+  const th = (x) => `<th class="px-5 py-4 align-top ${x.min === mejor ? "bg-green-50" : ""}"><p class="font-semibold text-gray-900">${e2(x.nombre)}</p>${x.min === mejor ? '<span class="inline-block mt-1 bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-check mr-1"></i>Precio más bajo</span>' : ""}</th>`;
+  document.getElementById("cmpHead").innerHTML = `<tr><th class="px-5 py-4 text-xs uppercase text-gray-500 font-semibold w-44">Característica</th>${comp.map(th).join("")}</tr>`;
+  document.getElementById("cmpBody").innerHTML = C.filas.map(([k, f, fuerte]) =>
+    `<tr><td class="px-5 py-3 text-gray-500">${k}</td>${comp.map((x) => `<td class="px-5 py-3 ${fuerte ? "font-bold text-lg " + (x.min === mejor ? "text-green-600" : "text-[#2563EB]") : "text-gray-800"} ${x.min === mejor ? "bg-green-50/50" : ""}">${e2(f(x))}</td>`).join("")}</tr>`).join("");
+  const orden = comp.slice().sort((a, b) => a.min - b.min), dif = orden[2].min - orden[0].min;
+  document.getElementById("cmpSummary").innerHTML = dif === 0
+    ? '<i class="fas fa-equals mr-2"></i>Las tres opciones tienen el mismo precio mínimo.'
+    : `<i class="fas fa-piggy-bank mr-2"></i><strong>${e2(orden[0].nombre)}</strong> tiene el precio más bajo (${m2(orden[0].min)} en ${e2(orden[0].sedeMin)}), ${m2(dif)} menos que <strong>${e2(orden[2].nombre)}</strong>.`;
+}
+
+function setModo(m) {
+  MODO = m; const C = COMP[m];
+  document.getElementById("cmpTitle").textContent = C.titulo;
+  document.getElementById("cmpSub").textContent = C.sub;
+  document.getElementById("cmpAviso").textContent = C.aviso;
+  document.querySelectorAll(".mode-btn").forEach((b) => {
+    const on = b.id === (m === "medicamentos" ? "modoMedicamentos" : "modoServicios");
+    b.className = "mode-btn px-5 py-2 rounded-lg border text-sm font-medium " + (on ? "bg-[#2563EB] text-white border-[#2563EB]" : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50");
+    b.setAttribute("aria-selected", on);
+  });
+  sel.forEach((s, i) => {
+    document.querySelector(`label[for=cmp${i}]`).textContent = `${C.label} ${i + 1}`;
+    s.innerHTML = "";
+    Object.keys(C.items).forEach((n) => { const o = document.createElement("option"); o.value = n; o.textContent = n; s.appendChild(o); });
+    s.value = C.defecto[i];
+  });
+  pintarComparador();
+}
+
+function toast2(msg, ok) {
+  const t = document.getElementById("cmpToast");
+  t.className = "fixed top-20 right-4 z-[70] max-w-sm rounded-xl shadow-lg px-4 py-3 items-start flex " + (ok ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-700");
+  t.innerHTML = `<i class="fas ${ok ? "fa-check-circle text-green-600" : "fa-exclamation-circle text-red-600"} mt-0.5 mr-3"></i><span class="text-sm font-medium">${e2(msg)}</span>`;
+  clearTimeout(toast2.h); toast2.h = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+
+/* HU48: POST /api/comparativa -> PDF descargable (medicamentos o servicios) */
+function descargarPdf() {
+  if (!comp) return;
+  if (!window.jspdf) { toast2("No se pudo generar el PDF. Revisa tu conexión e inténtalo de nuevo.", false); return; }
+  const C = COMP[MODO], b = document.getElementById("btnPdf"), lbl = b.querySelector("span");
+  b.disabled = true; lbl.textContent = "Generando...";
+  setTimeout(() => {
+    const { jsPDF } = window.jspdf, doc = new jsPDF(), q = (t) => String(t).normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    doc.setFillColor(37, 99, 235); doc.rect(0, 0, 210, 14, "F");
+    doc.setTextColor(0); let y = 26;
+    doc.setFontSize(18); doc.setFont("helvetica", "bold"); doc.text("ComparaSalud - Reporte comparativo de " + C.archivo, 14, y); y += 8;
+    doc.setFontSize(10); doc.setFont("helvetica", "normal"); doc.text("Generado: " + new Date().toLocaleString("es-PE"), 14, y); y += 10;
+    const X = [14, 62, 106, 150], W = 40;
+    doc.setFillColor(243, 244, 246); doc.rect(12, y - 5, 186, 12, "F");
+    doc.setFont("helvetica", "bold"); doc.setFontSize(10);
+    doc.text("Caracteristica", X[0], y + 2);
+    comp.forEach((x, i) => doc.text(doc.splitTextToSize(q(x.nombre), W)[0], X[i + 1], y + 2));
+    y += 14;
+    C.filas.forEach(([k, f, fuerte]) => {
+      const cel = comp.map((x) => doc.splitTextToSize(q(f(x)), W)), h = Math.max(...cel.map((c) => c.length)) * 5 + 3;
+      doc.setFont("helvetica", "bold"); doc.setTextColor(90); doc.text(q(k), X[0], y);
+      doc.setFont("helvetica", fuerte ? "bold" : "normal"); doc.setTextColor(0);
+      cel.forEach((c, i) => doc.text(c, X[i + 1], y));
+      y += h; doc.setDrawColor(229, 231, 235); doc.line(12, y - 4, 198, y - 4);
+    });
+    y += 4;
+    const orden = comp.slice().sort((a, b) => a.min - b.min), dif = orden[2].min - orden[0].min;
+    doc.setFont("helvetica", "bold"); doc.setFontSize(11);
+    const msg = dif === 0 ? "Las tres opciones tienen el mismo precio minimo." : `Mejor precio: ${orden[0].nombre} (${m2(orden[0].min)} en ${orden[0].sedeMin}), ${m2(dif)} menos que ${orden[2].nombre}.`;
+    doc.text(doc.splitTextToSize(q(msg), 180), 14, y); y += 16;
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8); doc.setTextColor(110);
+    doc.text(doc.splitTextToSize(q(C.aviso), 180), 14, y);
+    doc.save("reporte-comparativo-" + C.archivo + ".pdf");
+    b.disabled = false; lbl.textContent = "Descargar PDF";
+    toast2("Reporte PDF descargado correctamente", true);
+  }, 500);
+}
+
+sel.forEach((s) => s.addEventListener("change", pintarComparador));
+document.getElementById("modoMedicamentos").addEventListener("click", () => setModo("medicamentos"));
+document.getElementById("modoServicios").addEventListener("click", () => setModo("servicios"));
+document.getElementById("btnPdf").addEventListener("click", descargarPdf);
+const modoIni = new URLSearchParams(location.search).get("modo");
+setModo(modoIni === "servicios" ? "servicios" : "medicamentos");
+/* Selección que llega desde la búsqueda: ?modo=servicios&sel=A|B|C */
+(function () {
+  const raw = new URLSearchParams(location.search).get("sel");
+  if (modoIni !== "servicios" || !raw) return;
+  const ok = raw.split("|").filter((n, i, a) => COMP.servicios.items[n] && a.indexOf(n) === i).slice(0, 3);
+  if (!ok.length) return;
+  const resto = Object.keys(COMP.servicios.items).filter((n) => !ok.includes(n));
+  const lista = ok.concat(resto).slice(0, 3);
+  sel.forEach((s, i) => { s.value = lista[i]; });
+  pintarComparador();
+  if (ok.length < 3) toast2("Elegiste " + ok.length + " servicio(s); completamos con otro para comparar 3.", true);
+})();
+if (modoIni === "servicios") setTimeout(() => document.getElementById("comparador").scrollIntoView(), 100);
+</script>
+  </body>
+</html>

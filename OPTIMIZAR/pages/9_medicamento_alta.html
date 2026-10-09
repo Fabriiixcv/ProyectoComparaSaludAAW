@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Alta en Catálogo General - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+html{scroll-behavior:smooth}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+.btn-ok{display:none}
+form:not(:has(:placeholder-shown)) .btn-ok{display:flex}
+form:not(:has(:placeholder-shown)) .btn-no{display:none}
+.hint{display:none}
+form:has(#nombre:placeholder-shown) .h-nombre,
+form:has(#activo:placeholder-shown) .h-activo,
+form:has(#conc:placeholder-shown) .h-conc,
+form:has(#pres:placeholder-shown) .h-pres,
+form:has(#desc:placeholder-shown) .h-desc{display:flex}
+.modal{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:60;align-items:center;justify-content:center;padding:1rem}
+.modal:target{display:flex}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-14">
+      <a href="3_provider_home.html" class="flex items-center space-x-3">
+        <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+        <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-8">
+<a href="3_provider_home.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Inicio</a>
+<a href="9_medication_catalog.html" class="text-[#2563EB] font-medium">Catálogo</a>
+<a href="9_servicio_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Servicios</a>
+<a href="9_medico_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Médicos</a>
+<a href="9_provider_edit.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Mi sede</a>
+<a href="8_help_center.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Ayuda</a>
+</nav>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span class="hidden md:block text-gray-700 font-medium">Clínica Demo</span>
+      <a href="1_2_auth.html" class="text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100" aria-label="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+</header>
+
+<!-- Mensaje de éxito HU22 -->
+<div id="exito" class="hidden target:flex fixed top-20 right-4 z-[70] max-w-sm bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <div class="text-sm"><p class="font-medium">Medicamento dado de alta en el catálogo general</p><a href="9_medicamento_generico.html" class="underline text-xs">Asociarlo a un genérico</a></div>
+  <a href="#nombre" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+
+<section class="health-gradient text-white py-10">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Dar de alta en el catálogo general</h1>
+    <p class="text-lg opacity-90">Registra un medicamento que aún no existe en el listado maestro</p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-10">
+  <div class="max-w-2xl mx-auto">
+    <nav class="text-sm text-gray-500 mb-4"><a href="9_medication_catalog.html" class="hover:text-blue-600"><i class="fas fa-arrow-left mr-1"></i>Volver al catálogo</a></nav>
+
+    <div class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-sm mb-6">
+      <i class="fas fa-info-circle mt-0.5 mr-2"></i>Antes de registrar, verifica que el producto no figure ya en el listado maestro; si existe, solo vincúlalo a tu establecimiento.
+    </div>
+
+    <!-- HU22: Dar de alta en catálogo => POST /api/medicamento (tabla maestra de medicamentos globales) -->
+    <form action="/api/medicamento" method="post" class="bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-6" onsubmit="return false" novalidate>
+      <div>
+        <label for="nombre" class="block text-gray-700 text-sm font-medium mb-2">Nombre del medicamento *</label>
+        <input type="text" id="nombre" maxlength="100" placeholder="Ej: Cetirizina 10 mg" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+        <p class="hint h-nombre items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta ingresar el nombre.</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="activo" class="block text-gray-700 text-sm font-medium mb-2">Principio activo *</label>
+          <input type="text" id="activo" placeholder="Ej: Cetirizina" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+          <p class="hint h-activo items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta el principio activo.</p>
+        </div>
+        <div>
+          <label for="conc" class="block text-gray-700 text-sm font-medium mb-2">Concentración *</label>
+          <input type="text" id="conc" placeholder="Ej: 10 mg" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+          <p class="hint h-conc items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta la concentración.</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="pres" class="block text-gray-700 text-sm font-medium mb-2">Presentación *</label>
+          <input type="text" id="pres" placeholder="Ej: Caja x 10 tabletas" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+          <p class="hint h-pres items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta la presentación.</p>
+        </div>
+        <div>
+          <label for="cat" class="block text-gray-700 text-sm font-medium mb-2">Categoría</label>
+          <select id="cat" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]"><option>Analgésicos</option><option>Antiinflamatorios</option><option>Antibióticos</option><option selected>Antialérgicos</option><option>Cardiovasculares</option><option>Gastrointestinales</option></select>
+        </div>
+      </div>
+
+      <div>
+        <span class="block text-gray-700 text-sm font-medium mb-2">Tipo de producto</span>
+        <div class="grid grid-cols-2 gap-3">
+          <label class="cursor-pointer"><input type="radio" name="tipo" class="peer sr-only" checked /><div class="border border-gray-300 rounded-xl p-3 text-center peer-checked:border-blue-600 peer-checked:bg-blue-50"><i class="fas fa-tag text-blue-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Comercial (marca)</div></div></label>
+          <label class="cursor-pointer"><input type="radio" name="tipo" class="peer sr-only" /><div class="border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50"><i class="fas fa-leaf text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Genérico</div></div></label>
+        </div>
+      </div>
+
+      <label class="flex items-center gap-3 p-3 border border-gray-200 rounded-xl cursor-pointer"><input type="checkbox" class="accent-red-500 w-4 h-4" /><span class="text-sm text-gray-700"><i class="fas fa-file-prescription text-red-500 mr-1"></i>Requiere receta médica</span></label>
+
+      <div>
+        <label for="desc" class="block text-gray-700 text-sm font-medium mb-2">Descripción técnica *</label>
+        <textarea id="desc" rows="4" maxlength="500" placeholder="Indicaciones, uso y datos técnicos del producto." class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] resize-none"></textarea>
+        <p class="hint h-desc items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta la descripción técnica.</p>
+      </div>
+
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+        <a href="9_medication_catalog.html" class="text-center px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50">Cancelar</a>
+        <a href="#incompleto" class="btn-no justify-center items-center bg-gray-300 text-gray-600 px-6 py-3 rounded-xl font-medium cursor-not-allowed flex"><i class="fas fa-database mr-2"></i>Dar de alta en catálogo</a>
+        <a href="#exito" class="btn-ok justify-center items-center health-gradient text-white px-6 py-3 rounded-xl font-medium hover:opacity-90"><i class="fas fa-database mr-2"></i>Dar de alta en catálogo</a>
+      </div>
+
+      <p class="text-center text-xs text-gray-400">
+        <a href="#duplicado" class="underline hover:text-gray-600">Simular medicamento ya existente</a> ·
+        <a href="#error" class="underline hover:text-gray-600">Simular error del servidor</a>
+      </p>
+    </form>
+  </div>
+</main>
+
+<div id="incompleto" class="modal"><div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6"><div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-exclamation-triangle text-xl"></i></div><h3 class="text-xl font-bold text-gray-900 text-center mb-2">No se puede dar de alta aún</h3><p class="text-gray-600 text-center mb-6">Completa nombre, principio activo, concentración, presentación y descripción técnica.</p><a href="#nombre" class="block text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Entendido, completar datos</a></div></div>
+
+<div id="duplicado" class="modal"><div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6"><div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-clone text-xl"></i></div><h3 class="text-xl font-bold text-gray-900 text-center mb-2">Este medicamento ya existe</h3><p class="text-gray-600 text-center mb-6"><strong>Cetirizina 10 mg</strong> ya figura en el listado maestro. No es necesario registrarlo de nuevo: puedes vincularlo a tu establecimiento.</p><div class="flex flex-col-reverse sm:flex-row gap-3"><a href="#nombre" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cerrar</a><a href="9_medication_add.html" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Vincular a mi sede</a></div></div></div>
+
+<div id="error" class="modal"><div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6"><div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-server text-xl"></i></div><h3 class="text-xl font-bold text-gray-900 text-center mb-2">No pudimos completar el alta</h3><p class="text-gray-600 text-center mb-6">Error al conectar con el servidor (POST /api/medicamento). Tus datos se conservan, inténtalo nuevamente.</p><div class="flex flex-col-reverse sm:flex-row gap-3"><a href="#nombre" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cerrar</a><a href="#exito" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-redo mr-2"></i>Reintentar</a></div></div></div>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+</body>
+</html>

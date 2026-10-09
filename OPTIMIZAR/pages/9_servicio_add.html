@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Nuevo Servicio Médico - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+html{scroll-behavior:smooth}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+
+/* ---------- Validación simulada (solo CSS) ---------- */
+.btn-ok{display:none}
+form:not(:has(:placeholder-shown)):not(:has(#precio:invalid)) .btn-ok{display:flex}
+form:not(:has(:placeholder-shown)):not(:has(#precio:invalid)) .btn-no{display:none}
+.hint{display:none}
+form:has(#nombre:placeholder-shown) .h-nombre,
+form:has(#desc:placeholder-shown) .h-desc,
+form:has(#precio:placeholder-shown) .h-precio-vacio,
+form:has(#precio:not(:placeholder-shown):invalid) .h-precio-inv{display:flex}
+form:has(#nombre:not(:placeholder-shown)) #nombre,
+form:has(#desc:not(:placeholder-shown)) #desc{border-color:#10b981}
+#precio:not(:placeholder-shown):invalid{border-color:#ef4444}
+
+/* ---------- Modales con :target ---------- */
+.modal{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:60;align-items:center;justify-content:center;padding:1rem}
+.modal:target{display:flex}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-14">
+      <a href="3_provider_home.html" class="flex items-center space-x-3">
+        <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+        <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-8">
+<a href="3_provider_home.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Inicio</a>
+<a href="9_medication_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Catálogo</a>
+<a href="9_servicio_catalog.html" class="text-[#2563EB] font-medium">Servicios</a>
+<a href="9_medico_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Médicos</a>
+<a href="9_provider_edit.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Mi sede</a>
+<a href="8_help_center.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Ayuda</a>
+</nav>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span class="hidden md:block text-gray-700 font-medium">Clínica Demo</span>
+      <a href="1_2_auth.html" class="text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100" aria-label="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+</header>
+
+<section class="health-gradient text-white py-10">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Nuevo Servicio Médico</h1>
+    <p class="text-lg opacity-90">Registra una atención o procedimiento para ofrecerlo a los pacientes</p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-10">
+  <div class="max-w-2xl mx-auto">
+    <nav class="text-sm text-gray-500 mb-4"><a href="9_servicio_catalog.html" class="hover:text-blue-600"><i class="fas fa-arrow-left mr-1"></i>Volver a mis servicios</a></nav>
+
+    <!-- HU42: Guardar Servicio => POST /api/servicio (tabla Servicio: NombreServicio, Descripcion, Precio, IdCentroMedico) -->
+    <form action="/api/servicio" method="post" class="bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-6" onsubmit="return false" novalidate>
+
+      <div>
+        <label class="block text-gray-700 text-sm font-medium mb-2">Sede</label>
+        <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200">
+          <div class="w-9 h-9 rounded-lg health-gradient text-white flex items-center justify-center"><i class="fas fa-hospital"></i></div>
+          <div><p class="font-medium text-gray-900 text-sm">Clínica Demo</p><p class="text-gray-500 text-xs">Av. Arequipa 1450, Lince · el servicio quedará vinculado a esta sede</p></div>
+        </div>
+      </div>
+
+      <div>
+        <label for="nombre" class="block text-gray-700 text-sm font-medium mb-2">Nombre del servicio *</label>
+        <input type="text" id="nombre" name="NombreServicio" maxlength="100" placeholder="Ej: Ecografía Obstétrica"
+          class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+        <p class="hint h-nombre items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta ingresar el nombre del servicio.</p>
+      </div>
+
+      <div>
+        <label for="cat" class="block text-gray-700 text-sm font-medium mb-2">Categoría</label>
+        <select id="cat" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]">
+          <option>Consultas</option><option>Laboratorio</option><option selected>Imágenes</option><option>Odontología</option><option>Oftalmología</option><option>Vacunación</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="desc" class="block text-gray-700 text-sm font-medium mb-2">Descripción *</label>
+        <textarea id="desc" name="Descripcion" rows="4" maxlength="500" placeholder="Describe en qué consiste el procedimiento y qué incluye."
+          class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] resize-none"></textarea>
+        <div class="flex justify-between items-start">
+          <p class="hint h-desc items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta escribir la descripción.</p>
+          <span class="text-gray-400 text-xs mt-1 ml-auto">Máximo 500 caracteres</span>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div>
+          <label for="precio" class="block text-gray-700 text-sm font-medium mb-2">Costo del procedimiento (S/) *</label>
+          <div class="relative">
+            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">S/</span>
+            <input type="number" id="precio" name="Precio" step="0.01" min="0.01" max="99999" required placeholder="0.00"
+              class="w-full pl-10 pr-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+          </div>
+          <p class="hint h-precio-vacio items-center text-amber-700 text-sm mt-1"><i class="fas fa-exclamation-triangle mr-2"></i>Falta ingresar el costo.</p>
+          <p class="hint h-precio-inv items-center text-red-600 text-sm mt-1"><i class="fas fa-times-circle mr-2"></i>El costo debe ser mayor a S/ 0.00.</p>
+        </div>
+        <div>
+          <label for="dur" class="block text-gray-700 text-sm font-medium mb-2">Duración estimada</label>
+          <select id="dur" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]">
+            <option>15 minutos</option><option>30 minutos</option><option selected>45 minutos</option><option>60 minutos</option><option>Resultados en 24h</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-sm">
+        <i class="fas fa-info-circle mt-0.5 mr-2"></i>El precio será visible para los pacientes en tu perfil público y en los resultados de búsqueda.
+      </div>
+
+      <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+        <a href="9_servicio_catalog.html" class="text-center px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50">Cancelar</a>
+        <!-- Incompleto: muestra advertencia -->
+        <a href="#incompleto" class="btn-no justify-center items-center bg-gray-300 text-gray-600 px-6 py-3 rounded-xl font-medium cursor-not-allowed flex"><i class="fas fa-save mr-2"></i>Guardar Servicio</a>
+        <!-- Completo: simula el POST y vuelve al listado con el mensaje de éxito -->
+        <a href="9_servicio_catalog.html#exito" class="btn-ok justify-center items-center health-gradient text-white px-6 py-3 rounded-xl font-medium hover:opacity-90"><i class="fas fa-save mr-2"></i>Guardar Servicio</a>
+      </div>
+
+      <p class="text-center text-xs text-gray-400">
+        <a href="#error" class="underline hover:text-gray-600">Simular error del servidor</a> ·
+        <a href="#sin-sesion" class="underline hover:text-gray-600">Simular sesión expirada</a>
+      </p>
+    </form>
+  </div>
+</main>
+
+<!-- Advertencia: formulario incompleto -->
+<div id="incompleto" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-exclamation-triangle text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">No se puede guardar aún</h3>
+    <p class="text-gray-600 text-center mb-6">Completa el <strong>nombre</strong>, la <strong>descripción</strong> y un <strong>costo válido</strong> (mayor a S/ 0.00) para registrar el servicio.</p>
+    <a href="#nombre" class="block text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Entendido, completar datos</a>
+  </div>
+</div>
+
+<!-- Error del servidor -->
+<div id="error" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-server text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">No pudimos registrar el servicio</h3>
+    <p class="text-gray-600 text-center mb-6">Ocurrió un error al conectar con el servidor (POST /api/servicio). Tus datos no se perdieron, inténtalo nuevamente.</p>
+    <div class="flex flex-col-reverse sm:flex-row gap-3">
+      <a href="#nombre" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cerrar</a>
+      <a href="9_servicio_catalog.html#exito" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-redo mr-2"></i>Reintentar</a>
+    </div>
+  </div>
+</div>
+
+<!-- Sesión expirada -->
+<div id="sin-sesion" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Tu sesión expiró</h3>
+    <p class="text-gray-600 text-center mb-6">Solo un centro médico autenticado puede registrar servicios en su sede. Inicia sesión nuevamente para continuar.</p>
+    <div class="flex flex-col-reverse sm:flex-row gap-3">
+      <a href="#nombre" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Ahora no</a>
+      <a href="1_2_auth.html" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Iniciar sesión</a>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+</body>
+</html>

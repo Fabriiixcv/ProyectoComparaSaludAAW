@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>ComparaSalud - Explora</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+      }
+
+      .health-gradient {
+        background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+      }
+
+      .patient-gradient {
+        background: linear-gradient(135deg, #2563eb 0%, #8b5cf6 100%);
+      }
+
+      .provider-gradient {
+        background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%);
+      }
+
+      .business-gradient {
+        background: linear-gradient(135deg, #8b5cf6 0%, #f59e0b 100%);
+      }
+
+      .nav-active {
+        position: relative;
+      }
+
+      .nav-active::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: currentColor;
+        border-radius: 2px;
+      }
+
+      .hover-lift {
+        transition: all 0.3s ease;
+      }
+
+      .hover-lift:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+
+      .stat-card {
+        background: linear-gradient(
+          135deg,
+          rgba(255, 255, 255, 0.9) 0%,
+          rgba(255, 255, 255, 0.7) 100%
+        );
+        backdrop-filter: blur(10px);
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav
+      class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100"
+    >
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <!-- Logo -->
+          <a href="../index.html" class="flex items-center space-x-3">
+            <img
+              src="../assets/img/logo.png"
+              alt="ComparaSalud"
+              class="w-10 h-10"
+            />
+            <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+          </a>
+
+          <!-- Desktop Navigation -->
+          <div class="links hidden md:flex items-center space-x-8">
+            <a
+              href="#patient-landing"
+              class="text-blue-600 font-semibold nav-active"
+              >Pacientes</a
+            >
+            <a
+              href="#provider-landing"
+              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >Proveedores</a
+            >
+            <a
+              href="#business-landing"
+              class="text-gray-600 hover:text-blue-600 font-medium transition-colors"
+              >Empresas</a
+            >
+            <button
+              onclick="window.location.href='./1_2_auth.html'"
+              class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+            >
+              Iniciar Sesión
+            </button>
+          </div>
+
+          <!-- Mobile menu button -->
+          <div class="md:hidden">
+            <button
+              id="mobile-menu-button"
+              class="text-gray-600 hover:text-blue-600"
+            >
+              <i class="fas fa-bars text-xl"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mobile Menu -->
+      <div
+        id="mobile-menu"
+        class="hidden md:hidden bg-white border-t border-gray-200"
+      >
+        <div class="links px-4 py-6 space-y-4">
+          <a href="#patient-landing" class="block text-blue-600 font-semibold"
+            >Pacientes</a
+          >
+          <a
+            href="#provider-landing"
+            class="block text-gray-600 hover:text-blue-600 font-medium"
+            >Proveedores</a
+          >
+          <a
+            href="#business-landing"
+            class="block text-gray-600 hover:text-blue-600 font-medium"
+            >Empresas</a
+          >
+          <button
+            onclick="window.location.href='./1_2_auth.html'"
+            class="w-full bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          >
+            Iniciar Sesión
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Landing Page para Pacientes -->
+    <section id="patient-landing" class="min-h-screen">
+      <!-- Hero Section -->
+      <div class="patient-gradient text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Content -->
+            <div>
+              <div
+                class="inline-flex items-center bg-white/20 rounded-full px-4 py-2 mb-6"
+              >
+                <i class="fas fa-user-injured mr-2"></i>
+                <span class="text-sm font-medium"
+                  >Para pacientes y familias</span
+                >
+              </div>
+              <h1 class="text-4xl lg:text-6xl font-bold mb-6">
+                Toma el control de tu salud con transparencia
+              </h1>
+              <p class="text-xl mb-8 opacity-90">
+                Encuentra y compara servicios de salud y medicamentos con precios claros y calificaciones reales.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <a
+                  href="./1_2_auth.html?modo=registro&rol=paciente"
+                  class="bg-white text-blue-600 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors text-lg"
+                >
+                  Comenzar ahora
+                </a>
+                <a
+                  href="./about.html"
+                  class="border-2 border-white text-white font-semibold px-8 py-4 rounded-lg hover:bg-white/10 transition-colors text-lg"
+                >
+                  <i class="fas fa-play mr-2"></i>
+                  Ver video
+                </a>
+              </div>
+            </div>
+
+            <!-- Right Content - Hero Image -->
+            <div class="relative">
+              <div class="bg-white/20 rounded-3xl p-8 backdrop-blur-sm">
+                <div class="grid grid-cols-2 gap-6">
+                  <div
+                    class="bg-white/30 rounded-2xl p-6 text-center hover-lift"
+                  >
+                    <i class="fas fa-search text-3xl mb-4"></i>
+                    <h3 class="font-semibold mb-2">Busca</h3>
+                    <p class="text-sm opacity-90">
+                      Encuentra proveedores cerca de ti
+                    </p>
+                  </div>
+                  <div
+                    class="bg-white/30 rounded-2xl p-6 text-center hover-lift"
+                  >
+                    <i class="fas fa-balance-scale text-3xl mb-4"></i>
+                    <h3 class="font-semibold mb-2">Compara</h3>
+                    <p class="text-sm opacity-90">Precios y calificaciones</p>
+                  </div>
+                  <div
+                    class="bg-white/30 rounded-2xl p-6 text-center hover-lift"
+                  >
+                    <i class="fas fa-pills text-3xl mb-4"></i><h3 class="font-semibold mb-2">Explora</h3><p class="text-sm opacity-90">Medicamentos y servicios</p>
+                  </div>
+                  <div
+                    class="bg-white/30 rounded-2xl p-6 text-center hover-lift"
+                  >
+                    <i class="fas fa-heart text-3xl mb-4"></i>
+                    <h3 class="font-semibold mb-2">Ahorra</h3>
+                    <p class="text-sm opacity-90">Hasta 40% en servicios</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="bg-white py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div class="text-center">
+              <div class="text-3xl font-bold text-blue-600 mb-2">50K+</div>
+              <div class="text-gray-600">Pacientes activos</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-green-600 mb-2">2.5K+</div>
+              <div class="text-gray-600">Proveedores verificados</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-purple-600 mb-2">40%</div>
+              <div class="text-gray-600">De ahorro promedio</div>
+            </div>
+            <div class="text-center">
+              <div class="text-3xl font-bold text-cyan-600 mb-2">4.8/5</div>
+              <div class="text-gray-600">Calificación de usuarios</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+              Todo lo que necesitas para tu salud en un solo lugar
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+              Diseñado pensando en ti y tu familia, con transparencia y
+              simplicidad
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-2xl p-8 shadow-lg hover-lift">
+              <div
+                class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mb-6"
+              >
+                <i class="fas fa-map-marker-alt text-blue-600 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                Encuentra cerca de ti
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Geolocalización inteligente para mostrarte los mejores
+                proveedores en tu zona con precios transparentes.
+              </p>
+              <ul class="space-y-2 text-gray-600">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Distancias y tiempos reales
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Horarios de atención actualizados
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Precios actualizados
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl p-8 shadow-lg hover-lift">
+              <div
+                class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mb-6"
+              >
+                <i class="fas fa-chart-line text-green-600 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                Compara con transparencia
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Información clara sobre precios, calificaciones y experiencias
+                de otros pacientes para que decidas con confianza.
+              </p>
+              <ul class="space-y-2 text-gray-600">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Precios desglosados sin sorpresas
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Reseñas verificadas de pacientes
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Comparación lado a lado
+                </li>
+              </ul>
+            </div>
+
+            <div class="bg-white rounded-2xl p-8 shadow-lg hover-lift">
+              <div
+                class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-6"
+              >
+                <i class="fas fa-pills text-purple-600 text-2xl"></i>
+              </div>
+              <h3 class="text-xl font-semibold text-gray-800 mb-4">
+                Consulta medicamentos
+              </h3>
+              <p class="text-gray-600 mb-4">
+                Revisa el catálogo de medicamentos de cada proveedor con nombre, descripción y precio.
+              </p>
+              <ul class="space-y-2 text-gray-600">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Catálogo actualizado por cada sede
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Precios claros por producto
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-2"></i>
+                  Compara entre proveedores
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">
+            Comienza a tomar decisiones informadas sobre tu salud
+          </h2>
+          <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Únete a miles de pacientes que ya están ahorrando tiempo y dinero
+            mientras reciben la mejor atención médica.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="./1_2_auth.html?modo=registro&rol=paciente"
+              class="bg-blue-600 text-white font-semibold px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors text-lg"
+            >
+              Crear cuenta gratuita
+            </a>
+            <a
+              href="https://play.google.com/store/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="border-2 border-gray-300 text-gray-700 font-semibold px-8 py-4 rounded-lg hover:border-blue-600 hover:text-blue-600 transition-colors text-lg"
+            >
+              Descargar app
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Landing Page para Proveedores -->
+    <section id="provider-landing" class="min-h-screen bg-gray-50 hidden">
+      <!-- Hero Section -->
+      <div class="provider-gradient text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Content -->
+            <div>
+              <div
+                class="inline-flex items-center bg-white/20 rounded-full px-4 py-2 mb-6"
+              >
+                <i class="fas fa-stethoscope mr-2"></i>
+                <span class="text-sm font-medium"
+                  >Para proveedores de salud</span
+                >
+              </div>
+              <h1 class="text-4xl lg:text-6xl font-bold mb-6">
+                Llega a más pacientes y optimiza tu consultorio
+              </h1>
+              <p class="text-xl mb-8 opacity-90">
+                Conecta con pacientes que buscan activamente tus servicios,
+                reduce tiempos muertos y aumenta la eficiencia de tu práctica.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="window.location.href='./1_2_auth.html?modo=registro&rol=proveedor'"
+                  class="bg-white text-green-600 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors text-lg"
+                >
+                  Unirme como proveedor
+                </button>
+                <button onclick="window.location.href='./8_help_center.html'"
+                  class="border-2 border-white text-white font-semibold px-8 py-4 rounded-lg hover:bg-white/10 transition-colors text-lg"
+                >
+                  Solicitar demo
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Content - Stats -->
+            <div class="bg-white/20 rounded-3xl p-8 backdrop-blur-sm">
+              <div class="grid grid-cols-2 gap-6">
+                <div class="bg-white/30 rounded-2xl p-6 text-center">
+                  <div class="text-2xl font-bold mb-2">85%</div>
+                  <p class="text-sm opacity-90">
+                    De proveedores aumentan su visibilidad
+                  </p>
+                </div>
+                <div class="bg-white/30 rounded-2xl p-6 text-center">
+                  <div class="text-2xl font-bold mb-2">30%</div>
+                  <p class="text-sm opacity-90">Menor tiempo administrativo</p>
+                </div>
+                <div class="bg-white/30 rounded-2xl p-6 text-center">
+                  <div class="text-2xl font-bold mb-2">4.7/5</div>
+                  <p class="text-sm opacity-90">Satisfacción de proveedores</p>
+                </div>
+                <div class="bg-white/30 rounded-2xl p-6 text-center">
+                  <div class="text-2xl font-bold mb-2">24/7</div>
+                  <p class="text-sm opacity-90">Catálogo siempre disponible</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Benefits Section -->
+      <div class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+              Optimiza tu práctica médica con nuestras herramientas
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+              Diseñado específicamente para las necesidades de proveedores de
+              salud
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Side - Image/Illustration -->
+            <div
+              class="bg-gradient-to-br from-green-50 to-cyan-50 rounded-3xl p-8"
+            >
+              <div class="bg-white rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center justify-between mb-6">
+                  <div class="flex items-center">
+                    <div
+                      class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center"
+                    >
+                      <i class="fas fa-user-md text-green-600"></i>
+                    </div>
+                    <div class="ml-4">
+                      <div class="font-semibold">Dr. Rodríguez</div>
+                      <div class="text-sm text-gray-600">Cardiología</div>
+                    </div>
+                  </div>
+                  <div class="text-2xl font-bold text-green-600">98%</div>
+                </div>
+                <div class="space-y-4">
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Catálogo completo</span>
+                    <span class="font-semibold">92%</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      class="bg-green-600 h-2 rounded-full"
+                      style="width: 92%"
+                    ></div>
+                  </div>
+                  <div class="flex justify-between items-center">
+                    <span class="text-gray-600">Pacientes nuevos</span>
+                    <span class="font-semibold">45/mes</span>
+                  </div>
+                  <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div
+                      class="bg-cyan-600 h-2 rounded-full"
+                      style="width: 75%"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right Side - Features -->
+            <div class="space-y-8">
+              <div class="flex items-start">
+                <div
+                  class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0 mr-6"
+                >
+                  <i class="fas fa-users text-green-600 text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                    Más pacientes calificados
+                  </h3>
+                  <p class="text-gray-600">
+                    Conecta con pacientes que buscan específicamente tus
+                    especialidades y están listos para consultar.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div
+                  class="w-12 h-12 bg-cyan-100 rounded-xl flex items-center justify-center flex-shrink-0 mr-6"
+                >
+                  <i class="fas fa-pills text-cyan-600 text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                    Gestión simple de tu catálogo
+                  </h3>
+                  <p class="text-gray-600">
+                    Registra y administra los medicamentos de tu sede con precios y descripciones.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div
+                  class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 mr-6"
+                >
+                  <i class="fas fa-chart-bar text-blue-600 text-xl"></i>
+                </div>
+                <div>
+                  <h3 class="text-xl font-semibold text-gray-800 mb-2">
+                    Analíticas y reportes
+                  </h3>
+                  <p class="text-gray-600">
+                    Toma decisiones basadas en datos con reportes detallados de
+                    tu práctica y desempeño.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="py-20 bg-gray-50">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">
+            Únete a nuestra red de proveedores verificados
+          </h2>
+          <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Más de 2,500 proveedores ya confían en nosotros para hacer crecer su
+            práctica y servir mejor a sus pacientes.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onclick="window.location.href='./1_2_auth.html?modo=registro&rol=proveedor'"
+              class="bg-green-600 text-white font-semibold px-8 py-4 rounded-lg hover:bg-green-700 transition-colors text-lg"
+            >
+              Registrar mi consultorio
+            </button>
+            <button onclick="window.location.href='./8_help_center.html'"
+              class="border-2 border-gray-300 text-gray-700 font-semibold px-8 py-4 rounded-lg hover:border-green-600 hover:text-green-600 transition-colors text-lg"
+            >
+              Hablar con ventas
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Landing Page para Empresas -->
+    <section id="business-landing" class="min-h-screen bg-white hidden">
+      <!-- Hero Section -->
+      <div class="business-gradient text-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <!-- Left Content -->
+            <div>
+              <div
+                class="inline-flex items-center bg-white/20 rounded-full px-4 py-2 mb-6"
+              >
+                <i class="fas fa-building mr-2"></i>
+                <span class="text-sm font-medium">Para empresas</span>
+              </div>
+              <h1 class="text-4xl lg:text-6xl font-bold mb-6">
+                Salud accesible para tus colaboradores
+              </h1>
+              <p class="text-xl mb-8 opacity-90">
+                Mejora el bienestar de tu equipo con acceso preferencial a
+                servicios de salud de calidad y precios corporativos exclusivos.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-4">
+                <button onclick="window.location.href='./8_help_center.html'"
+                  class="bg-white text-purple-600 font-semibold px-8 py-4 rounded-lg hover:bg-gray-100 transition-colors text-lg"
+                >
+                  Solicitar cotización
+                </button>
+                <button onclick="window.location.href='./8_help_center.html'"
+                  class="border-2 border-white text-white font-semibold px-8 py-4 rounded-lg hover:bg-white/10 transition-colors text-lg"
+                >
+                  Ver casos de éxito
+                </button>
+              </div>
+            </div>
+
+            <!-- Right Content - Benefits -->
+            <div class="bg-white/20 rounded-3xl p-8 backdrop-blur-sm">
+              <div class="space-y-6">
+                <div class="flex items-center bg-white/30 rounded-2xl p-4">
+                  <div
+                    class="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center mr-4"
+                  >
+                    <i class="fas fa-chart-line"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold">Hasta 35% de ahorro</div>
+                    <div class="text-sm opacity-90">
+                      En servicios médicos para empleados
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center bg-white/30 rounded-2xl p-4">
+                  <div
+                    class="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center mr-4"
+                  >
+                    <i class="fas fa-user-shield"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold">+25% productividad</div>
+                    <div class="text-sm opacity-90">
+                      Mejora en equipos con acceso a salud
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex items-center bg-white/30 rounded-2xl p-4">
+                  <div
+                    class="w-12 h-12 bg-white/30 rounded-xl flex items-center justify-center mr-4"
+                  >
+                    <i class="fas fa-heartbeat"></i>
+                  </div>
+                  <div>
+                    <div class="font-semibold">95% satisfacción</div>
+                    <div class="text-sm opacity-90">
+                      De empleados en empresas asociadas
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plans Section -->
+      <div class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center mb-16">
+            <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-4">
+              Planes corporativos diseñados para tu empresa
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+              Desde startups hasta grandes corporaciones, tenemos la solución
+              perfecta para el bienestar de tu equipo
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <!-- Plan Básico -->
+            <div
+              class="bg-white rounded-2xl p-8 shadow-lg border-2 border-gray-200 hover-lift"
+            >
+              <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">Startup</h3>
+                <div class="text-4xl font-bold text-gray-800 mb-2">
+                  $29<span class="text-lg text-gray-600">/empleado/mes</span>
+                </div>
+                <p class="text-gray-600">Para empresas de 1-50 empleados</p>
+              </div>
+              <ul class="space-y-4 mb-8">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Descuentos en consultas y análisis</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Portal corporativo básico</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Soporte por email</span>
+                </li>
+                <li class="flex items-center text-gray-400">
+                  <i class="fas fa-times mr-3"></i>
+                  <span>Check-ups anuales incluidos</span>
+                </li>
+                <li class="flex items-center text-gray-400">
+                  <i class="fas fa-times mr-3"></i>
+                  <span>Asesoría médica 24/7</span>
+                </li>
+              </ul>
+              <button onclick="window.location.href='./8_help_center.html'"
+                class="w-full bg-gray-200 text-gray-800 font-semibold py-3 rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Seleccionar plan
+              </button>
+            </div>
+
+            <!-- Plan Profesional -->
+            <div
+              class="bg-white rounded-2xl p-8 shadow-lg border-2 border-purple-500 relative hover-lift"
+            >
+              <div
+                class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+              >
+                <span
+                  class="bg-purple-500 text-white px-4 py-1 rounded-full text-sm font-semibold"
+                >
+                  Más popular
+                </span>
+              </div>
+              <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                  Empresarial
+                </h3>
+                <div class="text-4xl font-bold text-gray-800 mb-2">
+                  $49<span class="text-lg text-gray-600">/empleado/mes</span>
+                </div>
+                <p class="text-gray-600">Para empresas de 51-500 empleados</p>
+              </div>
+              <ul class="space-y-4 mb-8">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Descuentos premium en servicios</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Portal corporativo avanzado</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Soporte prioritario</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Check-ups anuales incluidos</span>
+                </li>
+                <li class="flex items-center text-gray-400">
+                  <i class="fas fa-times mr-3"></i>
+                  <span>Asesoría médica 24/7</span>
+                </li>
+              </ul>
+              <button onclick="window.location.href='./8_help_center.html'"
+                class="w-full bg-purple-500 text-white font-semibold py-3 rounded-lg hover:bg-purple-600 transition-colors"
+              >
+                Seleccionar plan
+              </button>
+            </div>
+
+            <!-- Plan Enterprise -->
+            <div
+              class="bg-white rounded-2xl p-8 shadow-lg border-2 border-yellow-500 hover-lift"
+            >
+              <div class="text-center mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-2">
+                  Corporativo
+                </h3>
+                <div class="text-4xl font-bold text-gray-800 mb-2">
+                  $79<span class="text-lg text-gray-600">/empleado/mes</span>
+                </div>
+                <p class="text-gray-600">Para empresas de 500+ empleados</p>
+              </div>
+              <ul class="space-y-4 mb-8">
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Precios corporativos exclusivos</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Portal personalizado</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Gerente de cuenta dedicado</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Check-ups anuales premium</span>
+                </li>
+                <li class="flex items-center">
+                  <i class="fas fa-check text-green-500 mr-3"></i>
+                  <span>Asesoría médica 24/7</span>
+                </li>
+              </ul>
+              <button onclick="window.location.href='./8_help_center.html'"
+                class="w-full bg-yellow-500 text-white font-semibold py-3 rounded-lg hover:bg-yellow-600 transition-colors"
+              >
+                Seleccionar plan
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CTA Section -->
+      <div class="py-20 bg-white">
+        <div class="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl lg:text-4xl font-bold text-gray-800 mb-6">
+            Mejora el bienestar de tu equipo hoy
+          </h2>
+          <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+            Más de 200 empresas confían en nosotros para proporcionar acceso a
+            salud de calidad a sus colaboradores.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button onclick="window.location.href='./8_help_center.html'"
+              class="bg-purple-500 text-white font-semibold px-8 py-4 rounded-lg hover:bg-purple-600 transition-colors text-lg"
+            >
+              Solicitar demo corporativo
+            </button>
+            <button onclick="window.location.href='./8_help_center.html'"
+              class="border-2 border-gray-300 text-gray-700 font-semibold px-8 py-4 rounded-lg hover:border-purple-500 hover:text-purple-500 transition-colors text-lg"
+            >
+              Descargar brochure
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+    <script src="../js/components/footer.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById("mobile-menu-button");
+        const mobileMenu = document.getElementById("mobile-menu");
+
+        mobileMenuButton.addEventListener("click", function () {
+          mobileMenu.classList.toggle("hidden");
+        });
+
+        // Navigation between landing pages
+        const navLinks = document.querySelectorAll("nav .links a");
+        const landingPages = {
+          "patient-landing": document.getElementById("patient-landing"),
+          "provider-landing": document.getElementById("provider-landing"),
+          "business-landing": document.getElementById("business-landing"),
+        };
+
+        navLinks.forEach((link) => {
+          link.addEventListener("click", function (e) {
+            e.preventDefault();
+            const target = this.getAttribute("href").substring(1);
+
+            // Update active nav state
+            navLinks.forEach((l) => {
+              l.classList.remove(
+                "text-blue-600",
+                "font-semibold",
+                "nav-active"
+              );
+              l.classList.add("text-gray-600", "font-medium");
+            });
+            this.classList.remove("text-gray-600", "font-medium");
+            this.classList.add("text-blue-600", "font-semibold", "nav-active");
+
+            // Show target landing page, hide others
+            Object.keys(landingPages).forEach((page) => {
+              if (page === target) {
+                landingPages[page].classList.remove("hidden");
+              } else {
+                landingPages[page].classList.add("hidden");
+              }
+            });
+
+            // Close mobile menu if open
+            mobileMenu.classList.add("hidden");
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

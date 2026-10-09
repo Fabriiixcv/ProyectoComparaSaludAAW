@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Editar Servicio Médico - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+.field-error{border-color:#ef4444!important}
+.field-ok{border-color:#10b981!important}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-14">
+      <a href="3_provider_home.html" class="flex items-center space-x-3">
+        <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+        <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-8">
+<a href="3_provider_home.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Inicio</a>
+<a href="9_medication_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Catálogo</a>
+<a href="9_servicio_catalog.html" class="text-[#2563EB] font-medium">Servicios</a>
+<a href="9_medico_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Médicos</a>
+<a href="9_provider_edit.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Mi sede</a>
+<a href="8_help_center.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Ayuda</a>
+</nav>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span class="hidden md:block text-gray-700 font-medium">Clínica Demo</span>
+      <a href="1_2_auth.html" class="text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100" aria-label="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+</header>
+<section class="health-gradient text-white py-10"><div class="container mx-auto px-4 text-center max-w-3xl"><h1 class="text-3xl md:text-4xl font-bold mb-3">Editar Servicio Médico</h1><p class="text-lg opacity-90">Actualiza el costo y los detalles que ven los pacientes</p></div></section>
+<main class="flex-1 container mx-auto px-4 py-10"><div class="max-w-2xl mx-auto">
+<nav class="text-sm text-gray-500 mb-4"><a href="9_servicio_catalog.html" class="hover:text-blue-600"><i class="fas fa-arrow-left mr-1"></i>Volver a mis servicios</a></nav>
+<div id="notfound" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center"><i class="fas fa-stethoscope text-4xl text-gray-300 mb-4"></i><h2 class="text-xl font-semibold text-gray-900 mb-2">No encontramos este servicio</h2><p class="text-gray-600 mb-6">El enlace está incompleto o el servicio ya fue eliminado.</p><a href="9_servicio_catalog.html" class="inline-block health-gradient text-white px-6 py-2.5 rounded-xl font-medium hover:opacity-90">Volver a mis servicios</a></div>
+<!-- HU45: Guardar Cambios => PUT /api/servicio (tabla Servicio por IdServicio) -->
+<form id="form" novalidate class="hidden bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-6">
+  <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200"><div class="w-9 h-9 rounded-lg health-gradient text-white flex items-center justify-center"><i class="fas fa-hospital"></i></div><div><p class="font-medium text-gray-900 text-sm">Clínica Demo · ID del servicio: <span id="pId"></span></p><p class="text-gray-500 text-xs">Los cambios se reflejarán en tu perfil público y en la búsqueda</p></div></div>
+  <div><label for="nombre" class="block text-gray-700 text-sm font-medium mb-2">Nombre del servicio *</label><input type="text" id="nombre" maxlength="100" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" /><p id="nombreErr" class="hidden text-red-600 text-sm mt-1"></p></div>
+  <div><label for="cat" class="block text-gray-700 text-sm font-medium mb-2">Categoría</label><select id="cat" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]"><option>Consultas</option><option>Laboratorio</option><option>Imágenes</option><option>Odontología</option><option>Oftalmología</option><option>Vacunación</option></select></div>
+  <div><label for="desc" class="block text-gray-700 text-sm font-medium mb-2">Descripción *</label><textarea id="desc" rows="4" maxlength="500" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] resize-none"></textarea><div class="flex justify-between items-start"><p id="descErr" class="hidden text-red-600 text-sm mt-1"></p><span id="cnt" class="text-gray-400 text-xs mt-1 ml-auto">0/500</span></div></div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+    <div><label for="precio" class="block text-gray-700 text-sm font-medium mb-2">Costo del procedimiento (S/) *</label><div class="relative"><span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">S/</span><input type="text" id="precio" inputmode="decimal" maxlength="8" class="w-full pl-10 pr-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" /></div><p id="precioErr" class="hidden text-red-600 text-sm mt-1"></p><p id="precioDiff" class="hidden text-sm mt-1"></p></div>
+    <div><label for="dur" class="block text-gray-700 text-sm font-medium mb-2">Duración estimada</label><select id="dur" class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]"><option>15 minutos</option><option>20 minutos</option><option>30 minutos</option><option>45 minutos</option><option>60 minutos</option><option>Resultados en 24h</option></select></div>
+  </div>
+  <div><span class="block text-gray-700 text-sm font-medium mb-2">Estado</span><div class="grid grid-cols-2 gap-3">
+    <label class="cursor-pointer"><input type="radio" name="estado" value="Activo" class="peer sr-only" /><div class="border border-gray-300 rounded-xl p-3 text-center peer-checked:border-green-600 peer-checked:bg-green-50"><i class="fas fa-circle-check text-green-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Activo</div><div class="text-xs text-gray-500">Visible para pacientes</div></div></label>
+    <label class="cursor-pointer"><input type="radio" name="estado" value="Pausado" class="peer sr-only" /><div class="border border-gray-300 rounded-xl p-3 text-center peer-checked:border-yellow-500 peer-checked:bg-yellow-50"><i class="fas fa-pause-circle text-yellow-600 mb-1"></i><div class="text-sm font-medium text-gray-800">Pausado</div><div class="text-xs text-gray-500">Oculto temporalmente</div></div></label></div></div>
+  <div id="warn50" class="hidden items-start bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm"><i class="fas fa-exclamation-triangle mt-0.5 mr-2"></i><span>El nuevo costo varía más de 50 % respecto al actual. Verifica que sea correcto.</span></div>
+  <div id="noChange" class="flex items-start bg-blue-50 border border-blue-200 text-blue-800 rounded-lg px-3 py-2 text-sm"><i class="fas fa-info-circle mt-0.5 mr-2"></i>Aún no hay cambios por guardar.</div>
+  <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2"><a href="9_servicio_catalog.html" class="text-center px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50">Cancelar</a><button type="button" id="btnSave" disabled class="health-gradient text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 disabled:bg-none disabled:bg-gray-300 disabled:text-gray-600 disabled:cursor-not-allowed"><i class="fas fa-save mr-2"></i>Guardar Cambios</button></div>
+  <p class="text-center text-xs text-gray-400"><a id="simErr" href="#" class="underline hover:text-gray-600">Simular error del servidor</a></p>
+</form></div></main>
+
+<div id="mConfirm" class="hidden fixed inset-0 bg-gray-900/55 z-[60] items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+  <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-pen text-xl"></i></div>
+  <h3 class="text-xl font-bold text-gray-900 text-center mb-2">¿Guardar los cambios?</h3>
+  <p class="text-gray-600 text-center mb-4">Esto es lo que se actualizará en tu catálogo de servicios:</p>
+  <ul id="cResumen" class="text-sm space-y-2 mb-6 bg-gray-50 border border-gray-200 rounded-xl p-4"></ul>
+  <div class="flex flex-col-reverse sm:flex-row gap-3"><button id="cNo" type="button" class="flex-1 border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Revisar</button><button id="cSi" type="button" class="flex-1 health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90 disabled:opacity-60">Sí, guardar</button></div>
+</div></div>
+<div id="mError" class="hidden fixed inset-0 bg-gray-900/55 z-[60] items-center justify-center p-4"><div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+  <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-server text-xl"></i></div>
+  <h3 class="text-xl font-bold text-gray-900 text-center mb-2">No pudimos guardar los cambios</h3>
+  <p class="text-gray-600 text-center mb-6">Error al conectar con el servidor (PUT /api/servicio). Tus datos se conservan, inténtalo nuevamente.</p>
+  <div class="flex flex-col-reverse sm:flex-row gap-3"><button id="eNo" type="button" class="flex-1 border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cerrar</button><button id="eSi" type="button" class="flex-1 health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90"><i class="fas fa-redo mr-2"></i>Reintentar</button></div>
+</div></div>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+<script>const DATA=[{"id": 1, "name": "Consulta Médica General", "cat": "Consultas", "desc": "Consulta con médico general para evaluación inicial.", "price": 80, "dur": "30 minutos", "estado": "Activo"}, {"id": 2, "name": "Consulta con Especialista", "cat": "Consultas", "desc": "Consulta con médico especialista en su área.", "price": 120, "dur": "45 minutos", "estado": "Activo"}, {"id": 3, "name": "Análisis de Sangre Completo", "cat": "Laboratorio", "desc": "Hemograma completo, glucosa, colesterol y triglicéridos.", "price": 65, "dur": "Resultados en 24h", "estado": "Activo"}, {"id": 4, "name": "Ecografía Abdominal", "cat": "Imágenes", "desc": "Evaluación completa de órganos abdominales.", "price": 180, "dur": "45 minutos", "estado": "Activo"}, {"id": 5, "name": "Radiografía de Tórax", "cat": "Imágenes", "desc": "Imagen diagnóstica con informe médico.", "price": 45, "dur": "20 minutos", "estado": "Pausado"}];const REDIRECT="9_servicio_catalog.html#editado";
+const $=(i)=>document.getElementById(i);
+const esc=(s)=>{const d=document.createElement("div");d.textContent=s==null?"":s;return d.innerHTML};
+const money=(n)=>"S/ "+Number(n).toFixed(2);
+const show=(i)=>$(i).classList.replace("hidden","flex"), hide=(i)=>$(i).classList.replace("flex","hidden");
+const idRaw=new URLSearchParams(location.search).get("id");
+const item=/^\d{1,3}$/.test(idRaw||"")?DATA.find((x)=>x.id===Number(idRaw)):null;
+function setErr(id,msg){const i=$(id),e=$(id+"Err");i.classList.toggle("field-error",!!msg);i.classList.toggle("field-ok",!msg&&i.value!=="");e.textContent=msg;e.classList.toggle("hidden",!msg)}
+function guardar(){ // simula PUT y vuelve al catálogo con el mensaje de éxito
+  $("cSi").disabled=true;$("cSi").innerHTML='<i class="fas fa-spinner fa-spin mr-2"></i>Guardando...';
+  setTimeout(()=>{ if(window.__fallar){window.__fallar=false;hide("mConfirm");$("cSi").disabled=false;$("cSi").textContent="Sí, guardar";show("mError");return;} location.href=REDIRECT; },700);
+}
+$("cNo").onclick=()=>hide("mConfirm");$("eNo").onclick=()=>hide("mError");
+$("eSi").onclick=()=>{hide("mError");show("mConfirm");guardar()};
+$("simErr").onclick=(e)=>{e.preventDefault();window.__fallar=true;if($("btnSave").disabled){alert("Primero modifica algún dato válido; luego pulsa Guardar Cambios para ver el error simulado.");window.__fallar=false;return}$("btnSave").click()};
+['mConfirm','mError'].forEach((m)=>$(m).addEventListener("click",(e)=>{if(e.target===$(m))hide(m)}));
+
+const RE=/^\d+(\.\d{1,2})?$/;
+const cur=()=>({nombre:$("nombre").value.trim(),cat:$("cat").value,desc:$("desc").value.trim(),precio:$("precio").value.trim().replace(",","."),dur:$("dur").value,estado:document.querySelector('input[name=estado]:checked').value});
+function validar(){
+  const c=cur();let ok=true,e="";
+  if(!c.nombre)e="Falta ingresar el nombre del servicio.";else if(c.nombre.length<3)e="El nombre debe tener al menos 3 caracteres.";else if(!/^[\p{L}0-9\s.,()\-\/]+$/u.test(c.nombre))e="El nombre contiene caracteres no permitidos.";
+  setErr("nombre",e);if(e)ok=false;
+  e="";if(!c.desc)e="Falta escribir la descripción.";else if(c.desc.length<10)e="La descripción debe tener al menos 10 caracteres.";
+  setErr("desc",e);if(e)ok=false;
+  e="";if(!c.precio)e="Falta ingresar el costo.";else if(!RE.test(c.precio))e="Usa solo números, con máximo 2 decimales.";else if(Number(c.precio)<=0)e="El costo debe ser mayor a S/ 0.00.";else if(Number(c.precio)>99999)e="El costo no puede superar S/ 99,999.00.";
+  setErr("precio",e);if(e)ok=false;
+  $("cnt").textContent=$("desc").value.length+"/500";
+  const dif=$("precioDiff"),valP=RE.test(c.precio)&&Number(c.precio)>0,num=Number(c.precio);
+  if(valP&&num!==item.price){const x=num-item.price,pc=Math.abs(x/item.price*100);dif.className="text-sm mt-1 "+(x>0?"text-amber-700":"text-green-700");dif.innerHTML=`<i class="fas fa-arrow-${x>0?"up":"down"} mr-1"></i>${x>0?"Sube":"Baja"} ${money(Math.abs(x))} (${pc.toFixed(0)} %) respecto a ${money(item.price)}`;$("warn50").classList.toggle("hidden",pc<=50);$("warn50").classList.toggle("flex",pc>50)}
+  else{dif.className="hidden";$("warn50").classList.add("hidden");$("warn50").classList.remove("flex")}
+  const cambio=(valP&&num!==item.price)||c.nombre!==item.name||c.cat!==item.cat||c.desc!==item.desc||c.dur!==item.dur||c.estado!==item.estado;
+  $("noChange").classList.toggle("hidden",cambio);$("noChange").classList.toggle("flex",!cambio);
+  $("btnSave").disabled=!(ok&&cambio);return ok&&cambio;
+}
+if(!item){$("notfound").classList.remove("hidden")}
+else{
+  document.title="Editar "+item.name+" - ComparaSalud";
+  $("form").classList.remove("hidden");$("pId").textContent=item.id;
+  $("nombre").value=item.name;$("cat").value=item.cat;$("desc").value=item.desc;$("precio").value=item.price.toFixed(2);$("dur").value=item.dur;
+  document.querySelector(`input[name=estado][value=${item.estado}]`).checked=true;validar();
+  ["nombre","desc","precio"].forEach((i)=>$(i).addEventListener("input",validar));
+  ["cat","dur"].forEach((i)=>$(i).addEventListener("change",validar));
+  document.querySelectorAll("input[name=estado]").forEach((r)=>r.addEventListener("change",validar));
+  $("btnSave").onclick=()=>{if(!validar())return;const c=cur(),l=[];
+    if(Number(c.precio)!==item.price)l.push(`<li><i class="fas fa-tag text-[#2563EB] mr-2"></i><strong>Costo:</strong> <span class="line-through text-gray-400">${money(item.price)}</span> → <strong class="text-green-600">${money(c.precio)}</strong></li>`);
+    if(c.nombre!==item.name)l.push(`<li><i class="fas fa-heading text-[#2563EB] mr-2"></i><strong>Nombre:</strong> ${esc(c.nombre)}</li>`);
+    if(c.cat!==item.cat)l.push(`<li><i class="fas fa-layer-group text-[#2563EB] mr-2"></i><strong>Categoría:</strong> ${esc(c.cat)}</li>`);
+    if(c.desc!==item.desc)l.push(`<li><i class="fas fa-align-left text-[#2563EB] mr-2"></i><strong>Descripción:</strong> actualizada</li>`);
+    if(c.dur!==item.dur)l.push(`<li><i class="far fa-clock text-[#2563EB] mr-2"></i><strong>Duración:</strong> ${esc(c.dur)}</li>`);
+    if(c.estado!==item.estado)l.push(`<li><i class="fas fa-toggle-on text-[#2563EB] mr-2"></i><strong>Estado:</strong> ${esc(c.estado)}</li>`);
+    $("cResumen").innerHTML=l.join("");show("mConfirm")};
+}</script>
+</body>
+</html>

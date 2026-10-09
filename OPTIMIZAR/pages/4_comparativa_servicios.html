@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Comparar Servicios - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+    <a href="3_user_dashboard.html" class="flex items-center space-x-3"><img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" /><span class="text-xl font-bold text-gray-900">ComparaSalud</span></a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+      <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Búsqueda</a>
+      <a href="4_comparativa_servicios.html" class="text-blue-600 font-semibold">Comparar servicios</a>
+      <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+    </div>
+    <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold" aria-label="Mi perfil">U</a>
+  </div>
+</nav>
+
+<div id="toast" class="hidden fixed top-20 right-4 z-[70] max-w-sm rounded-xl shadow-lg px-4 py-3 items-start flex" role="status"></div>
+
+<section class="health-gradient text-white py-12">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Compara dos servicios</h1>
+    <p class="text-lg md:text-xl opacity-90">Elige dos opciones y un medicamento para ver el costo global de cada una</p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-8">
+  <div class="max-w-5xl mx-auto">
+
+    <p class="text-sm text-gray-600 mb-3"><i class="fas fa-file-pdf text-[#2563EB] mr-1"></i>¿Quieres comparar 3 servicios y descargar el reporte? <a href="4_comparativa_medicamento.html?modo=servicios" class="text-[#2563EB] font-medium hover:underline">Ir al comparador de 3</a></p>
+    <form id="form" class="bg-white rounded-2xl shadow-soft p-6 mb-6">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div><label for="selA" class="block text-sm font-medium text-gray-700 mb-2">Opción A</label><select id="selA" class="w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"></select></div>
+        <div><label for="selB" class="block text-sm font-medium text-gray-700 mb-2">Opción B</label><select id="selB" class="w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"></select></div>
+        <div><label for="selM" class="block text-sm font-medium text-gray-700 mb-2">Medicamento</label><select id="selM" class="w-full px-3 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"></select></div>
+      </div>
+      <p id="warn" class="hidden items-center bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm mt-4"><i class="fas fa-exclamation-triangle mr-2"></i><span></span></p>
+      <div class="flex flex-col sm:flex-row sm:justify-end gap-3 mt-5">
+        <button id="btnCmp" type="submit" class="health-gradient text-white px-6 py-3 rounded-xl font-semibold hover:opacity-90 disabled:opacity-60"><i class="fas fa-balance-scale mr-2"></i>Comparar</button>
+      </div>
+    </form>
+
+    <div id="loading" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center text-gray-600"><i class="fas fa-spinner fa-spin text-2xl text-[#2563EB] mb-3"></i><p>Consultando la comparativa...</p></div>
+
+    <section id="res" class="hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div><h2 id="resT" class="text-2xl font-bold text-gray-800"></h2><p id="resS" class="text-gray-600"></p></div>
+        <button id="btnPdf" type="button" class="bg-white border border-[#2563EB] text-[#2563EB] px-5 py-2.5 rounded-xl font-semibold hover:bg-blue-50 disabled:opacity-60"><i class="fas fa-file-pdf mr-2"></i><span>Exportar a PDF</span></button>
+      </div>
+      <div id="cards" class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"></div>
+      <div id="diff" class="bg-green-50 border border-green-200 text-green-800 rounded-xl px-4 py-3 text-sm mb-8"></div>
+
+      <h2 class="text-xl font-bold text-gray-800 mb-4">Servicios y medicamentos de cada sede</h2>
+      <div id="sedes" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      <p class="text-gray-500 text-xs mt-6">Costo global = costo de la atención + precio del medicamento en esa sede (o el más bajo registrado si la sede no lo ofrece).</p>
+    </section>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+<script src="../js/components/footer.js"></script>
+<script src="../js/services/auth.js"></script>
+<script src="../js/services/usuario.js?v=3"></script>
+<script>document.addEventListener("DOMContentLoaded", function () { if (window.UsuarioService) UsuarioService.pintarCabecera(); });</script>
+<script>
+/* Datos simulados */
+const SEDES = {
+  "Clínica San Juan":      { distrito:"Miraflores",        servicios:[["Consulta Médica General",80],["Examen Visual",50],["Vacunación Adulto",35]],       meds:{"Paracetamol 500 mg":12.50,"Ibuprofeno 400 mg":9.00,"Salbutamol inhalador":19.90} },
+  "Clínica Surco Vital":   { distrito:"Santiago de Surco", servicios:[["Consulta Médica General",95],["Limpieza Dental",60],["Control Prenatal",140]],      meds:{"Paracetamol 500 mg":10.90,"Metformina 850 mg":14.50,"Amoxicilina 500 mg":16.50} },
+  "Clínica Médica Central":{ distrito:"San Isidro",        servicios:[["Consulta Médica General",70],["Ecografía Abdominal",180],["Análisis de Sangre",65]],meds:{"Paracetamol 500 mg":12.50,"Amoxicilina 500 mg":15.90,"Ibuprofeno 400 mg":8.80} },
+  "Centro Cardiológico":   { distrito:"San Borja",         servicios:[["Consulta con Especialista",120],["Chequeo Cardiovascular",180]],                   meds:{"Losartán 50 mg":18.00,"Ibuprofeno 400 mg":9.50} }
+};
+const OPC = [
+  { id:1, nombre:"Consulta Médica General",   tipo:"servicio", sede:"Clínica San Juan",       precio:80,  rating:4.8 },
+  { id:2, nombre:"Consulta Médica General",   tipo:"servicio", sede:"Clínica Surco Vital",    precio:95,  rating:4.4 },
+  { id:3, nombre:"Dr. Luis Paredes",          tipo:"medico",   sede:"Clínica Médica Central", precio:70,  rating:4.5 },
+  { id:4, nombre:"Consulta con Especialista", tipo:"servicio", sede:"Centro Cardiológico",    precio:120, rating:4.9 }
+];
+const MEDS = ["Paracetamol 500 mg","Ibuprofeno 400 mg","Amoxicilina 500 mg"];
+
+const $ = (id) => document.getElementById(id);
+const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+const money = (n) => "S/ " + Number(n).toFixed(2);
+let ultimo = null;
+
+function minimo(med) { return Math.min(...Object.values(SEDES).map((s) => s.meds[med]).filter((p) => p != null)); }
+function toast(msg, ok = true) {
+  const t = $("toast");
+  t.className = "fixed top-20 right-4 z-[70] max-w-sm rounded-xl shadow-lg px-4 py-3 items-start flex " + (ok ? "bg-green-50 border border-green-200 text-green-800" : "bg-red-50 border border-red-200 text-red-700");
+  t.innerHTML = `<i class="fas ${ok ? "fa-check-circle text-green-600" : "fa-exclamation-circle text-red-600"} mt-0.5 mr-3"></i><span class="text-sm font-medium">${esc(msg)}</span>`;
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.add("hidden"), 3500);
+}
+
+/* Equivale a GET /api/comparativa?opcionA=&opcionB=&medicamento= */
+function consultar(a, b, med) {
+  return [a, b].map((id) => {
+    const o = OPC.find((x) => x.id === id), propio = SEDES[o.sede].meds[med];
+    const precioMed = propio != null ? propio : minimo(med);
+    return { ...o, med, precioMed, estimado: propio == null, global: o.precio + precioMed };
+  });
+}
+
+function pintarCards(r) {
+  const min = Math.min(r[0].global, r[1].global);
+  $("cards").innerHTML = r.map((f, i) => {
+    const mejor = f.global === min && r[0].global !== r[1].global;
+    return `<article class="bg-white rounded-2xl shadow-soft p-6 ${mejor ? "border-2 border-green-500" : "border border-gray-100"}">
+      <div class="flex items-start gap-4 mb-4">
+        <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas ${f.tipo === "medico" ? "fa-user-md" : "fa-stethoscope"}"></i></div>
+        <div class="min-w-0 flex-1">
+          <div class="flex flex-wrap items-center gap-2"><span class="text-xs text-gray-400">Opción ${i ? "B" : "A"}</span>${mejor ? '<span class="bg-green-100 text-green-800 px-2 py-0.5 rounded-full text-xs font-medium"><i class="fas fa-check mr-1"></i>Menor costo</span>' : ""}</div>
+          <h3 class="text-lg font-semibold text-gray-900">${esc(f.nombre)}</h3>
+          <p class="text-gray-500 text-sm"><i class="fas fa-hospital mr-1"></i>${esc(f.sede)} · ${esc(SEDES[f.sede].distrito)}</p>
+          <p class="text-yellow-500 text-sm mt-1"><i class="fas fa-star mr-1"></i><span class="text-gray-700 font-medium">${f.rating.toFixed(1)}</span></p>
+        </div>
+      </div>
+      <dl class="space-y-2 text-sm border-t border-gray-100 pt-4">
+        <div class="flex justify-between"><dt class="text-gray-500">Atención</dt><dd class="font-semibold text-gray-800">${money(f.precio)}</dd></div>
+        <div class="flex justify-between"><dt class="text-gray-500">${esc(f.med)}${f.estimado ? ' <span class="text-amber-600 text-xs">(precio más bajo registrado)</span>' : ""}</dt><dd class="font-semibold text-gray-800">${money(f.precioMed)}</dd></div>
+        <div class="flex justify-between items-end pt-2 border-t border-gray-100"><dt class="text-gray-700 font-medium">Costo global</dt><dd class="text-2xl font-bold ${mejor ? "text-green-600" : "text-[#2563EB]"}">${money(f.global)}</dd></div>
+      </dl></article>`;
+  }).join("");
+  const d = Math.abs(r[0].global - r[1].global);
+  const g = r[0].global <= r[1].global ? r[0] : r[1];
+  $("diff").innerHTML = d === 0 ? '<i class="fas fa-equals mr-2"></i>Ambas opciones tienen el mismo costo global.' : `<i class="fas fa-piggy-bank mr-2"></i>Con <strong>${esc(g.nombre)}</strong> en <strong>${esc(g.sede)}</strong> ahorras <strong>${money(d)}</strong> en el costo global.`;
+}
+
+/* HU44: servicios y medicamentos con precio de cada sede */
+function pintarSedes(r) {
+  const nombres = [...new Set(r.map((f) => f.sede))];
+  $("sedes").innerHTML = nombres.map((n) => { const s = SEDES[n]; return `
+    <section class="bg-white rounded-2xl shadow-soft p-6">
+      <h3 class="font-semibold text-gray-900 mb-1">${esc(n)}</h3><p class="text-gray-500 text-sm mb-4">${esc(s.distrito)}</p>
+      <p class="text-xs font-semibold text-gray-500 uppercase mb-2"><i class="fas fa-stethoscope mr-1"></i>Servicios</p>
+      <ul class="mb-4 divide-y divide-gray-100 text-sm">${s.servicios.map(([a, p]) => `<li class="flex justify-between py-2"><span class="text-gray-700">${esc(a)}</span><span class="font-semibold text-gray-900">${money(p)}</span></li>`).join("")}</ul>
+      <p class="text-xs font-semibold text-gray-500 uppercase mb-2"><i class="fas fa-pills mr-1"></i>Medicamentos</p>
+      <ul class="divide-y divide-gray-100 text-sm">${Object.entries(s.meds).map(([a, p]) => `<li class="flex justify-between py-2"><span class="text-gray-700">${esc(a)}</span><span class="font-semibold text-gray-900">${money(p)}</span></li>`).join("")}</ul>
+    </section>`; }).join("");
+}
+
+function comparar() {
+  const a = +$("selA").value, b = +$("selB").value, med = $("selM").value, w = $("warn");
+  if (a === b) { w.querySelector("span").textContent = "Elige dos opciones distintas para poder compararlas."; w.classList.replace("hidden", "flex"); return; }
+  w.classList.replace("flex", "hidden");
+  $("res").classList.add("hidden"); $("loading").classList.remove("hidden"); $("btnCmp").disabled = true;
+  setTimeout(() => {
+    ultimo = { med, filas: consultar(a, b, med) };
+    $("loading").classList.add("hidden"); $("btnCmp").disabled = false;
+    $("resT").textContent = med; $("resS").textContent = "Comparativa de 2 opciones que incluyen este medicamento";
+    pintarCards(ultimo.filas); pintarSedes(ultimo.filas); $("res").classList.remove("hidden");
+  }, 600);
+}
+
+/* HU48: POST /api/comparativa -> PDF descargable */
+function exportarPdf() {
+  if (!ultimo) return;
+  if (!window.jspdf) { toast("No se pudo generar el PDF. Revisa tu conexión e inténtalo de nuevo.", false); return; }
+  const b = $("btnPdf"); b.disabled = true; b.querySelector("span").textContent = "Generando...";
+  setTimeout(() => {
+    const { jsPDF } = window.jspdf, doc = new jsPDF(), [A, B] = ultimo.filas;
+    let y = 20;
+    const line = (t, size = 11, bold = false, x = 20) => { doc.setFontSize(size); doc.setFont("helvetica", bold ? "bold" : "normal"); doc.text(t, x, y); y += size * 0.6 + 3; };
+    doc.setFillColor(37, 99, 235); doc.rect(0, 0, 210, 14, "F");
+    line("ComparaSalud - Reporte comparativo", 18, true); line("Generado: " + new Date().toLocaleString("es-PE"), 10);
+    y += 4; line("Medicamento: " + ultimo.med, 13, true); y += 2;
+    [A, B].forEach((f, i) => {
+      line("Opcion " + (i ? "B" : "A") + ": " + f.nombre, 12, true);
+      line(f.sede + " - " + SEDES[f.sede].distrito, 10, false, 24);
+      line("Atencion: " + money(f.precio), 11, false, 24);
+      line("Medicamento: " + money(f.precioMed) + (f.estimado ? " (precio mas bajo registrado)" : ""), 11, false, 24);
+      line("Costo global: " + money(f.global), 12, true, 24); y += 4;
+    });
+    const d = Math.abs(A.global - B.global), g = A.global <= B.global ? A : B;
+    line(d ? "Ahorro con " + g.nombre + " (" + g.sede + "): " + money(d) : "Ambas opciones tienen el mismo costo global.", 11, true);
+    y += 6; line("Tarifas por sede", 13, true);
+    [...new Set([A.sede, B.sede])].forEach((n) => {
+      y += 2; line(n, 11, true);
+      SEDES[n].servicios.forEach(([a, p]) => line("- " + a + ": " + money(p), 10, false, 24));
+      Object.entries(SEDES[n].meds).forEach(([a, p]) => line("- " + a + ": " + money(p), 10, false, 24));
+    });
+    doc.save("reporte-comparativo.pdf");
+    b.disabled = false; b.querySelector("span").textContent = "Exportar a PDF";
+    toast("Reporte PDF descargado correctamente");
+  }, 500);
+}
+
+OPC.forEach((o) => ["selA", "selB"].forEach((s) => { const e = document.createElement("option"); e.value = o.id; e.textContent = `${o.nombre} - ${o.sede} (${money(o.precio)})`; $(s).appendChild(e); }));
+MEDS.forEach((m) => { const e = document.createElement("option"); e.value = m; e.textContent = m; $("selM").appendChild(e); });
+$("selB").value = 2;
+$("form").addEventListener("submit", (e) => { e.preventDefault(); comparar(); });
+$("btnPdf").addEventListener("click", exportarPdf);
+comparar(); // consulta simulada al abrir
+</script>
+</body>
+</html>

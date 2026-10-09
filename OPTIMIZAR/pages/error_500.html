@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon">
+    <title>Error del Servidor - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: "Inter", sans-serif; }
+        .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+        .error-animation { animation: shake 0.5s ease-in-out infinite alternate; }
+        @keyframes shake {
+            0% { transform: translateX(-2px); }
+            100% { transform: translateX(2px); }
+        }
+        .pulse-animation { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .5; }
+        }
+        .gear-rotate { animation: rotate 4s linear infinite; }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .hero-pattern {
+            background-image: radial-gradient(circle at 1px 1px, rgba(239, 68, 68, 0.15) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <a href="../index.html" class="flex items-center space-x-3">
+                    <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10">
+                    <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+                </a>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+                    <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Búsqueda</a>
+                    <a href="6_favorites.html" class="text-gray-600 hover:text-blue-600 font-medium">Favoritos</a>
+                    <a href="6_user_profile.html" class="text-gray-600 hover:text-blue-600 font-medium">Perfil</a>
+                    <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+                </div>
+                <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold">U</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-pattern py-20">
+        <div class="container mx-auto px-4 text-center">
+            <!-- Error Animation -->
+            <div class="error-animation mb-8">
+                <div class="relative inline-block">
+                    <div class="text-9xl font-bold text-red-400 mb-4">500</div>
+                    <div class="absolute -top-4 -right-4 pulse-animation">
+                        <i class="fas fa-exclamation-triangle text-red-500 text-4xl"></i>
+                    </div>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <i class="fas fa-cog text-gray-400 text-6xl gear-rotate"></i>
+                    </div>
+                </div>
+            </div>
+
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">Error del Servidor</h1>
+            <p class="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+                Lo sentimos, estamos experimentando problemas técnicos. Nuestro equipo ya está trabajando para resolverlo.
+                Por favor, inténtalo de nuevo en unos minutos.
+            </p>
+
+            <!-- Error Details -->
+            <div class="bg-white rounded-lg p-6 shadow-sm mb-8 max-w-2xl mx-auto">
+                <div class="flex items-center mb-4">
+                    <i class="fas fa-info-circle text-blue-600 text-xl mr-3"></i>
+                    <h3 class="font-semibold text-gray-900">¿Qué está pasando?</h3>
+                </div>
+                <ul class="text-left text-gray-600 space-y-2">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                        <span>Nuestros servidores están temporalmente sobrecargados</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                        <span>Estamos realizando mantenimiento programado</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-green-500 mr-2 mt-1"></i>
+                        <span>El problema será resuelto en breve</span>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <button onclick="retryAction()" class="bg-blue-600 text-white px-8 py-4 rounded-lg hover:bg-blue-700 transition-colors font-semibold text-lg">
+                    <i class="fas fa-redo mr-2"></i>Intentar de nuevo
+                </button>
+                <button onclick="goHome()" class="bg-gray-600 text-white px-8 py-4 rounded-lg hover:bg-gray-700 transition-colors font-semibold text-lg">
+                    <i class="fas fa-home mr-2"></i>Volver al inicio
+                </button>
+            </div>
+
+            <!-- Status Check -->
+            <div class="bg-white rounded-lg p-6 shadow-sm mb-8 max-w-2xl mx-auto">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-gray-900">Estado del sistema</h3>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mr-2 pulse-animation"></div>
+                        <span class="text-green-600 font-medium">Operativo</span>
+                    </div>
+                </div>
+                <p class="text-gray-600 text-sm mb-4">Última actualización: <span id="lastUpdate">Hace 2 minutos</span></p>
+                <button onclick="checkStatus()" class="bg-green-100 text-green-700 px-4 py-2 rounded-lg hover:bg-green-200 transition-colors">
+                    <i class="fas fa-sync-alt mr-2"></i>Verificar estado
+                </button>
+            </div>
+
+            <!-- Alternative Actions -->
+            <div class="bg-white rounded-lg p-8 shadow-sm mb-12">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Mientras tanto, puedes:</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="goHome()">
+                        <div class="w-12 h-12 health-gradient rounded-lg flex items-center justify-center mb-4 mx-auto">
+                            <i class="fas fa-search text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Explorar servicios</h3>
+                        <p class="text-gray-600 text-sm">Descubre nuestros proveedores de salud</p>
+                    </div>
+
+                    <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="window.location.href='6_favorites.html'">
+                        <div class="w-12 h-12 bg-red-500 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                            <i class="fas fa-heart text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Ver favoritos</h3>
+                        <p class="text-gray-600 text-sm">Accede a tus proveedores guardados</p>
+                    </div>
+
+                    <div class="text-center p-4 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer" onclick="window.location.href='8_help_center.html'">
+                        <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                            <i class="fas fa-question-circle text-white text-xl"></i>
+                        </div>
+                        <h3 class="font-semibold text-gray-900 mb-2">Centro de ayuda</h3>
+                        <p class="text-gray-600 text-sm">Encuentra respuestas a tus preguntas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Support -->
+            <div class="bg-gradient-to-r from-red-500 to-orange-500 rounded-lg p-8 text-white">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="mb-6 md:mb-0">
+                        <h3 class="text-2xl font-bold mb-2">¿El problema persiste?</h3>
+                        <p class="text-red-100">Nuestro equipo de soporte está disponible para ayudarte</p>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="mailto:soporte@comparasalud.com" class="bg-white text-red-600 px-6 py-3 rounded-lg hover:bg-gray-100 transition-colors font-semibold">
+                            <i class="fas fa-envelope mr-2"></i>Contactar Soporte
+                        </a>
+                        <a href="tel:015000000" class="bg-red-700 text-white px-6 py-3 rounded-lg hover:bg-red-800 transition-colors font-semibold">
+                            <i class="fas fa-phone mr-2"></i>Llamar ahora
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script>
+        // Retry the failed action
+        function retryAction() {
+            // Show loading state
+            const retryBtn = document.querySelector('button[onclick="retryAction()"]');
+            const originalText = retryBtn.innerHTML;
+            retryBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Intentando...';
+            retryBtn.disabled = true;
+
+            // Simulate retry attempt
+            setTimeout(() => {
+                // In a real scenario, you would retry the failed request here
+                // For demo purposes, we'll just show a message
+                retryBtn.innerHTML = originalText;
+                retryBtn.disabled = false;
+                
+                // Show a toast message
+                showToast('Se ha reintentado la conexión. Si el problema persiste, por favor contacta soporte.', 'info');
+            }, 2000);
+        }
+
+        // Go to home page
+        function goHome() {
+            window.location.href = '../index.html';
+        }
+
+        // Check system status
+        function checkStatus() {
+            const statusBtn = document.querySelector('button[onclick="checkStatus()"]');
+            const originalText = statusBtn.innerHTML;
+            statusBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Verificando...';
+            statusBtn.disabled = true;
+
+            setTimeout(() => {
+                statusBtn.innerHTML = originalText;
+                statusBtn.disabled = false;
+                
+                // Update last update time
+                document.getElementById('lastUpdate').textContent = 'Hace unos segundos';
+                
+                showToast('El sistema está funcionando correctamente.', 'success');
+            }, 1500);
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-x-full`;
+            
+            const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+            toast.classList.add(bgColor, 'text-white');
+            
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'} mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Animate in
+            setTimeout(() => {
+                toast.classList.remove('translate-x-full');
+            }, 100);
+            
+            // Remove after 4 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => {
+                    document.body.removeChild(toast);
+                }, 300);
+            }, 4000);
+        }
+
+        // Add interactive animations
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate error number on load
+            const errorNumber = document.querySelector('.text-9xl');
+            errorNumber.style.opacity = '0';
+            errorNumber.style.transform = 'scale(0.5)';
+            
+            setTimeout(() => {
+                errorNumber.style.transition = 'all 0.8s ease-out';
+                errorNumber.style.opacity = '1';
+                errorNumber.style.transform = 'scale(1)';
+            }, 300);
+
+            // Add hover effects to cards
+            document.querySelectorAll('.cursor-pointer').forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-5px)';
+                });
+                
+                card.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Simulate periodic status updates
+            setInterval(() => {
+                const lastUpdateElement = document.getElementById('lastUpdate');
+                const currentText = lastUpdateElement.textContent;
+                
+                if (currentText.includes('minutos')) {
+                    const minutes = parseInt(currentText.match(/\d+/)[0]) + 1;
+                    lastUpdateElement.textContent = `Hace ${minutes} minutos`;
+                }
+            }, 60000); // Update every minute
+        });
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'r' && e.ctrlKey) {
+                e.preventDefault();
+                retryAction();
+            } else if (e.key === 'h' && e.ctrlKey) {
+                e.preventDefault();
+                goHome();
+            }
+        });
+    </script>
+</body>
+</html>

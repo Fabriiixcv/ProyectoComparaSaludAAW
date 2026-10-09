@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>Panel de Proveedor - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      body { font-family: "Inter", sans-serif; }
+      .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+      .shadow-soft { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+      .action-card { transition: transform 0.2s ease; }
+      .action-card:hover { transform: translateY(-4px); }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <div class="flex justify-between items-center space-x-14">
+            <a href="3_provider_home.html" class="flex items-center space-x-3">
+              <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+              <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+            </a>
+            <nav class="hidden lg:flex items-center space-x-8">
+<a href="3_provider_home.html" class="text-[#2563EB] font-medium">Inicio</a>
+<a href="9_medication_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Catálogo</a>
+<a href="9_servicio_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Servicios</a>
+<a href="9_medico_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Médicos</a>
+<a href="9_provider_edit.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Mi sede</a>
+<a href="8_help_center.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Ayuda</a>
+</nav>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span class="hidden md:block text-gray-700 font-medium">Clínica Demo</span>
+            <a href="1_2_auth.html" class="flex items-center text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100">
+              <i class="fas fa-sign-out-alt mr-2"></i><span class="hidden sm:inline">Cerrar Sesión</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="health-gradient text-white py-12 md:py-16">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+            Bienvenido, <span>Clínica Demo</span>
+          </h1>
+          <p class="text-xl md:text-2xl opacity-90">Gestiona tu catálogo y llega a más pacientes</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="flex-1 container mx-auto px-4 py-10">
+      <div class="max-w-5xl mx-auto space-y-10">
+        <!-- Resumen -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div class="bg-white rounded-2xl shadow-soft p-6 flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center"><i class="fas fa-pills"></i></div>
+            <div>
+              <p class="text-gray-600 text-sm">Medicamentos en tu catálogo</p>
+              <p class="text-2xl font-bold text-gray-900">20</p>
+            </div>
+          </div>
+          <div class="bg-white rounded-2xl shadow-soft p-6 flex items-center space-x-4">
+            <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center"><i class="fas fa-envelope"></i></div>
+            <div class="min-w-0">
+              <p class="text-gray-600 text-sm">Cuenta</p>
+              <p class="text-lg font-semibold text-gray-900 truncate">proveedor@comparasalud.com</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Accesos -->
+        <div>
+          <h2 class="text-xl font-bold text-gray-900 mb-4">¿Qué quieres hacer?</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <a href="9_medication_add.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-plus"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Agregar medicamento</h3>
+              <p class="text-gray-600 text-sm">Registra nombre, descripción y precio.</p>
+            </a>
+            <a href="9_medication_catalog.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-list"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Catálogo de la sede</h3>
+              <p class="text-gray-600 text-sm">Revisa los medicamentos que ofreces.</p>
+            </a>
+            
+            <a href="9_provider_edit.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-pen"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Editar perfil institucional</h3>
+              <p class="text-gray-600 text-sm">Actualiza dirección y teléfono.</p>
+            </a>
+            <a href="9_provider_operativa.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-clock"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Gestión operativa</h3>
+              <p class="text-gray-600 text-sm">Actualiza horarios y categorías.</p>
+            </a>
+            <a href="9_provider_config.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-cog"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Configuración de sede</h3>
+              <p class="text-gray-600 text-sm">Dar de baja sede o eliminar perfil.</p>
+            </a>
+            <a href="4_provider_profile.html?id=2" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-hospital"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Perfil público</h3>
+              <p class="text-gray-600 text-sm">Mira cómo te ven los pacientes.</p>
+            </a>
+            <a href="4_provider_reviews.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-star"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Reseñas</h3>
+              <p class="text-gray-600 text-sm">Consulta las opiniones recibidas.</p>
+            </a>
+            <a href="9_servicio_catalog.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-stethoscope"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Mis servicios</h3>
+              <p class="text-gray-600 text-sm">Consulta los servicios médicos de tu sede.</p>
+            </a>
+            <a href="9_servicio_add.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-notes-medical"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Nuevo servicio</h3>
+              <p class="text-gray-600 text-sm">Registra una atención o procedimiento.</p>
+            </a>
+            <a href="9_medicamento_alta.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-database"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Alta en catálogo general</h3>
+              <p class="text-gray-600 text-sm">Registra un medicamento que no existe.</p>
+            </a>
+            <a href="9_medicamento_generico.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-link"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Asociar genérico</h3>
+              <p class="text-gray-600 text-sm">Vincula marcas con alternativas económicas.</p>
+            </a>
+            <a href="9_medico_catalog.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-user-md"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Nómina de médicos</h3>
+              <p class="text-gray-600 text-sm">Consulta, edita o desvincula a tus profesionales.</p>
+            </a>
+            <a href="9_medico_add.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-user-plus"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Registrar médico</h3>
+              <p class="text-gray-600 text-sm">Añade un profesional a la nómina de tu sede.</p>
+            </a>
+            <a href="8_help_center.html" class="action-card bg-white rounded-2xl shadow-soft p-6 block">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center mb-4"><i class="fas fa-life-ring"></i></div>
+              <h3 class="font-semibold text-gray-900 mb-1">Centro de ayuda</h3>
+              <p class="text-gray-600 text-sm">Resuelve tus dudas.</p>
+            </a>
+          </div>
+        </div>
+
+        <!-- Últimos medicamentos -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-900">Últimos medicamentos registrados</h2>
+            <a href="9_medication_catalog.html" class="text-[#2563EB] font-medium hover:underline">Ver todos</a>
+          </div>
+          <div class="space-y-3">
+            <div class="bg-white rounded-2xl shadow-soft p-4 flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="font-semibold text-gray-900 truncate">Paracetamol 500 mg</p>
+                <p class="text-gray-600 text-sm truncate">Caja x 20 tabletas. Analgésico y antipirético para dolor leve y fiebre.</p>
+              </div>
+              <span class="font-bold text-[#2563EB] whitespace-nowrap">S/ 12.50</span>
+            </div>
+            <div class="bg-white rounded-2xl shadow-soft p-4 flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="font-semibold text-gray-900 truncate">Ibuprofeno 400 mg</p>
+                <p class="text-gray-600 text-sm truncate">Caja x 10 tabletas. Antiinflamatorio para dolor muscular y de cabeza.</p>
+              </div>
+              <span class="font-bold text-[#2563EB] whitespace-nowrap">S/ 8.50</span>
+            </div>
+            <div class="bg-white rounded-2xl shadow-soft p-4 flex items-center justify-between gap-4">
+              <div class="min-w-0">
+                <p class="font-semibold text-gray-900 truncate">Losartán 50 mg</p>
+                <p class="text-gray-600 text-sm truncate">Caja x 30 tabletas. Antihipertensivo de uso diario.</p>
+              </div>
+              <span class="font-bold text-[#2563EB] whitespace-nowrap">S/ 18.00</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+  </body>
+</html>

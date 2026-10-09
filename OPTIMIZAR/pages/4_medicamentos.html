@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Medicamentos - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+.med-card{transition:transform .2s ease,box-shadow .2s ease}
+.med-card:hover{transform:translateY(-3px);box-shadow:0 10px 25px -3px rgba(0,0,0,.1)}
+.star{color:#fbbf24}
+@media (prefers-reduced-motion:reduce){.med-card{transition:none}.med-card:hover{transform:none}}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-4">
+    <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+      <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+      <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+    </a>
+    <div class="hidden md:flex items-center space-x-8">
+      <a href="3_user_dashboard.html" class="text-gray-600 hover:text-blue-600 font-medium">Inicio</a>
+      <a href="4_search_results.html" class="text-gray-600 hover:text-blue-600 font-medium">Búsqueda</a>
+      <a href="4_medicamentos.html" class="text-blue-600 font-semibold">Medicamentos</a>
+      
+      <a href="6_favorites.html" class="text-gray-600 hover:text-blue-600 font-medium">Favoritos</a>
+      <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium">Ayuda</a>
+    </div>
+    <a href="6_user_profile.html" class="w-8 h-8 health-gradient rounded-full flex items-center justify-center text-white font-semibold" aria-label="Mi perfil">U</a>
+  </div>
+</nav>
+
+<section class="health-gradient text-white py-12">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Catálogo de medicamentos</h1>
+    <p class="text-lg md:text-xl opacity-90">Busca por presentación farmacéutica, filtra por rango de precio y consulta la ficha de cada producto</p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-8">
+  <div class="max-w-6xl mx-auto flex flex-col lg:flex-row gap-6">
+
+    <!-- Filtros (HU24) + HU1: búsqueda por presentación y rango de precio -->
+    <aside class="lg:w-1/4">
+      <div class="bg-white rounded-2xl shadow-soft p-6 lg:sticky lg:top-24">
+        <a href="4_medicamento_busqueda.html" class="flex items-center justify-center mb-5 border border-[#2563EB] text-[#2563EB] py-2 rounded-lg text-sm font-medium hover:bg-blue-50"><i class="fas fa-tag mr-2"></i>Buscar por nombre comercial</a>
+        <h2 class="font-semibold text-gray-800 mb-4"><i class="fas fa-filter text-[#2563EB] mr-2"></i>Filtros</h2>
+        <label for="q" class="block text-sm font-medium text-gray-700 mb-2">Buscar</label>
+        <input id="q" type="text" autocomplete="off" placeholder="Nombre o presentación (ej. jarabe)" class="w-full px-3 py-2 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#2563EB]" />
+        <label for="forma" class="block text-sm font-medium text-gray-700 mb-2"><i class="fas fa-capsules text-[#2563EB] mr-1"></i>Presentación</label>
+        <select id="forma" class="w-full px-3 py-2 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#2563EB]"><option value="">Todas las presentaciones</option></select>
+        <label for="cat" class="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+        <select id="cat" class="w-full px-3 py-2 mb-5 border border-gray-300 rounded-lg focus:outline-none focus:border-[#2563EB]"><option value="">Todas las categorías</option></select>
+        <p class="block text-sm font-medium text-gray-700 mb-2">Rango de precio: <span id="precioLbl" class="text-blue-600 font-semibold">S/ 5.00 – S/ 30.00</span></p>
+        <label for="pmin" class="block text-xs text-gray-500">Mínimo</label>
+        <input id="pmin" type="range" min="5" max="30" step="0.5" value="5" class="w-full accent-blue-600 mb-2" />
+        <label for="pmax" class="block text-xs text-gray-500">Máximo</label>
+        <input id="pmax" type="range" min="5" max="30" step="0.5" value="30" class="w-full accent-blue-600" />
+        <div class="flex justify-between text-xs text-gray-500 mb-6"><span>S/ 5</span><span>S/ 30</span></div>
+        <button id="apply" type="button" class="w-full bg-blue-600 text-white py-2.5 rounded-lg font-medium hover:bg-blue-700 transition-colors">Aplicar filtros</button>
+        <button id="clear" type="button" class="w-full mt-2 border border-gray-300 text-gray-700 py-2.5 rounded-lg hover:bg-gray-50">Limpiar filtros</button>
+      </div>
+    </aside>
+
+    <!-- Resultados -->
+    <section class="lg:w-3/4">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+        <p id="summary" class="text-gray-600" aria-live="polite"></p>
+        <select id="orden" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-[#2563EB]" aria-label="Ordenar por">
+          <option value="rel">Relevancia</option><option value="rating">Mejor calificados</option><option value="asc">Precio: menor a mayor</option><option value="desc">Precio: mayor a menor</option>
+        </select>
+      </div>
+      <div id="loading" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center text-gray-600"><i class="fas fa-spinner fa-spin text-2xl text-[#2563EB] mb-3"></i><p>Consultando medicamentos...</p></div>
+      <div id="list" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      <div id="empty" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center">
+        <i class="fas fa-pills text-4xl text-gray-300 mb-4"></i>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">No hay medicamentos con esos filtros</h2>
+        <p class="text-gray-600 mb-4">Amplía el rango de precio o elige otra presentación.</p>
+        <button id="emptyClear" type="button" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">Limpiar filtros</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+<script src="../js/components/footer.js"></script>
+<script src="../js/services/auth.js"></script>
+<script src="../js/services/usuario.js?v=3"></script>
+<script>document.addEventListener("DOMContentLoaded", function () { if (window.UsuarioService) UsuarioService.pintarCabecera(); });</script>
+<script>
+const PMIN = 5, PMAX = 30;
+/* Presentaciones farmacéuticas (agrupadas solo para asignar el ícono) */
+const TIPOS = {
+  solida:     { label:"Formas sólidas",     icono:"fa-tablets",              formas:["Comprimido","Cápsula","Píldora","Gránulos","Supositorio"] },
+  semisolida: { label:"Formas semisólidas", icono:"fa-hand-holding-medical", formas:["Crema","Pomada","Gel","Ungüento"] },
+  liquida:    { label:"Formas líquidas",    icono:"fa-bottle-droplet",       formas:["Jarabe","Solución","Suspensión","Emulsión","Colirio"] },
+  gaseosa:    { label:"Formas gaseosas",    icono:"fa-wind",                 formas:["Aerosol","Inhalador"] }
+};
+const tipoDe = (forma) => Object.keys(TIPOS).find((k) => TIPOS[k].formas.includes(forma));
+
+const MEDS = [
+  { id:1,  nombre:"Paracetamol 500 mg",          pres:"Caja x 20 tabletas",  forma:"Comprimido",  cat:"Analgésicos",       precio:12.50, rating:4.8, rev:312, sede:"Clínica Médica Central",             rx:false, desc:"Analgésico y antipirético para dolor leve y fiebre." },
+  { id:2,  nombre:"Ibuprofeno 400 mg",           pres:"Caja x 10 tabletas",  forma:"Comprimido",  cat:"Antiinflamatorios", precio:8.50,  rating:4.6, rev:198, sede:"Laboratorio Médico Central",         rx:false, desc:"Antiinflamatorio para dolor muscular y de cabeza." },
+  { id:3,  nombre:"Losartán 50 mg",              pres:"Caja x 30 tabletas",  forma:"Comprimido",  cat:"Cardiovasculares",  precio:18.00, rating:4.7, rev:145, sede:"Centro Cardiológico",                rx:true,  desc:"Antihipertensivo de uso diario." },
+  { id:4,  nombre:"Amoxicilina 500 mg",          pres:"Caja x 12 cápsulas",  forma:"Cápsula",     cat:"Antibióticos",      precio:15.90, rating:4.4, rev:176, sede:"Clínica Miraflores Salud",           rx:true,  desc:"Antibiótico de amplio espectro con receta médica." },
+  { id:5,  nombre:"Omeprazol 20 mg",             pres:"Caja x 14 cápsulas",  forma:"Cápsula",     cat:"Gastrointestinales",precio:11.20, rating:4.5, rev:121, sede:"Centro Médico San Isidro",           rx:false, desc:"Reduce la acidez y protege el estómago." },
+  { id:6,  nombre:"Loratadina 10 mg",            pres:"Caja x 10 tabletas",  forma:"Comprimido",  cat:"Antialérgicos",     precio:6.80,  rating:4.3, rev:89,  sede:"Policlínico La Molina",              rx:false, desc:"Antialérgico que no produce somnolencia." },
+  { id:7,  nombre:"Metformina 850 mg",           pres:"Caja x 30 tabletas",  forma:"Comprimido",  cat:"Endocrinológicos",  precio:14.50, rating:4.7, rev:210, sede:"Clínica Surco Vital",                rx:true,  desc:"Control de la glucosa en diabetes tipo 2." },
+  { id:8,  nombre:"Atorvastatina 20 mg",         pres:"Caja x 30 tabletas",  forma:"Comprimido",  cat:"Cardiovasculares",  precio:24.00, rating:4.9, rev:97,  sede:"Laboratorio Miraflores Diagnóstica", rx:true,  desc:"Reduce el colesterol y los triglicéridos." },
+  { id:9,  nombre:"Salbutamol inhalador",        pres:"Frasco 200 dosis",    forma:"Inhalador",   cat:"Respiratorios",     precio:19.90, rating:4.6, rev:133, sede:"Clínica San Juan",                   rx:false, desc:"Broncodilatador para crisis de asma." },
+  { id:10, nombre:"Azitromicina 500 mg",         pres:"Caja x 3 tabletas",   forma:"Comprimido",  cat:"Antibióticos",      precio:22.00, rating:4.2, rev:64,  sede:"Clínica Angloamericana",             rx:true,  desc:"Antibiótico para infecciones respiratorias." },
+  { id:11, nombre:"Diclofenaco gel 1%",          pres:"Tubo 40 g",           forma:"Gel",         cat:"Antiinflamatorios", precio:13.90, rating:4.5, rev:152, sede:"Clínica Miraflores Salud",           rx:false, desc:"Gel tópico para dolor articular y muscular." },
+  { id:12, nombre:"Hidrocortisona crema 1%",     pres:"Tubo 20 g",           forma:"Crema",       cat:"Dermatológicos",    precio:9.50,  rating:4.4, rev:108, sede:"Centro Médico San Isidro",           rx:false, desc:"Crema para dermatitis e irritaciones leves de la piel." },
+  { id:13, nombre:"Mupirocina pomada 2%",        pres:"Tubo 15 g",           forma:"Pomada",      cat:"Antibióticos",      precio:21.50, rating:4.6, rev:73,  sede:"Clínica Angloamericana",             rx:true,  desc:"Pomada antibiótica para infecciones de la piel." },
+  { id:14, nombre:"Ambroxol jarabe 15 mg/5 ml",  pres:"Frasco 120 ml",       forma:"Jarabe",      cat:"Respiratorios",     precio:10.80, rating:4.5, rev:141, sede:"Policlínico La Molina",              rx:false, desc:"Mucolítico para la tos con flema." },
+  { id:15, nombre:"Ibuprofeno suspensión 100 mg/5 ml", pres:"Frasco 100 ml", forma:"Suspensión",  cat:"Antiinflamatorios", precio:12.30, rating:4.7, rev:187, sede:"Clínica Médica Central",             rx:false, desc:"Suspensión oral para fiebre y dolor en niños." },
+  { id:16, nombre:"Lágrimas artificiales",       pres:"Frasco 10 ml",        forma:"Colirio",     cat:"Oftalmológicos",    precio:16.50, rating:4.3, rev:58,  sede:"Laboratorio Médico Central",         rx:false, desc:"Colirio lubricante para ojo seco." },
+  { id:17, nombre:"Paracetamol supositorio 250 mg", pres:"Caja x 6 unidades",forma:"Supositorio", cat:"Analgésicos",       precio:7.90,  rating:4.2, rev:46,  sede:"Clínica Surco Vital",                rx:false, desc:"Vía rectal para fiebre cuando no se tolera la vía oral." },
+  { id:18, nombre:"Beclometasona aerosol",       pres:"Frasco 200 dosis",    forma:"Aerosol",     cat:"Respiratorios",     precio:28.50, rating:4.8, rev:92,  sede:"Clínica San Juan",                   rx:true,  desc:"Corticoide inhalado para control del asma." },
+  { id:19, nombre:"Mentol y alcanfor ungüento",  pres:"Tarro 30 g",          forma:"Ungüento",    cat:"Analgésicos",       precio:6.50,  rating:4.1, rev:67,  sede:"Laboratorio Miraflores Diagnóstica", rx:false, desc:"Ungüento de uso tópico para dolores musculares." },
+  { id:20, nombre:"Sales de rehidratación oral", pres:"Caja x 10 sobres",    forma:"Gránulos",    cat:"Gastrointestinales",precio:9.20,  rating:4.6, rev:119, sede:"Centro Cardiológico",                rx:false, desc:"Gránulos para preparar solución de rehidratación." }
+];
+const $ = (id) => document.getElementById(id);
+const esc = (s) => { const d = document.createElement("div"); d.textContent = s == null ? "" : s; return d.innerHTML; };
+const norm = (s) => String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+const estado = { texto: "", forma: "", cat: "", pmin: PMIN, pmax: PMAX, orden: "rel" };
+let timer = null;
+
+function estrellas(r) {
+  return [1,2,3,4,5].map((n) => r >= n - 0.25 ? '<i class="fas fa-star"></i>' : r >= n - 0.75 ? '<i class="fas fa-star-half-alt"></i>' : '<i class="far fa-star"></i>').join("");
+}
+const rangoTxt = (a, b) => "S/ " + Number(a).toFixed(2) + " – S/ " + Number(b).toFixed(2);
+
+/* Equivale a GET /api/medicamento?presentacion=&categoria=&precioMin=&precioMax= */
+function obtener() {
+  const q = norm(estado.texto);
+  const l = MEDS.filter((m) => {
+    const texto = norm([m.nombre, m.desc, m.pres, m.forma].join(" "));
+    return (!q || texto.includes(q))
+      && (!estado.forma || m.forma === estado.forma)
+      && (!estado.cat || m.cat === estado.cat)
+      && m.precio >= estado.pmin && m.precio <= estado.pmax;
+  });
+  if (estado.orden === "rating") l.sort((a, b) => b.rating - a.rating);
+  else if (estado.orden === "asc") l.sort((a, b) => a.precio - b.precio);
+  else if (estado.orden === "desc") l.sort((a, b) => b.precio - a.precio);
+  return l;
+}
+
+function tarjeta(m) {
+  const t = TIPOS[tipoDe(m.forma)];
+  return `<article class="med-card bg-white rounded-2xl shadow-soft p-6 flex flex-col border border-gray-100">
+    <div class="flex items-start justify-between gap-3 mb-3">
+      <div class="flex items-start gap-4 min-w-0">
+        <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas ${t.icono}"></i></div>
+        <div class="min-w-0">
+          <h3 class="text-lg font-semibold"><a href="4_medicamento_ficha.html?id=${m.id}" class="text-gray-900 hover:text-[#2563EB] hover:underline">${esc(m.nombre)}</a></h3>
+          <p class="text-gray-500 text-sm">${esc(m.pres)}</p>
+        </div>
+      </div>
+      <div class="text-xl font-bold text-green-600 whitespace-nowrap">S/ ${m.precio.toFixed(2)}</div>
+    </div>
+    <div class="flex flex-wrap items-center gap-x-2 mb-2"><span class="star text-sm">${estrellas(m.rating)}</span><span class="font-semibold text-gray-900">${m.rating.toFixed(1)}</span><span class="text-gray-500 text-sm">(${m.rev} reseñas)</span></div>
+    <p class="text-gray-600 text-sm mb-3">${esc(m.desc)}</p>
+    <div class="flex flex-wrap gap-2 mb-4">
+      <span class="bg-indigo-100 text-indigo-800 px-2 py-1 rounded text-xs"><i class="fas ${t.icono} mr-1"></i>${esc(m.forma)}</span>
+      <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs">${esc(m.cat)}</span>
+      ${m.rx ? '<span class="bg-red-100 text-red-800 px-2 py-1 rounded text-xs"><i class="fas fa-file-prescription mr-1"></i>Con receta</span>' : '<span class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">Venta libre</span>'}
+    </div>
+    <div class="mt-auto flex items-center justify-between gap-3 pt-3 border-t border-gray-100">
+      <p class="text-sm text-gray-500 truncate"><i class="fas fa-hospital mr-1"></i>${esc(m.sede)}</p>
+      <a href="4_medicamento_ficha.html?id=${m.id}#ficha" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 whitespace-nowrap">Ver ficha</a>
+    </div>
+  </article>`;
+}
+
+function pintar() {
+  const l = obtener(), n = l.length;
+  $("list").innerHTML = l.map(tarjeta).join("");
+  $("list").classList.toggle("hidden", !n);
+  $("empty").classList.toggle("hidden", n > 0);
+  const pres = estado.forma;
+  const precio = (estado.pmin > PMIN || estado.pmax < PMAX) ? rangoTxt(estado.pmin, estado.pmax) : "";
+  const f = [pres, estado.cat, precio].filter(Boolean).join(" • ");
+  $("summary").innerHTML = `<span class="font-semibold text-blue-600">${n}</span> ${n === 1 ? "medicamento" : "medicamentos"}${f ? " • " + esc(f) : ""}`;
+}
+
+/* Simula la consulta GET /api/medicamento al aplicar filtros */
+function consultar() {
+  clearTimeout(timer);
+  $("list").classList.add("hidden"); $("empty").classList.add("hidden"); $("loading").classList.remove("hidden");
+  timer = setTimeout(() => { $("loading").classList.add("hidden"); pintar(); }, 400);
+}
+
+/* Presentaciones disponibles */
+function llenarFormas() {
+  const sel = $("forma");
+  sel.innerHTML = '<option value="">Todas las presentaciones</option>';
+  Object.keys(TIPOS).forEach((k) => TIPOS[k].formas.forEach((f) => { const o = document.createElement("option"); o.value = f; o.textContent = f; sel.appendChild(o); }));
+}
+
+function actualizarRango(origen) {
+  let a = Number($("pmin").value), b = Number($("pmax").value);
+  if (a > b) { if (origen === "pmin") { b = a; $("pmax").value = b; } else { a = b; $("pmin").value = a; } }
+  $("precioLbl").textContent = rangoTxt(a, b);
+}
+
+function limpiar() {
+  Object.assign(estado, { texto: "", forma: "", cat: "", pmin: PMIN, pmax: PMAX, orden: "rel" });
+  $("q").value = ""; $("forma").value = ""; $("cat").value = "";
+  $("pmin").value = PMIN; $("pmax").value = PMAX; $("precioLbl").textContent = rangoTxt(PMIN, PMAX); $("orden").value = "rel";
+  pintar();
+}
+
+llenarFormas();
+Array.from(new Set(MEDS.map((m) => m.cat))).sort((a, b) => a.localeCompare(b, "es")).forEach((c) => { const o = document.createElement("option"); o.value = c; o.textContent = c; $("cat").appendChild(o); });
+$("pmin").addEventListener("input", () => actualizarRango("pmin"));
+$("pmax").addEventListener("input", () => actualizarRango("pmax"));
+$("apply").addEventListener("click", () => {
+  estado.forma = $("forma").value; estado.cat = $("cat").value;
+  estado.pmin = Number($("pmin").value); estado.pmax = Number($("pmax").value); estado.texto = $("q").value;
+  consultar();
+});
+$("q").addEventListener("keydown", (e) => { if (e.key === "Enter") $("apply").click(); });
+$("orden").addEventListener("change", (e) => { estado.orden = e.target.value; pintar(); });
+$("clear").addEventListener("click", limpiar);
+$("emptyClear").addEventListener("click", limpiar);
+pintar();
+</script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Registro de Proveedor - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+#track{display:flex;transition:transform .35s ease}
+.slide{min-width:100%;padding:0 2px}
+.dot.active{background:#fff;color:#2563eb}
+.dot.done{background:#10b981;color:#fff}
+.field-error{border-color:#ef4444!important}
+.svc.sel{border-color:#2563eb;background:#eff6ff}
+.drop{border:2px dashed #d1d5db}.drop:hover{border-color:#2563eb;background:#f8fafc}
+@media (prefers-reduced-motion:reduce){#track{transition:none}}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <a href="3_provider_home.html" class="flex items-center space-x-3"><img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" /><span class="text-xl font-bold text-gray-900">ComparaSalud</span></a>
+    <a href="3_provider_home.html" class="text-sm text-gray-500 hover:text-gray-800">Completar más tarde</a>
+  </div>
+</header>
+
+<section class="health-gradient text-white py-10">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl font-bold mb-2">Registra tu establecimiento</h1>
+    <p class="opacity-90 mb-6">Completa estos pasos para empezar a recibir pacientes</p>
+    <div class="flex items-center justify-center gap-2 text-sm" id="dots">
+      <span class="dot w-9 h-9 rounded-full bg-white/30 flex items-center justify-center font-semibold">1</span><span class="w-8 h-0.5 bg-white/40"></span>
+      <span class="dot w-9 h-9 rounded-full bg-white/30 flex items-center justify-center font-semibold">2</span><span class="w-8 h-0.5 bg-white/40"></span>
+      <span class="dot w-9 h-9 rounded-full bg-white/30 flex items-center justify-center font-semibold">3</span><span class="w-8 h-0.5 bg-white/40"></span>
+      <span class="dot w-9 h-9 rounded-full bg-white/30 flex items-center justify-center font-semibold">4</span>
+    </div>
+    <p id="stepName" class="mt-3 font-medium"></p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-10">
+  <div class="max-w-3xl mx-auto">
+    <div class="overflow-hidden">
+      <div id="track">
+
+        <!-- 1: Datos de la clínica -->
+        <section class="slide"><div class="bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-5">
+          <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-hospital text-[#2563EB] mr-2"></i>Datos de la clínica</h2>
+          <div><label class="block text-sm font-medium text-gray-700 mb-2">Nombre de la clínica *</label><input id="nombre" required maxlength="100" placeholder="Ej: Clínica San Juan" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]" /></div>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div><label class="block text-sm font-medium text-gray-700 mb-2">Razón social *</label><input id="razon" required maxlength="120" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]" /></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-2">RUC * <span class="text-gray-400 font-normal">(11 dígitos)</span></label><input id="ruc" required inputmode="numeric" maxlength="11" pattern="\d{11}" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]" /></div>
+          </div>
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div><label class="block text-sm font-medium text-gray-700 mb-2">Tipo de establecimiento *</label>
+              <select id="tipo" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="">Selecciona</option><option>Clínica</option><option>Policlínico</option><option>Laboratorio</option><option>Centro especializado</option><option>Hospital</option></select></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-2">Teléfono *</label><input id="tel" type="tel" required maxlength="20" placeholder="(01) 234-5678" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]" /></div>
+          </div>
+          <div><label class="block text-sm font-medium text-gray-700 mb-2">Descripción *</label><textarea id="desc" required rows="3" maxlength="400" placeholder="Cuéntales a los pacientes qué ofreces." class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB] resize-none"></textarea></div>
+        </div></section>
+
+        <!-- 2: Ubicación, servicios y horarios -->
+        <section class="slide"><div class="bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-5">
+          <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-location-dot text-[#2563EB] mr-2"></i>Ubicación, servicios y horarios</h2>
+          <div class="grid sm:grid-cols-3 gap-5">
+            <div class="sm:col-span-2"><label class="block text-sm font-medium text-gray-700 mb-2">Dirección *</label><input id="dir" required maxlength="200" placeholder="Av. Larco 345" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]" /></div>
+            <div><label class="block text-sm font-medium text-gray-700 mb-2">Distrito *</label>
+              <select id="dist" required class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB]"><option value="">Selecciona</option><option>Miraflores</option><option>San Isidro</option><option>La Molina</option><option>San Borja</option><option>Santiago de Surco</option><option>Lince</option><option>Cercado de Lima</option></select></div>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-700 mb-2">Servicios que ofreces * <span class="text-gray-400 font-normal">(elige uno o más)</span></p>
+            <div id="svcs" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+          </div>
+          <div>
+            <p class="text-sm font-medium text-gray-700 mb-2">Horarios de atención</p>
+            <div class="space-y-2 text-sm">
+              <div class="grid grid-cols-[7rem_1fr_auto_1fr] gap-2 items-center"><span>Lun - Vie</span><input type="time" value="08:00" class="h" /><span>a</span><input type="time" value="19:00" class="h" /></div>
+              <div class="grid grid-cols-[7rem_1fr_auto_1fr] gap-2 items-center"><span>Sábados</span><input type="time" value="08:00" class="h" /><span>a</span><input type="time" value="13:00" class="h" /></div>
+              <div class="grid grid-cols-[7rem_1fr_auto_1fr] gap-2 items-center"><span>Domingos</span><input type="time" class="h" /><span>a</span><input type="time" class="h" /></div>
+            </div>
+          </div>
+        </div></section>
+
+        <!-- 3: Documentos -->
+        <section class="slide"><div class="bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-5">
+          <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-file-shield text-[#2563EB] mr-2"></i>Documentos</h2>
+          <p class="text-gray-600 text-sm">Formatos PDF, JPG o PNG. Máximo 5 MB por archivo.</p>
+          <div id="docs" class="space-y-4"></div>
+        </div></section>
+
+        <!-- 4: Revisión -->
+        <section class="slide"><div class="bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-5">
+          <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-clipboard-check text-[#2563EB] mr-2"></i>Revisión y confirmación</h2>
+          <dl id="resumen" class="grid sm:grid-cols-2 gap-3 text-sm"></dl>
+          <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-xl p-4 text-sm"><i class="fas fa-info-circle mr-2"></i>Verificaremos tus documentos en 3 a 5 días hábiles. Mientras tanto puedes configurar tu panel.</div>
+          <label class="flex items-start gap-3 text-sm text-gray-700"><input id="terms" type="checkbox" class="mt-1 accent-blue-600" />Acepto los términos y condiciones y confirmo que la información es verdadera *</label>
+        </div></section>
+      </div>
+    </div>
+
+    <p id="err" class="hidden mt-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-4 py-2 text-sm"><i class="fas fa-exclamation-triangle mr-2"></i><span></span></p>
+
+    <div class="flex justify-between mt-6">
+      <button id="prev" type="button" class="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 invisible"><i class="fas fa-arrow-left mr-2"></i>Anterior</button>
+      <button id="next" type="button" class="health-gradient text-white px-8 py-3 rounded-xl font-medium hover:opacity-90">Siguiente<i class="fas fa-arrow-right ml-2"></i></button>
+    </div>
+  </div>
+</main>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const NAMES = ["Datos de la clínica", "Ubicación, servicios y horarios", "Documentos", "Revisión"];
+const SERV = [["fa-stethoscope","Consulta general"],["fa-heartbeat","Cardiología"],["fa-microscope","Laboratorio"],["fa-x-ray","Imágenes"],["fa-teeth","Odontología"],["fa-eye","Oftalmología"],["fa-baby","Pediatría"],["fa-syringe","Vacunación"],["fa-pills","Farmacia"]];
+const DOCS = [["logo","Logo o foto de la clínica","fa-image",true],["lic","Licencia de funcionamiento","fa-file-contract",true],["rucdoc","Ficha RUC (SUNAT)","fa-file-invoice",true],["dni","DNI del representante (frente y reverso)","fa-id-card",true],["extra","Certificaciones adicionales (opcional)","fa-graduation-cap",false]];
+const archivos = {};
+let paso = 0;
+
+$("svcs").innerHTML = SERV.map(([i,n]) => `<button type="button" class="svc border-2 border-gray-200 rounded-xl p-3 text-center hover:border-blue-400" data-n="${n}"><i class="fas ${i} text-xl text-[#2563EB] mb-1"></i><div class="text-sm font-medium text-gray-800">${n}</div></button>`).join("");
+$("svcs").addEventListener("click", (e) => { const b = e.target.closest(".svc"); if (b) b.classList.toggle("sel"); });
+document.querySelectorAll(".h").forEach((i) => i.className = "px-3 py-2 border border-gray-300 rounded-lg w-full");
+
+$("docs").innerHTML = DOCS.map(([k,t,i,req]) => `
+  <div><p class="text-sm font-medium text-gray-700 mb-2">${t}${req ? " *" : ""}</p>
+  <label class="drop block rounded-xl p-5 text-center cursor-pointer"><i class="fas ${i} text-2xl text-gray-400 mb-1"></i><p class="text-gray-600 text-sm">Haz clic para subir el archivo</p>
+  <input type="file" data-k="${k}" accept=".pdf,.jpg,.jpeg,.png" class="hidden" /></label>
+  <p id="f-${k}" class="text-sm text-green-700 mt-1"></p></div>`).join("");
+$("docs").addEventListener("change", (e) => {
+  const f = e.target.files[0], k = e.target.dataset.k;
+  if (!f) return;
+  if (f.size > 5 * 1024 * 1024) { e.target.value = ""; delete archivos[k]; $("f-" + k).className = "text-sm text-red-600 mt-1"; $("f-" + k).textContent = "El archivo supera los 5 MB."; return; }
+  archivos[k] = f.name; $("f-" + k).className = "text-sm text-green-700 mt-1"; $("f-" + k).innerHTML = '<i class="fas fa-check-circle mr-1"></i>' + f.name;
+});
+
+function aviso(m) { $("err").classList.toggle("hidden", !m); $("err").querySelector("span").textContent = m || ""; }
+
+function validar() {
+  const sec = document.querySelectorAll(".slide")[paso];
+  if (paso === 0) {
+    for (const id of ["nombre","razon","ruc","tipo","tel","desc"]) { const el = $(id); el.classList.remove("field-error"); if (!el.value.trim()) { el.classList.add("field-error"); el.focus(); return "Completa todos los campos obligatorios."; } }
+    if (!/^\d{11}$/.test($("ruc").value.trim())) { $("ruc").classList.add("field-error"); return "El RUC debe tener 11 dígitos."; }
+  }
+  if (paso === 1) {
+    for (const id of ["dir","dist"]) { const el = $(id); el.classList.remove("field-error"); if (!el.value.trim()) { el.classList.add("field-error"); el.focus(); return "Indica la dirección y el distrito."; } }
+    if (!document.querySelector(".svc.sel")) return "Elige al menos un servicio.";
+  }
+  if (paso === 2) { const falta = DOCS.find(([k,,,req]) => req && !archivos[k]); if (falta) return "Falta subir: " + falta[1] + "."; }
+  if (paso === 3 && !$("terms").checked) return "Debes aceptar los términos y condiciones.";
+  return "";
+}
+
+function resumen() {
+  const sv = [...document.querySelectorAll(".svc.sel")].map((b) => b.dataset.n).join(", ");
+  const f = (k, v) => `<div class="p-3 bg-gray-50 rounded-xl"><dt class="text-xs text-gray-500">${k}</dt><dd class="font-semibold text-gray-900 break-words"></dd></div>`;
+  const items = [["Clínica", $("nombre").value],["Razón social", $("razon").value],["RUC", $("ruc").value],["Tipo", $("tipo").value],["Teléfono", $("tel").value],["Dirección", $("dir").value + ", " + $("dist").value],["Servicios", sv],["Documentos", Object.keys(archivos).length + " archivo(s) cargados"]];
+  $("resumen").innerHTML = items.map(([k]) => f(k)).join("");
+  document.querySelectorAll("#resumen dd").forEach((d, i) => d.textContent = items[i][1]);
+}
+
+function mostrar() {
+  $("track").style.transform = `translateX(-${paso * 100}%)`;
+  $("stepName").textContent = `Paso ${paso + 1} de 4: ${NAMES[paso]}`;
+  document.querySelectorAll(".dot").forEach((d, i) => { d.classList.toggle("active", i === paso); d.classList.toggle("done", i < paso); d.innerHTML = i < paso ? '<i class="fas fa-check"></i>' : i + 1; });
+  $("prev").classList.toggle("invisible", paso === 0);
+  $("next").innerHTML = paso === 3 ? '<i class="fas fa-paper-plane mr-2"></i>Enviar y ir a mi panel' : 'Siguiente<i class="fas fa-arrow-right ml-2"></i>';
+  if (paso === 3) resumen();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+$("next").addEventListener("click", () => {
+  const m = validar(); aviso(m); if (m) return;
+  if (paso < 3) { paso++; mostrar(); return; }
+  // Guarda el perfil y actualiza la sesión con el nombre de la clínica
+  const perfil = { nombre: $("nombre").value.trim(), razon: $("razon").value.trim(), ruc: $("ruc").value.trim(), tipo: $("tipo").value, telefono: $("tel").value.trim(), descripcion: $("desc").value.trim(), direccion: $("dir").value.trim(), distrito: $("dist").value, servicios: [...document.querySelectorAll(".svc.sel")].map((b) => b.dataset.n), documentos: archivos, estado: "En verificación" };
+  try {
+    localStorage.setItem("cs_proveedor_perfil", JSON.stringify(perfil));
+    const s = JSON.parse(sessionStorage.getItem("cs_session")) || {};
+    s.nombreCentro = perfil.nombre; sessionStorage.setItem("cs_session", JSON.stringify(s));
+    const u = JSON.parse(localStorage.getItem("cs_users")) || [];
+    u.forEach((x) => { if (x.id === s.id) x.nombre = perfil.nombre; });
+    localStorage.setItem("cs_users", JSON.stringify(u));
+  } catch (e) {}
+  location.href = "./3_provider_home.html";
+});
+$("prev").addEventListener("click", () => { if (paso > 0) { paso--; aviso(""); mostrar(); } });
+mostrar();
+</script>
+</body>
+</html>

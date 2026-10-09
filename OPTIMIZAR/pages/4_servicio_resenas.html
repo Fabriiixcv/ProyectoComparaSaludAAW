@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Reseñas del Servicio - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+html{scroll-behavior:smooth}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+
+/* ---------- Estrellas (solo CSS) ---------- */
+.stars{display:flex;flex-direction:row-reverse;justify-content:flex-end;gap:.25rem}
+.stars input{position:absolute;opacity:0;pointer-events:none}
+.stars label{font-size:2.25rem;line-height:1;color:#d1d5db;cursor:pointer;transition:color .15s,transform .15s}
+.stars label:hover,.stars label:hover~label,.stars input:checked~label{color:#f59e0b}
+.stars label:hover{transform:scale(1.15)}
+.stars input:focus-visible+label{outline:2px solid #2563eb;border-radius:6px}
+
+/* Texto de la puntuación elegida */
+.rt{display:none}
+form:has(#s1:checked) .rt1,form:has(#s2:checked) .rt2,form:has(#s3:checked) .rt3,
+form:has(#s4:checked) .rt4,form:has(#s5:checked) .rt5{display:inline}
+form:has(input[name=rating]:checked) .rt-none{display:none}
+
+/* ---------- Validación simulada ---------- */
+.btn-ok{display:none}
+form:has(input[name=rating]:checked):has(textarea:not(:placeholder-shown)) .btn-ok{display:flex}
+form:has(input[name=rating]:checked):has(textarea:not(:placeholder-shown)) .btn-no{display:none}
+.hint-rating,.hint-text{display:flex}
+form:has(input[name=rating]:checked) .hint-rating{display:none}
+form:has(textarea:not(:placeholder-shown)) .hint-text{display:none}
+
+/* ---------- Modales y mensajes con :target ---------- */
+.modal{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:60;align-items:center;justify-content:center;padding:1rem}
+.modal:target{display:flex}
+#exito{display:none}
+#exito:target{display:flex}
+
+/* ---------- Promedio actualizado tras publicar ---------- */
+.avg-new,.cnt-new,.nueva{display:none}
+body:has(#exito:target) .avg-old,body:has(#exito:target) .cnt-old{display:none}
+body:has(#exito:target) .cnt-new{display:inline}
+body:has(#exito:target) .nueva{display:block}
+body:has(#exito:target):has(#s1:checked) .n1,
+body:has(#exito:target):has(#s2:checked) .n2,
+body:has(#exito:target):has(#s3:checked) .n3,
+body:has(#exito:target):has(#s4:checked) .n4,
+body:has(#exito:target):has(#s5:checked) .n5{display:inline}
+
+/* Estrellas de "Tu reseña" según lo seleccionado */
+.nueva .k{color:#d1d5db}
+body:has(#s1:checked) .nueva .k1,
+body:has(#s2:checked) .nueva .k1,body:has(#s2:checked) .nueva .k2,
+body:has(#s3:checked) .nueva .k1,body:has(#s3:checked) .nueva .k2,body:has(#s3:checked) .nueva .k3,
+body:has(#s4:checked) .nueva .k1,body:has(#s4:checked) .nueva .k2,body:has(#s4:checked) .nueva .k3,body:has(#s4:checked) .nueva .k4,
+body:has(#s5:checked) .nueva .k{color:#f59e0b}
+@media (prefers-reduced-motion:reduce){.stars label{transition:none}.stars label:hover{transform:none}}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+
+<!-- Mensaje de éxito (HU47 · Escenario 1) -->
+<div id="exito" class="fixed top-20 right-4 z-[70] max-w-sm bg-green-50 border border-green-200 text-green-800 rounded-xl shadow-lg px-4 py-3 items-start" role="status">
+  <i class="fas fa-check-circle text-green-600 mt-0.5 mr-3"></i>
+  <span class="text-sm font-medium">Reseña publicada correctamente</span>
+  <a href="#resenas" class="ml-4 text-green-700 hover:text-green-900" aria-label="Cerrar"><i class="fas fa-times"></i></a>
+</div>
+
+<header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-14">
+      <a href="3_user_dashboard.html" class="flex items-center space-x-3">
+        <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+        <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-8">
+        <a href="3_user_dashboard.html" class="text-gray-700 hover:text-[#2563EB] font-medium">Inicio</a>
+        <a href="4_search_results.html" class="text-[#2563EB] font-medium">Buscar</a>
+        <a href="6_favorites.html" class="text-gray-700 hover:text-[#2563EB] font-medium">Favoritos</a>
+        <a href="8_help_center.html" class="text-gray-700 hover:text-[#2563EB] font-medium">Ayuda</a>
+      </nav>
+    </div>
+    <div class="flex items-center space-x-3">
+      <img src="../assets/img/usuarios/usuario9.png" alt="Juan Sánchez" class="w-9 h-9 rounded-full" />
+      <span class="hidden md:block text-gray-700 font-medium">Juan Sánchez</span>
+      <a href="1_2_auth.html" class="text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100" aria-label="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+</header>
+
+<section class="health-gradient text-white py-10">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Reseñas del servicio</h1>
+    <p class="text-lg opacity-90">Califica tu experiencia y ayuda a otros pacientes a decidir</p>
+  </div>
+</section>
+
+<main class="flex-1 container mx-auto px-4 py-8">
+  <div class="max-w-6xl mx-auto">
+
+    <nav class="text-sm text-gray-500 mb-6" aria-label="Ruta">
+      <a href="4_detalle.html?tipo=servicios&id=1" class="hover:text-blue-600"><i class="fas fa-arrow-left mr-1"></i>Volver al servicio</a>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- ============ Columna izquierda: resumen ============ -->
+      <aside class="space-y-6">
+        <section class="bg-white rounded-2xl shadow-soft p-6">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-14 h-14 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas fa-stethoscope text-xl"></i></div>
+            <div class="min-w-0">
+              <span class="inline-block bg-blue-50 text-blue-700 px-2.5 py-0.5 rounded-full text-xs font-medium mb-1">Servicio • Consultas</span>
+              <h2 class="font-bold text-gray-900 leading-tight">Consulta Médica General</h2>
+              <p class="text-blue-600 text-sm font-medium">Clínica San Juan</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between text-sm text-gray-600 border-t border-gray-100 pt-4">
+            <span><i class="far fa-clock mr-1 text-gray-400"></i>30 minutos</span>
+            <span class="text-lg font-bold text-green-600">S/ 80</span>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-2xl shadow-soft p-6 text-center">
+          <p class="text-gray-600 text-sm mb-1">Puntuación promedio</p>
+          <p class="text-5xl font-bold text-gray-900">
+            <span class="avg-old">4.50</span>
+            <span class="avg-new n1">4.23</span><span class="avg-new n2">4.31</span><span class="avg-new n3">4.38</span><span class="avg-new n4">4.46</span><span class="avg-new n5">4.54</span>
+          </p>
+          <div class="text-yellow-400 my-2 text-lg">
+            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+          </div>
+          <p class="text-gray-600 text-sm">Basado en <span class="cnt-old font-semibold">12</span><span class="cnt-new font-semibold">13</span> reseñas</p>
+
+          <div class="mt-5 space-y-2 text-sm text-left">
+            <div class="flex items-center gap-2"><span class="w-14 text-gray-600">5 estrellas</span><div class="flex-1 bg-gray-200 rounded-full h-2"><div class="health-gradient h-2 rounded-full" style="width:58%"></div></div><span class="w-6 text-right text-gray-600">7</span></div>
+            <div class="flex items-center gap-2"><span class="w-14 text-gray-600">4 estrellas</span><div class="flex-1 bg-gray-200 rounded-full h-2"><div class="health-gradient h-2 rounded-full" style="width:33%"></div></div><span class="w-6 text-right text-gray-600">4</span></div>
+            <div class="flex items-center gap-2"><span class="w-14 text-gray-600">3 estrellas</span><div class="flex-1 bg-gray-200 rounded-full h-2"><div class="health-gradient h-2 rounded-full" style="width:9%"></div></div><span class="w-6 text-right text-gray-600">1</span></div>
+            <div class="flex items-center gap-2"><span class="w-14 text-gray-600">2 estrellas</span><div class="flex-1 bg-gray-200 rounded-full h-2"></div><span class="w-6 text-right text-gray-600">0</span></div>
+            <div class="flex items-center gap-2"><span class="w-14 text-gray-600">1 estrella</span><div class="flex-1 bg-gray-200 rounded-full h-2"></div><span class="w-6 text-right text-gray-600">0</span></div>
+          </div>
+        </section>
+      </aside>
+
+      <!-- ============ Columna derecha: formulario + lista ============ -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Formulario HU47 -->
+        <section class="bg-white rounded-2xl shadow-soft p-6 md:p-8">
+          <div class="flex items-start justify-between gap-3 mb-1 flex-wrap">
+            <h2 class="text-xl font-bold text-gray-900"><i class="fas fa-pen-to-square text-[#2563EB] mr-2"></i>Escribe tu reseña</h2>
+            <span class="inline-flex items-center bg-green-50 text-green-700 px-3 py-1 rounded-full text-xs font-medium"><i class="fas fa-circle text-[8px] mr-2"></i>Sesión iniciada</span>
+          </div>
+          <p class="text-gray-600 text-sm mb-6">Tu opinión quedará asociada a tu cuenta y ayudará a otros usuarios.</p>
+
+          <!-- Simulación: POST /api/comparativa  (u /admin) -->
+          <form action="/api/comparativa" method="post" class="space-y-6" onsubmit="return false">
+
+            <div>
+              <label class="block text-gray-700 text-sm font-medium mb-2">Reseñando como</label>
+              <div class="flex items-center gap-3 px-4 py-3 bg-gray-50 rounded-xl border border-gray-200">
+                <img src="../assets/img/usuarios/usuario9.png" alt="" class="w-8 h-8 rounded-full" />
+                <div class="min-w-0">
+                  <p class="font-medium text-gray-900 text-sm">Juan Sánchez</p>
+                  <p class="text-gray-500 text-xs truncate">juan.sanchez@email.com</p>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <span class="block text-gray-700 text-sm font-medium mb-2">Puntuación (1 a 5 estrellas) *</span>
+              <div class="stars" role="radiogroup" aria-label="Puntuación">
+                <input type="radio" name="rating" id="s5" value="5" /><label for="s5" title="5 estrellas">★</label>
+                <input type="radio" name="rating" id="s4" value="4" /><label for="s4" title="4 estrellas">★</label>
+                <input type="radio" name="rating" id="s3" value="3" /><label for="s3" title="3 estrellas">★</label>
+                <input type="radio" name="rating" id="s2" value="2" /><label for="s2" title="2 estrellas">★</label>
+                <input type="radio" name="rating" id="s1" value="1" /><label for="s1" title="1 estrella">★</label>
+              </div>
+              <p class="text-sm mt-2 text-gray-500">
+                <span class="rt-none">Selecciona cuántas estrellas le das al servicio.</span>
+                <span class="rt rt1 text-red-600 font-medium">1 · Muy malo</span>
+                <span class="rt rt2 text-orange-600 font-medium">2 · Malo</span>
+                <span class="rt rt3 text-yellow-600 font-medium">3 · Regular</span>
+                <span class="rt rt4 text-green-600 font-medium">4 · Bueno</span>
+                <span class="rt rt5 text-green-700 font-medium">5 · Excelente</span>
+              </p>
+            </div>
+
+            <div>
+              <label for="comentario" class="block text-gray-700 text-sm font-medium mb-2">Tu opinión *</label>
+              <textarea id="comentario" name="comentario" rows="5" maxlength="500" placeholder="Cuéntanos tu experiencia: ¿qué te gustó? ¿qué podría mejorar?"
+                class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] resize-none"></textarea>
+              <p class="text-gray-400 text-xs text-right mt-1">Máximo 500 caracteres</p>
+            </div>
+
+            <div>
+              <label for="fecha" class="block text-gray-700 text-sm font-medium mb-2">Fecha y hora de la reseña</label>
+              <div class="relative">
+                <i class="far fa-calendar-alt absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input type="text" id="fecha" name="fecha" placeholder="Fecha y hora actual del sistema"
+                  class="w-full pl-11 pr-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+              </div>
+              <p class="text-gray-400 text-xs mt-1">Si lo dejas vacío, el sistema guardará la fecha y hora actuales. También puedes escribirla (ej: 20/05/2025 15:30).</p>
+            </div>
+
+            <!-- Advertencias (se ocultan solas al completar) -->
+            <div class="space-y-2">
+              <p class="hint-rating items-center bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm"><i class="fas fa-exclamation-triangle mr-2"></i>Falta seleccionar una puntuación de 1 a 5 estrellas.</p>
+              <p class="hint-text items-center bg-amber-50 border border-amber-200 text-amber-800 rounded-lg px-3 py-2 text-sm"><i class="fas fa-exclamation-triangle mr-2"></i>Falta escribir tu comentario.</p>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+              <a href="4_detalle.html?tipo=servicios&id=1" class="text-center px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50">Cancelar</a>
+              <!-- Incompleto: muestra advertencia -->
+              <a href="#incompleto" class="btn-no justify-center items-center bg-gray-300 text-gray-600 px-6 py-3 rounded-xl font-medium cursor-not-allowed flex"><i class="fas fa-paper-plane mr-2"></i>Publicar Reseña</a>
+              <!-- Completo: simula el POST y muestra el éxito -->
+              <a href="#exito" class="btn-ok justify-center items-center health-gradient text-white px-6 py-3 rounded-xl font-medium hover:opacity-90"><i class="fas fa-paper-plane mr-2"></i>Publicar Reseña</a>
+            </div>
+
+            <p class="text-center text-xs text-gray-400">
+              <a href="#sin-sesion" class="underline hover:text-gray-600">Simular usuario sin sesión iniciada</a>
+            </p>
+          </form>
+        </section>
+
+        <!-- Lista de reseñas -->
+        <section id="resenas" class="scroll-mt-24">
+          <div class="flex items-center justify-between mb-4 flex-wrap gap-3">
+            <h2 class="text-xl font-bold text-gray-900">Reseñas de pacientes</h2>
+            <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" aria-label="Ordenar reseñas">
+              <option>Más recientes</option>
+              <option>Mejor puntuación</option>
+              <option>Peor puntuación</option>
+            </select>
+          </div>
+
+          <div class="space-y-4">
+
+            <!-- Nueva reseña (aparece tras publicar) -->
+            <article class="nueva bg-white rounded-2xl shadow-soft p-6 border-2 border-green-400">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div class="flex items-center gap-3">
+                  <img src="../assets/img/usuarios/usuario9.png" alt="" class="w-10 h-10 rounded-full" />
+                  <div>
+                    <p class="font-semibold text-gray-900 text-sm">Juan Sánchez <span class="ml-1 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded-full font-medium">Tu reseña</span></p>
+                    <p class="text-gray-500 text-xs">Publicada ahora · fecha y hora del sistema</p>
+                  </div>
+                </div>
+                <div class="text-lg"><span class="k k1">★</span><span class="k k2">★</span><span class="k k3">★</span><span class="k k4">★</span><span class="k k5">★</span></div>
+              </div>
+              <p class="text-gray-600 text-sm">Tu comentario y tu puntuación fueron guardados y ya cuentan en el promedio del servicio.</p>
+            </article>
+
+            <article class="bg-white rounded-2xl shadow-soft p-6">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold text-sm">MR</div>
+                  <div><p class="font-semibold text-gray-900 text-sm">María Rodríguez</p><p class="text-gray-500 text-xs">12/05/2025 · 10:42</p></div>
+                </div>
+                <div class="text-yellow-400 text-sm"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+              </div>
+              <p class="text-gray-600 text-sm">El servicio fue rápido y bien explicado. El precio coincidió con lo publicado y recibí mi receta al terminar.</p>
+            </article>
+
+            <article class="bg-white rounded-2xl shadow-soft p-6">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-green-100 text-green-600 rounded-full flex items-center justify-center font-semibold text-sm">CP</div>
+                  <div><p class="font-semibold text-gray-900 text-sm">Carlos Pérez</p><p class="text-gray-500 text-xs">28/04/2025 · 17:15</p></div>
+                </div>
+                <div class="text-yellow-400 text-sm"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i></div>
+              </div>
+              <p class="text-gray-600 text-sm">Buena atención y trato amable. Tuve que esperar unos minutos más de lo previsto, pero lo volvería a contratar.</p>
+            </article>
+
+            <article class="bg-white rounded-2xl shadow-soft p-6">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div class="flex items-center gap-3">
+                  <div class="w-10 h-10 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-semibold text-sm">AG</div>
+                  <div><p class="font-semibold text-gray-900 text-sm">Ana García</p><p class="text-gray-500 text-xs">15/04/2025 · 09:05</p></div>
+                </div>
+                <div class="text-yellow-400 text-sm"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i></div>
+              </div>
+              <p class="text-gray-600 text-sm">La consulta estuvo bien, aunque sentí que fue algo corta. El consultorio estaba limpio y ordenado.</p>
+            </article>
+
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- Advertencia: formulario incompleto -->
+<div id="incompleto" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-exclamation-triangle text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">No se puede publicar aún</h3>
+    <p class="text-gray-600 text-center mb-6">Para publicar tu reseña debes seleccionar una <strong>puntuación de 1 a 5 estrellas</strong> y escribir tu <strong>comentario</strong>.</p>
+    <a href="#comentario" class="block text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Entendido, completar reseña</a>
+  </div>
+</div>
+
+<!-- Advertencia: usuario sin sesión -->
+<div id="sin-sesion" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Inicia sesión para publicar</h3>
+    <p class="text-gray-600 text-center mb-6">Solo los usuarios autenticados pueden calificar un servicio, para que cada reseña quede asociada a una cuenta.</p>
+    <div class="flex flex-col-reverse sm:flex-row gap-3">
+      <a href="#resenas" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Ahora no</a>
+      <a href="1_2_auth.html" class="flex-1 text-center health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Iniciar sesión</a>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+</body>
+</html>

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>Editar Perfil Institucional - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      body { font-family: "Inter", sans-serif; }
+      .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+      .shadow-soft { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+      .field-error { border-color: #ef4444 !important; }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+      <div class="container mx-auto px-4 py-3">
+        <div class="flex items-center justify-between">
+          <div class="flex justify-between items-center space-x-14">
+            <a href="3_provider_home.html" class="flex items-center space-x-3">
+              <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+              <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+            </a>
+            <nav class="hidden lg:flex items-center space-x-8">
+<a href="3_provider_home.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Inicio</a>
+<a href="9_medication_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Catálogo</a>
+<a href="9_servicio_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Servicios</a>
+<a href="9_medico_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Médicos</a>
+<a href="9_provider_edit.html" class="text-[#2563EB] font-medium">Mi sede</a>
+<a href="8_help_center.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Ayuda</a>
+</nav>
+          </div>
+          <div class="flex items-center space-x-3">
+            <span id="centerName" class="hidden md:block text-gray-700 font-medium"></span>
+            <button type="button" onclick="Auth.logout()" class="text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100" aria-label="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></button>
+          </div>
+        </div>
+      </div>
+    </header>
+<div class="bg-white border-b border-gray-100"><div class="container mx-auto px-4 flex gap-6 text-sm overflow-x-auto"><a href="9_provider_edit.html" class="py-3 font-medium whitespace-nowrap border-b-2 border-[#2563EB] text-[#2563EB]">Perfil institucional</a><a href="9_provider_operativa.html" class="py-3 font-medium whitespace-nowrap text-gray-600 hover:text-[#2563EB]">Horarios y categorías</a><a href="9_provider_config.html" class="py-3 font-medium whitespace-nowrap text-gray-600 hover:text-[#2563EB]">Configuración</a></div></div>
+
+    <section class="health-gradient text-white py-10">
+      <div class="container mx-auto px-4">
+        <div class="max-w-3xl mx-auto text-center">
+          <h1 class="text-3xl md:text-4xl font-bold mb-3">Editar Perfil Institucional</h1>
+          <p class="text-lg opacity-90">Mantén actualizados la dirección y el teléfono de tu establecimiento</p>
+        </div>
+      </div>
+    </section>
+
+    <main class="flex-1 container mx-auto px-4 py-10">
+      <div class="max-w-2xl mx-auto">
+        <div id="formAlert" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm" role="alert"></div>
+
+        <form id="perfilForm" novalidate class="bg-white rounded-2xl shadow-soft p-6 md:p-8 space-y-6">
+          <div>
+            <label class="block text-gray-700 text-sm font-medium mb-2">Establecimiento</label>
+            <p id="nombreCentro" class="px-4 py-3 bg-gray-50 rounded-xl border border-gray-200 text-gray-700"></p>
+          </div>
+
+          <div>
+            <label for="direccion" class="block text-gray-700 text-sm font-medium mb-2">Dirección *</label>
+            <input type="text" id="direccion" name="Direccion" maxlength="200" required
+              placeholder="Ej: Av. Principal 123, Miraflores, Lima"
+              class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] transition-colors" />
+            <p id="direccionError" class="hidden text-red-600 text-sm mt-1"></p>
+          </div>
+
+          <div>
+            <label for="telefono" class="block text-gray-700 text-sm font-medium mb-2">Teléfono *</label>
+            <input type="tel" id="telefono" name="Telefono" maxlength="20" required inputmode="tel"
+              placeholder="Ej: 987 654 321 o (01) 234-5678"
+              class="w-full px-4 py-3 bg-white rounded-xl border border-gray-200 focus:outline-none focus:border-[#2563EB] transition-colors" />
+            <p id="telefonoError" class="hidden text-red-600 text-sm mt-1"></p>
+          </div>
+
+          <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pt-2">
+            <a id="cancelLink" href="3_provider_home.html" class="text-center px-6 py-3 rounded-xl border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition-colors">Cancelar</a>
+            <button type="submit" id="submitBtn" class="health-gradient text-white px-6 py-3 rounded-xl font-medium hover:opacity-90 transition-opacity disabled:opacity-60 disabled:cursor-not-allowed">
+              <i class="fas fa-save mr-2"></i><span id="submitLabel">Guardar Cambios</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </main>
+
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/auth.js"></script>
+    <script src="../js/services/centro_medico.js"></script>
+    <script>
+      const session = Auth.requireRole("proveedor");
+
+      const fieldMap = {
+        Direccion: ["direccion", "direccionError"],
+        Telefono: ["telefono", "telefonoError"],
+      };
+      const form = document.getElementById("perfilForm");
+      const alertBox = document.getElementById("formAlert");
+      const submitBtn = document.getElementById("submitBtn");
+      const submitLabel = document.getElementById("submitLabel");
+
+      function clearErrors() {
+        alertBox.classList.add("hidden");
+        Object.values(fieldMap).forEach(([i, e]) => {
+          document.getElementById(i).classList.remove("field-error");
+          document.getElementById(e).classList.add("hidden");
+        });
+      }
+
+      function showErrors(errores) {
+        let first = null;
+        Object.entries(errores).forEach(([campo, msg]) => {
+          const [inputId, errId] = fieldMap[campo];
+          const input = document.getElementById(inputId);
+          input.classList.add("field-error");
+          const err = document.getElementById(errId);
+          err.textContent = msg;
+          err.classList.remove("hidden");
+          if (!first) first = input;
+        });
+        if (first) first.focus();
+      }
+
+      if (session) {
+        const id = session.idCentroMedico;
+        document.getElementById("centerName").textContent = session.nombreCentro || "";
+        document.getElementById("cancelLink").href = "4_provider_profile.html?id=" + id;
+
+        CentroMedicoService.obtenerPerfil(id, session.nombreCentro).then((r) => {
+          document.getElementById("nombreCentro").textContent = r.data.Nombre;
+          document.getElementById("direccion").value = r.data.Direccion || "";
+          document.getElementById("telefono").value = r.data.Telefono || "";
+        });
+
+        form.addEventListener("submit", async function (e) {
+          e.preventDefault();
+          clearErrors();
+
+          const data = {
+            Direccion: document.getElementById("direccion").value,
+            Telefono: document.getElementById("telefono").value,
+          };
+
+          const errores = CentroMedicoService.validar(data);
+          if (Object.keys(errores).length) {
+            showErrors(errores);
+            return;
+          }
+
+          submitBtn.disabled = true;
+          submitLabel.textContent = "Guardando...";
+
+          const result = await CentroMedicoService.actualizar(id, data, session.nombreCentro); // PUT /api/centro-medico
+
+          if (result.ok) {
+            CentroMedicoService.Flash.set("Información actualizada correctamente");
+            window.location.href = "./4_provider_profile.html?id=" + id;
+            return;
+          }
+          if (result.status === 401) {
+            window.location.href = "./1_2_auth.html";
+            return;
+          }
+          if (result.errores) showErrors(result.errores);
+          else {
+            alertBox.textContent = result.error || "Ocurrió un error. Inténtalo nuevamente.";
+            alertBox.classList.remove("hidden");
+          }
+          submitBtn.disabled = false;
+          submitLabel.textContent = "Guardar Cambios";
+        });
+      }
+    </script>
+  </body>
+</html>

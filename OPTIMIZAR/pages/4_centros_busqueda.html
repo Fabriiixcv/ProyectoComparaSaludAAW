@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+    <title>Buscar Centros Médicos - ComparaSalud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+      body { font-family: "Inter", sans-serif; }
+      .health-gradient { background: linear-gradient(135deg, #2563eb 0%, #10b981 100%); }
+      .shadow-soft { box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+      .search-focus:focus-within { box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+      .center-card { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+      .center-card:hover { transform: translateY(-4px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); }
+      @media (prefers-reduced-motion: reduce) { .center-card { transition: none; } .center-card:hover { transform: none; } }
+      mark { background: #dbeafe; color: #1e40af; border-radius: 4px; padding: 0 2px; }
+    </style>
+  </head>
+  <body class="bg-gray-50 min-h-screen flex flex-col">
+    <!-- Navegación -->
+    <nav class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center py-4">
+          <a href="../index.html" class="flex items-center space-x-3">
+            <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+            <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+          </a>
+          <div class="hidden md:flex items-center space-x-8">
+            <a href="../index.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Inicio</a>
+            <a href="4_centros_busqueda.html" class="text-blue-600 font-semibold">Centros médicos</a>
+            <a href="8_help_center.html" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Ayuda</a>
+          </div>
+          <a href="1_2_auth.html" class="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium">Iniciar Sesión</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero con buscador principal -->
+    <section class="health-gradient text-white py-14 md:py-20">
+      <div class="container mx-auto px-4">
+        <div class="max-w-4xl mx-auto text-center">
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">Encuentra centros médicos cerca de ti</h1>
+          <p class="text-xl md:text-2xl opacity-90 mb-8">Busca por distrito o por el nombre del establecimiento</p>
+
+          <form id="searchForm" role="search" class="bg-white rounded-2xl p-3 shadow-soft search-focus max-w-2xl mx-auto">
+            <div class="flex flex-col sm:flex-row gap-3">
+              <div class="relative flex-1">
+                <label for="searchInput" class="sr-only">Distrito o nombre del establecimiento</label>
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                <input id="searchInput" type="text" maxlength="100" autocomplete="off"
+                  placeholder="Ej: Miraflores o Clínica San Marcos"
+                  class="w-full pl-12 pr-4 py-3 rounded-xl text-gray-800 placeholder-gray-400 bg-gray-50 border border-gray-200 focus:outline-none focus:border-[#2563EB]" />
+              </div>
+              <button type="submit" id="searchBtn" class="health-gradient text-white px-8 py-3 rounded-xl font-semibold hover:opacity-90 transition-opacity disabled:opacity-60">
+                <i class="fas fa-search mr-2"></i>Buscar
+              </button>
+            </div>
+          </form>
+
+          <div class="mt-6 flex flex-wrap items-center justify-center gap-2 text-sm">
+            <span class="opacity-80">Distritos disponibles:</span>
+            <span id="districtChips" class="flex flex-wrap justify-center gap-2"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Resultados -->
+    <main class="flex-1 container mx-auto px-4 py-10">
+      <div class="max-w-5xl mx-auto">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Establecimientos de salud</h2>
+          <p id="resultSummary" class="text-gray-600" aria-live="polite"></p>
+        </div>
+
+        <div id="errorBox" class="hidden mb-6 bg-red-50 border border-red-200 text-red-700 rounded-xl p-4 text-sm" role="alert"></div>
+
+        <div id="loading" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center text-gray-600">
+          <i class="fas fa-spinner fa-spin text-2xl text-[#2563EB] mb-3"></i>
+          <p>Buscando establecimientos...</p>
+        </div>
+
+        <div id="emptyState" class="hidden bg-white rounded-2xl shadow-soft p-10 text-center">
+          <i class="fas fa-hospital text-4xl text-gray-300 mb-4"></i>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">No encontramos establecimientos</h3>
+          <p id="emptyText" class="text-gray-600 mb-6">Revisa la ortografía o prueba con otro distrito.</p>
+          <button type="button" id="showAllBtn" class="inline-block health-gradient text-white px-5 py-2.5 rounded-xl font-medium hover:opacity-90">Ver todos los centros</button>
+        </div>
+
+        <div id="resultList" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+      </div>
+    </main>
+
+    <!-- Cómo funciona -->
+    <section class="bg-white py-14">
+      <div class="container mx-auto px-4">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-800 text-center mb-10">Encontrar tu centro médico es simple</h2>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="text-center">
+              <div class="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-keyboard text-blue-600 text-2xl"></i></div>
+              <h3 class="font-semibold text-gray-800 mb-2">Escribe un distrito o nombre</h3>
+              <p class="text-gray-600 text-sm">Basta con una parte del texto, sin importar tildes o mayúsculas.</p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-list text-green-600 text-2xl"></i></div>
+              <h3 class="font-semibold text-gray-800 mb-2">Revisa las sedes</h3>
+              <p class="text-gray-600 text-sm">Mira dirección, distrito y teléfono de cada establecimiento.</p>
+            </div>
+            <div class="text-center">
+              <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center mx-auto mb-4"><i class="fas fa-map-marker-alt text-purple-600 text-2xl"></i></div>
+              <h3 class="font-semibold text-gray-800 mb-2">Abre su perfil</h3>
+              <p class="text-gray-600 text-sm">Consulta el mapa, los medicamentos y las reseñas de la sede.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="bg-gray-800 text-white pt-12 pb-8" id="footer"></footer>
+
+    <script src="../js/components/footer.js"></script>
+    <script src="../js/services/centro_medico.js"></script>
+    <script src="../js/services/centro_medico_busqueda.js"></script>
+    <script>
+      const $ = (id) => document.getElementById(id);
+      const input = $("searchInput");
+      const btn = $("searchBtn");
+
+      function esc(s) {
+        const d = document.createElement("div");
+        d.textContent = s == null ? "" : s;
+        return d.innerHTML;
+      }
+      function norm(s) {
+        return String(s || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      }
+      // Resalta la coincidencia parcial (ignora tildes)
+      function resaltar(texto, q) {
+        const t = String(texto || "");
+        if (!q) return esc(t);
+        const i = norm(t).indexOf(norm(q));
+        if (i < 0) return esc(t);
+        return esc(t.slice(0, i)) + "<mark>" + esc(t.slice(i, i + q.length)) + "</mark>" + esc(t.slice(i + q.length));
+      }
+
+      function render(lista, q) {
+        $("resultList").innerHTML = lista
+          .map(
+            (c) => `
+          <article class="center-card bg-white rounded-2xl shadow-soft p-6 flex flex-col">
+            <div class="flex items-start space-x-4 mb-4">
+              <div class="w-12 h-12 rounded-xl health-gradient text-white flex items-center justify-center flex-shrink-0"><i class="fas fa-hospital"></i></div>
+              <div class="min-w-0">
+                <h3 class="text-lg font-semibold text-gray-900">${resaltar(c.NombreComercial, q)}</h3>
+                <span class="inline-block mt-1 bg-blue-50 text-blue-700 px-3 py-1 rounded-full text-xs font-medium"><i class="fas fa-map-marker-alt mr-1"></i>${resaltar(c.Distrito || "Distrito no registrado", q)}</span>
+              </div>
+            </div>
+            <ul class="space-y-2 text-sm text-gray-600 mb-5">
+              <li><i class="fas fa-location-dot w-5 text-gray-400"></i>${esc(c.Direccion || "Dirección no registrada")}</li>
+              <li><i class="fas fa-phone-alt w-5 text-gray-400"></i>${esc(c.Telefono || "Teléfono no registrado")}</li>
+            </ul>
+            <div class="mt-auto grid grid-cols-2 gap-3">
+              <a href="4_provider_profile.html?id=${encodeURIComponent(c.IdCentroMedico)}" class="block text-center health-gradient text-white py-2.5 rounded-lg font-medium hover:shadow-md transition-all">Ver perfil</a>
+              <a href="4_provider_profile.html?id=${encodeURIComponent(c.IdCentroMedico)}#tarifario" class="block text-center border border-blue-600 text-blue-600 py-2.5 rounded-lg font-medium hover:bg-blue-50 transition-colors"><i class="fas fa-tags mr-1"></i>Tarifario</a>
+            </div>
+          </article>`
+          )
+          .join("");
+      }
+
+      async function buscar(texto) {
+        const q = (texto || "").trim();
+        $("errorBox").classList.add("hidden");
+        $("emptyState").classList.add("hidden");
+        $("resultList").innerHTML = "";
+        $("loading").classList.remove("hidden");
+        btn.disabled = true;
+
+        const r = await CentroMedicoService.buscar(q); // GET /api/centro-medico?q=
+
+        $("loading").classList.add("hidden");
+        btn.disabled = false;
+
+        if (!r.ok) {
+          $("errorBox").textContent = r.error;
+          $("errorBox").classList.remove("hidden");
+          $("resultSummary").textContent = "";
+          return;
+        }
+        const n = r.data.length;
+        if (!n) {
+          $("resultSummary").textContent = "0 resultados";
+          $("emptyText").textContent = `No hay sedes que coincidan con "${q}". Revisa la ortografía o prueba con otro distrito.`;
+          $("emptyState").classList.remove("hidden");
+          return;
+        }
+        $("resultSummary").textContent = q
+          ? `${n} ${n === 1 ? "establecimiento encontrado" : "establecimientos encontrados"} para "${q}"`
+          : `Mostrando todos los centros (${n})`;
+        render(r.data, q);
+      }
+
+      // Distritos como atajos
+      $("districtChips").innerHTML = CentroMedicoService.distritos()
+        .map((d) => `<button type="button" data-d="${esc(d)}" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded-full transition-colors">${esc(d)}</button>`)
+        .join("");
+      $("districtChips").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-d]");
+        if (!b) return;
+        input.value = b.dataset.d;
+        buscar(input.value);
+      });
+
+      $("searchForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        buscar(input.value);
+      });
+      $("showAllBtn").addEventListener("click", () => {
+        input.value = "";
+        buscar("");
+      });
+
+      // Soporta ?q= (por ejemplo, desde otras páginas)
+      const inicial = new URLSearchParams(location.search).get("q") || "";
+      input.value = inicial;
+      buscar(inicial);
+    </script>
+  </body>
+</html>

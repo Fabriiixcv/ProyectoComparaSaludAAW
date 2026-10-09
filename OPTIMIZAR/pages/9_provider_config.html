@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="shortcut icon" href="../assets/logo.ico" type="image/x-icon" />
+<title>Configuración de Sede - ComparaSalud</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<style>
+body{font-family:"Inter",sans-serif}
+html{scroll-behavior:smooth}
+.health-gradient{background:linear-gradient(135deg,#2563eb 0%,#10b981 100%)}
+.shadow-soft{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+.modal{display:none;position:fixed;inset:0;background:rgba(17,24,39,.55);z-index:60;align-items:center;justify-content:center;padding:1rem}
+.modal:target{display:flex}
+.msg{display:none}
+.msg:target{display:flex}
+</style>
+</head>
+<body class="bg-gray-50 min-h-screen flex flex-col">
+<header class="bg-white sticky top-0 z-50 border-b border-gray-100">
+  <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-14">
+      <a href="3_provider_home.html" class="flex items-center space-x-3">
+        <img src="../assets/img/logo.png" alt="ComparaSalud" class="w-10 h-10" />
+        <span class="text-xl font-bold text-gray-900">ComparaSalud</span>
+      </a>
+      <nav class="hidden lg:flex items-center space-x-8">
+<a href="3_provider_home.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Inicio</a>
+<a href="9_medication_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Catálogo</a>
+<a href="9_servicio_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Servicios</a>
+<a href="9_medico_catalog.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Médicos</a>
+<a href="9_provider_edit.html" class="text-[#2563EB] font-medium">Mi sede</a>
+<a href="8_help_center.html" class="text-gray-700 hover:text-[#2563EB] font-medium transition-colors">Ayuda</a>
+</nav>
+    </div>
+    <div class="flex items-center space-x-3">
+      <span class="hidden md:block text-gray-700 font-medium">Clínica Demo</span>
+      <a href="1_2_auth.html" class="text-gray-700 px-3 py-2 rounded-lg hover:bg-gray-100" aria-label="Cerrar Sesión"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
+  </div>
+</header>
+<div class="bg-white border-b border-gray-100"><div class="container mx-auto px-4 flex gap-6 text-sm overflow-x-auto"><a href="9_provider_edit.html" class="py-3 font-medium whitespace-nowrap text-gray-600 hover:text-[#2563EB]">Perfil institucional</a><a href="9_provider_operativa.html" class="py-3 font-medium whitespace-nowrap text-gray-600 hover:text-[#2563EB]">Horarios y categorías</a><a href="9_provider_config.html" class="py-3 font-medium whitespace-nowrap border-b-2 border-[#2563EB] text-[#2563EB]">Configuración</a></div></div>
+
+<section class="health-gradient text-white py-10">
+  <div class="container mx-auto px-4 text-center max-w-3xl">
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">Configuración de Sede</h1>
+    <p class="text-lg opacity-90">Administra la baja de tu establecimiento y de tu perfil institucional</p>
+  </div>
+</section>
+
+<main id="sede" class="flex-1 container mx-auto px-4 py-10">
+  <div class="max-w-4xl mx-auto space-y-8">
+
+    <section class="bg-white rounded-2xl shadow-soft p-6">
+      <h2 class="text-xl font-bold text-gray-900 mb-4">Datos de la sede</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="p-4 bg-gray-50 rounded-xl"><p class="text-gray-500 text-sm">Establecimiento</p><p class="font-semibold text-gray-900">Clínica Demo</p></div>
+        <div class="p-4 bg-gray-50 rounded-xl"><p class="text-gray-500 text-sm">Estado</p><p class="font-semibold text-green-600"><i class="fas fa-circle text-[8px] mr-2"></i>Operativo</p></div>
+        <div class="p-4 bg-gray-50 rounded-xl"><p class="text-gray-500 text-sm">Dirección</p><p class="font-semibold text-gray-900">Av. Arequipa 1450, Lince</p></div>
+        <div class="p-4 bg-gray-50 rounded-xl"><p class="text-gray-500 text-sm">Teléfono</p><p class="font-semibold text-gray-900">(01) 500-1200</p></div>
+        <div class="p-4 bg-gray-50 rounded-xl"><p class="text-gray-500 text-sm">Representante</p><p class="font-semibold text-gray-900">proveedor@comparasalud.com</p></div>
+        <div class="p-4 bg-gray-50 rounded-xl"><p class="text-gray-500 text-sm">Medicamentos en catálogo</p><p class="font-semibold text-gray-900">3</p></div>
+      </div>
+    </section>
+
+    <!-- HU17 -->
+    <section class="bg-white rounded-2xl shadow-soft p-6 border border-red-100">
+      <h2 class="text-xl font-bold text-gray-900 mb-1"><i class="fas fa-store-slash text-red-500 mr-2"></i>Dar de baja el establecimiento</h2>
+      <p class="text-gray-600 mb-5">Úsalo cuando la sede ya no se encuentre en operación. Se retirará de la plataforma y se cerrará tu sesión.</p>
+      <a href="#confirmar-baja" class="inline-block bg-red-50 text-red-600 border border-red-200 font-medium py-2.5 px-6 rounded-xl hover:bg-red-100"><i class="fas fa-trash-alt mr-2"></i>Dar de baja establecimiento</a>
+    </section>
+
+    <!-- HU18 -->
+    <section class="bg-white rounded-2xl shadow-soft p-6 border border-red-100">
+      <h2 class="text-xl font-bold text-gray-900 mb-1"><i class="fas fa-user-slash text-red-500 mr-2"></i>Eliminar perfil institucional</h2>
+      <p class="text-gray-600 mb-5">Dejarás de figurar en la plataforma. Se desvincularán los servicios asociados y se eliminará la cuenta del representante.</p>
+      <p class="text-sm font-semibold text-gray-700 mb-2">Servicios que se desvincularán:</p>
+      <div class="space-y-2 mb-6">
+          <div class="flex items-center justify-between gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <span class="flex items-center gap-3"><i class="fas fa-stethoscope text-[#2563EB]"></i><span class="font-medium text-gray-900 text-sm">Consulta Médica General</span></span>
+            <span class="text-gray-600 text-sm">S/ 80.00</span>
+          </div>
+          <div class="flex items-center justify-between gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <span class="flex items-center gap-3"><i class="fas fa-x-ray text-[#2563EB]"></i><span class="font-medium text-gray-900 text-sm">Ecografía Abdominal</span></span>
+            <span class="text-gray-600 text-sm">S/ 180.00</span>
+          </div>
+          <div class="flex items-center justify-between gap-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+            <span class="flex items-center gap-3"><i class="fas fa-microscope text-[#2563EB]"></i><span class="font-medium text-gray-900 text-sm">Análisis de Sangre Completo</span></span>
+            <span class="text-gray-600 text-sm">S/ 65.00</span>
+          </div>
+      </div>
+      <a href="#confirmar-perfil" class="inline-block bg-red-600 text-white font-medium py-2.5 px-6 rounded-xl hover:bg-red-700"><i class="fas fa-user-times mr-2"></i>Eliminar Perfil</a>
+    </section>
+
+  </div>
+</main>
+
+<!-- HU17: confirmación -->
+<div id="confirmar-baja" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-exclamation-triangle text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">¿Dar de baja el establecimiento?</h3>
+    <p class="text-gray-600 text-center mb-6">Se eliminará <strong>Clínica Demo</strong> del sistema y se cerrará tu sesión.</p>
+    <div class="flex flex-col-reverse sm:flex-row gap-3">
+      <a href="#sede" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+      <a href="#baja-ok" class="flex-1 text-center bg-red-600 text-white font-medium py-2.5 rounded-xl hover:bg-red-700">Sí, dar de baja</a>
+    </div>
+  </div>
+</div>
+<div id="baja-ok" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center">
+    <div class="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 mb-2">Establecimiento eliminado del sistema</h3>
+    <p class="text-gray-600 mb-6">Tu sesión se ha cerrado.</p>
+    <a href="1_2_auth.html" class="block health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Ir al inicio de sesión</a>
+  </div>
+</div>
+
+<!-- HU18: confirmación con contraseña -->
+<div id="confirmar-perfil" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+    <div class="w-14 h-14 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-lock text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 text-center mb-2">Confirma con tu contraseña</h3>
+    <p class="text-gray-600 text-center mb-5">Por seguridad, ingresa tu contraseña para eliminar el perfil de <strong>Clínica Demo</strong>.</p>
+    <label for="pw" class="block text-gray-700 text-sm font-medium mb-2">Contraseña de seguridad</label>
+    <input id="pw" type="password" placeholder="Ingresa tu contraseña" class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:border-[#2563EB] mb-6" />
+    <div class="flex flex-col-reverse sm:flex-row gap-3">
+      <a href="#sede" class="flex-1 text-center border border-gray-300 text-gray-700 font-medium py-2.5 rounded-xl hover:bg-gray-50">Cancelar</a>
+      <a href="#perfil-ok" class="flex-1 text-center bg-red-600 text-white font-medium py-2.5 rounded-xl hover:bg-red-700">Eliminar perfil</a>
+    </div>
+  </div>
+</div>
+<div id="perfil-ok" class="modal">
+  <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center">
+    <div class="w-14 h-14 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4"><i class="fas fa-check text-xl"></i></div>
+    <h3 class="text-xl font-bold text-gray-900 mb-2">Perfil eliminado de la plataforma</h3>
+    <p class="text-gray-600 mb-6">Los servicios asociados fueron desvinculados y la cuenta del representante fue eliminada.</p>
+    <a href="1_2_auth.html" class="block health-gradient text-white font-medium py-2.5 rounded-xl hover:opacity-90">Ir al inicio de sesión</a>
+  </div>
+</div>
+
+<footer class="bg-gray-800 text-white py-8 text-center text-sm">© 2025 ComparaSalud. Todos los derechos reservados.</footer>
+</body>
+</html>
